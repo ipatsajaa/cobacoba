@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Camera - Photobooth</title>
+    <title>Photobooth - Capture & Result</title>
     <style>
-        /* Tema Coklat Estetik & Warm */
+        /* Tema Coklat Estetik */
         body {
-            background: #F5EBE0; /* Cream Warm */
+            background: #F5EBE0;
             color: #4E342E;
             margin: 0;
             font-family: 'Segoe UI', Roboto, sans-serif;
@@ -18,37 +18,21 @@
         }
 
         .pose-counter {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 800;
             color: #6D4C41;
-            margin: 20px 0 10px 0;
+            margin: 15px 0;
             background: white;
             padding: 5px 25px;
             border-radius: 50px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
 
-        .top-controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        #timerSelect {
-            padding: 10px 15px;
-            border-radius: 12px;
-            border: 2px solid #D5BDAF;
-            background: white;
-            color: #4E342E;
-            font-weight: bold;
-            outline: none;
-        }
-
-        /* Container Kamera Disesuaikan dengan Rasio Canva (4:3) */
+        /* Container Kamera & Hasil */
         .cam-box {
             width: 90%;
-            max-width: 500px;
-            aspect-ratio: 4 / 3; /* Mengikuti rasio lubang frame 700x525 */
+            max-width: 450px;
+            aspect-ratio: 4 / 3;
             background: #000;
             border-radius: 20px;
             position: relative;
@@ -57,222 +41,238 @@
             border: 6px solid white;
         }
 
-        #videoFeed {
+        #videoFeed, #resultCanvas {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transform: scaleX(-1); /* Mirror effect */
         }
 
+        #videoFeed { transform: scaleX(-1); }
+        #resultCanvas { display: none; background: white; object-fit: contain; }
+
         #countdown {
-            position: absolute;
-            top: 50%; left: 50%;
+            position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 120px;
-            color: white;
-            font-weight: 900;
-            z-index: 5;
-            text-shadow: 0 0 20px rgba(0,0,0,0.5);
-            display: none;
+            font-size: 100px; color: white; font-weight: 900; z-index: 5;
+            text-shadow: 0 0 20px rgba(0,0,0,0.5); display: none;
         }
 
         #flash {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: white;
-            display: none;
-            z-index: 10;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: white; display: none; z-index: 10;
         }
 
-        .btn-capture {
-            background: #6D4C41;
-            color: white;
-            border: none;
-            padding: 18px 60px;
-            border-radius: 50px;
-            font-size: 1.1rem;
-            font-weight: 700;
+        /* Controls */
+        .controls {
             margin-top: 20px;
-            cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 8px 20px rgba(109, 76, 65, 0.3);
-        }
-
-        .btn-capture:hover { background: #5D4037; transform: scale(1.05); }
-        .btn-capture:disabled { background: #D5BDAF; cursor: not-allowed; }
-
-        /* Filter Bar Modern Coklat */
-        .filter-bar {
-            display: flex;
-            gap: 15px;
-            margin-top: 25px;
-            padding: 10px;
-            max-width: 100%;
-            overflow-x: auto;
-        }
-
-        .filter-item {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 5px;
+            gap: 12px;
+            width: 80%;
+            max-width: 320px;
+        }
+
+        button {
+            padding: 16px;
+            border-radius: 50px;
+            border: none;
+            font-weight: bold;
             cursor: pointer;
-        }
-
-        .filter-dot {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            border: 3px solid white;
             transition: 0.3s;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .filter-item.active .filter-dot {
-            border-color: #6D4C41;
-            transform: translateY(-5px);
-        }
+        .btn-capture { background: #6D4C41; color: white; box-shadow: 0 8px 20px rgba(109, 76, 65, 0.3); }
+        .btn-download { background: #6D4C41; color: white; display: none; }
+        .btn-gif { background: #D5BDAF; color: #4E342E; display: none; }
+        .btn-retake { background: transparent; border: 2px solid #6D4C41; color: #6D4C41; display: none; }
 
-        .filter-item span { font-size: 12px; font-weight: bold; color: #8D6E63; }
-
-        /* Filter Colors */
-        .f-none { background: #e0e0e0; }
-        .f-bw { background: #333; filter: grayscale(1); }
-        .f-retro { background: #d2b48c; filter: sepia(0.8); }
-        .f-soft { background: #ffdbdb; filter: hue-rotate(330deg) brightness(1.1); }
+        /* Filter Bar */
+        .filter-bar { display: flex; gap: 12px; margin-top: 20px; padding-bottom: 20px; }
+        .filter-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+        .filter-dot { width: 45px; height: 45px; border-radius: 50%; border: 3px solid white; margin-bottom: 5px; }
+        .active .filter-dot { border-color: #6D4C41; transform: scale(1.1); }
+        
+        #loading { display: none; color: #6D4C41; font-weight: bold; margin-top: 10px; }
     </style>
 </head>
 <body>
 
     <div class="pose-counter" id="poseDisplay">0/3</div>
 
-    <div class="top-controls">
-        <select id="timerSelect">
-            <option value="3">3 Detik</option>
-            <option value="5">5 Detik</option>
-            <option value="7">7 Detik</option>
-        </select>
-    </div>
-
     <div class="cam-box">
         <div id="flash"></div>
         <div id="countdown">3</div>
         <video id="videoFeed" autoplay playsinline></video>
+        <canvas id="resultCanvas"></canvas>
     </div>
 
-    <button class="btn-capture" id="startBtn" onclick="startSequence()">Mulai Foto</button>
+    <div id="loading">Sabar ya, lagi nyusun fotomu... ✨</div>
 
-    <div class="filter-bar">
+    <div class="controls">
+        <button class="btn-capture" id="startBtn" onclick="startSequence()">Mulai Foto</button>
+        <button class="btn-download" id="dlBtn" onclick="downloadImage()">Download Foto</button>
+        <button class="btn-gif" id="gifBtn" onclick="downloadGIF()">Download GIF</button>
+        <button class="btn-retake" id="reBtn" onclick="location.reload()">Foto Lagi</button>
+    </div>
+
+    <div class="filter-bar" id="filterBar">
         <div class="filter-item active" onclick="setFilter('none', this)">
-            <div class="filter-dot f-none"></div>
-            <span>Normal</span>
+            <div class="filter-dot" style="background:#ccc"></div><span>Normal</span>
         </div>
         <div class="filter-item" onclick="setFilter('grayscale(100%)', this)">
-            <div class="filter-dot f-bw"></div>
-            <span>Classic</span>
+            <div class="filter-dot" style="background:#333"></div><span>Classic</span>
         </div>
-        <div class="filter-item" onclick="setFilter('sepia(60%) contrast(1.1) brightness(0.9)', this)">
-            <div class="filter-dot f-retro"></div>
-            <span>Vintage</span>
-        </div>
-        <div class="filter-item" onclick="setFilter('brightness(1.1) saturate(1.2) sepia(20%)', this)">
-            <div class="filter-dot f-soft"></div>
-            <span>Creamy</span>
+        <div class="filter-item" onclick="setFilter('sepia(60%) contrast(1.1)', this)">
+            <div class="filter-dot" style="background:#d2b48c"></div><span>Vintage</span>
         </div>
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gifshot/0.4.5/gifshot.min.js"></script>
 
     <script>
         const video = document.getElementById('videoFeed');
-        const poseDisplay = document.getElementById('poseDisplay');
+        const canvas = document.getElementById('resultCanvas');
+        const ctx = canvas.getContext('2d');
         const countdownEl = document.getElementById('countdown');
         const startBtn = document.getElementById('startBtn');
+        const loading = document.getElementById('loading');
+        
         let photos = [];
         let currentFilter = 'none';
-        
         const selectedLayout = localStorage.getItem('selectedLayout') || 'layoutA';
         const maxPoses = selectedLayout === 'layoutA' ? 3 : 4;
-        poseDisplay.innerText = `0/${maxPoses}`;
+
+        // Load Frame Gambar
+        const frameImg = new Image();
+        frameImg.src = selectedLayout === 'layoutA' ? 'frames/framea.png' : 'frames/frameb.png';
 
         async function initCamera() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { 
-                        facingMode: "user", 
-                        aspectRatio: 4/3, // Menyesuaikan rasio lubang Canva (700/525)
-                        width: { ideal: 1280 } 
-                    }, 
-                    audio: false 
-                });
-                video.srcObject = stream;
-            } catch (err) {
-                alert("Kamera tidak dapat diakses. Pastikan izin kamera sudah diberikan.");
-            }
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                video: { aspectRatio: 4/3, width: { ideal: 1280 } }, audio: false 
+            });
+            video.srcObject = stream;
         }
 
-        function setFilter(filterValue, element) {
-            currentFilter = filterValue;
-            video.style.filter = filterValue;
-            document.querySelectorAll('.filter-item').forEach(item => item.classList.remove('active'));
-            element.classList.add('active');
+        function setFilter(filter, el) {
+            currentFilter = filter;
+            video.style.filter = filter;
+            document.querySelectorAll('.filter-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
         }
 
         async function startSequence() {
             startBtn.disabled = true;
-            startBtn.innerText = "SMILE! 📸";
+            document.getElementById('filterBar').style.display = 'none';
             photos = [];
 
             for (let i = 1; i <= maxPoses; i++) {
-                poseDisplay.innerText = `${i}/${maxPoses}`;
-                await runCountdown();
+                document.getElementById('poseDisplay').innerText = `${i}/${maxPoses}`;
+                await runCountdown(3);
                 capture();
-                await new Promise(r => setTimeout(r, 800)); // Jeda antar foto
+                await new Promise(r => setTimeout(r, 600));
             }
-
-            localStorage.setItem('capturedPhotos', JSON.stringify(photos));
-            window.location.href = 'result.html';
+            
+            showResult();
         }
 
-        function runCountdown() {
+        function runCountdown(sec) {
             return new Promise(resolve => {
-                let count = parseInt(document.getElementById('timerSelect').value);
-                countdownEl.innerText = count;
+                let count = sec;
                 countdownEl.style.display = 'block';
-
+                countdownEl.innerText = count;
                 const timer = setInterval(() => {
                     count--;
-                    if (count <= 0) {
+                    if(count <= 0) {
                         clearInterval(timer);
                         countdownEl.style.display = 'none';
                         resolve();
-                    } else {
-                        countdownEl.innerText = count;
-                    }
+                    } else { countdownEl.innerText = count; }
                 }, 1000);
             });
         }
 
-       function capture() {
-    const flash = document.getElementById('flash');
-    flash.style.display = 'block';
-    setTimeout(() => flash.style.display = 'none', 100);
+        function capture() {
+            const flash = document.getElementById('flash');
+            flash.style.display = 'block';
+            setTimeout(() => flash.style.display = 'none', 100);
 
-    const canvas = document.createElement('canvas');
-    // Ukuran standar agar ringan di memori
-    canvas.width = 800; 
-    canvas.height = 600; 
-    
-    const ctx = canvas.getContext('2d');
-    ctx.filter = currentFilter;
-    ctx.translate(canvas.width, 0);
-    ctx.scale(-1, 1);
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    
-    // Gunakan jpeg 0.7 agar loading ke halaman result instan
-    photos.push(canvas.toDataURL('image/jpeg', 0.7)); 
-}
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = 800; tempCanvas.height = 600;
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.filter = currentFilter;
+            tempCtx.translate(tempCanvas.width, 0);
+            tempCtx.scale(-1, 1);
+            tempCtx.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
+            photos.push(tempCanvas.toDataURL('image/jpeg', 0.8));
+        }
+
+        async function showResult() {
+            loading.style.display = 'block';
+            video.style.display = 'none';
+            canvas.style.display = 'block';
+
+            // Tunggu frame di-decode agar tidak nge-lag
+            try { await frameImg.decode(); } catch(e) {}
+
+            canvas.width = frameImg.width;
+            canvas.height = frameImg.height;
+
+            let cfg = selectedLayout === 'layoutA' 
+                ? { photoW: 700, photoH: 525, startX: 50, startY: 79.8, gap: 219 }
+                : { photoW: 700, photoH: 420, startX: 50, startY: 60, gap: 89 };
+
+            for (let i = 0; i < photos.length; i++) {
+                const img = new Image();
+                img.src = photos[i];
+                await new Promise(resolve => {
+                    img.onload = () => {
+                        const yPos = cfg.startY + (i * (cfg.photoH + cfg.gap));
+                        ctx.drawImage(img, cfg.startX, yPos, cfg.photoW, cfg.photoH);
+                        resolve();
+                    }
+                });
+            }
+
+            ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
+            
+            loading.style.display = 'none';
+            startBtn.style.display = 'none';
+            document.getElementById('dlBtn').style.display = 'block';
+            document.getElementById('gifBtn').style.display = 'block';
+            document.getElementById('reBtn').style.display = 'block';
+        }
+
+        function downloadImage() {
+            const link = document.createElement('a');
+            link.download = `photobooth_${Date.now()}.jpg`;
+            link.href = canvas.toDataURL('image/jpeg', 0.9);
+            link.click();
+        }
+
+        function downloadGIF() {
+            const btn = document.getElementById('gifBtn');
+            btn.innerText = "⚡ PROSES...";
+            btn.disabled = true;
+
+            gifshot.createGIF({
+                images: photos,
+                gifWidth: 400, gifHeight: 300,
+                interval: 0.4, sampleInterval: 20, numWorkers: 4
+            }, function (obj) {
+                if (!obj.error) {
+                    const link = document.createElement('a');
+                    link.download = 'moment.gif';
+                    link.href = obj.image;
+                    link.click();
+                }
+                btn.innerText = "Download GIF";
+                btn.disabled = false;
+            });
+        }
 
         window.onload = initCamera;
     </script>
 </body>
-
 </html>
