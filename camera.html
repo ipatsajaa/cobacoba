@@ -251,32 +251,28 @@
             });
         }
 
-        function capture() {
-            // Flash Effect
-            const flash = document.getElementById('flash');
-            flash.style.display = 'block';
-            setTimeout(() => flash.style.display = 'none', 100);
+       function capture() {
+    const flash = document.getElementById('flash');
+    flash.style.display = 'block';
+    setTimeout(() => flash.style.display = 'none', 100);
 
-            const canvas = document.createElement('canvas');
-            
-            // Simpan dalam resolusi tinggi namun tetap rasio 4:3
-            canvas.width = 1024; 
-            canvas.height = 768; 
-            
-            const ctx = canvas.getContext('2d');
-            
-            // Apply Filter & Mirroring
-            ctx.filter = currentFilter;
-            ctx.translate(canvas.width, 0);
-            ctx.scale(-1, 1);
-            
-            // Draw video to canvas (Center Crop)
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            
-            photos.push(canvas.toDataURL('image/jpeg', 0.9));
-        }
+    const canvas = document.createElement('canvas');
+    // Ukuran standar agar ringan di memori
+    canvas.width = 800; 
+    canvas.height = 600; 
+    
+    const ctx = canvas.getContext('2d');
+    ctx.filter = currentFilter;
+    ctx.translate(canvas.width, 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    // Gunakan jpeg 0.7 agar loading ke halaman result instan
+    photos.push(canvas.toDataURL('image/jpeg', 0.7)); 
+}
 
         window.onload = initCamera;
     </script>
 </body>
+
 </html>
