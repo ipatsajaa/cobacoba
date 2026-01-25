@@ -214,33 +214,34 @@
             link.click();
         }
 
-        function downloadGIF() {
-            const btn = document.querySelector('.btn-gif');
-            const originalText = btn.innerText;
-            btn.innerText = "PROCESSING...";
-            btn.disabled = true;
+       function downloadGIF() {
+    const btn = document.querySelector('.btn-gif');
+    const originalText = btn.innerText;
+    btn.innerText = "⚡ PROCESSING...";
+    btn.disabled = true;
 
-            gifshot.createGIF({
-                images: capturedPhotos,
-                gifWidth: 600, 
-                gifHeight: 450,
-                interval: 0.5,
-                numFrames: capturedPhotos.length,
-            }, function (obj) {
-                if (!obj.error) {
-                    const link = document.createElement('a');
-                    link.download = 'moment_animasi.gif';
-                    link.href = obj.image;
-                    link.click();
-                } else {
-                    alert("GIF failed to generate.");
-                }
-                btn.innerText = originalText;
-                btn.disabled = false;
-            });
+    gifshot.createGIF({
+        images: capturedPhotos,
+        gifWidth: 400, 
+        gifHeight: 300,
+        interval: 0.4,
+        numFrames: capturedPhotos.length,
+        sampleInterval: 20, // Angka lebih tinggi = proses jauh lebih cepat
+        numWorkers: 4       // Memakai lebih banyak tenaga browser
+    }, function (obj) {
+        if (!obj.error) {
+            const link = document.createElement('a');
+            link.download = 'moment_animasi.gif';
+            link.href = obj.image;
+            link.click();
         }
+        btn.innerText = originalText;
+        btn.disabled = false;
+    });
+}
 
         window.onload = initResult;
     </script>
 </body>
+
 </html>
