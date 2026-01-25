@@ -208,16 +208,19 @@
             photos.push(tempCanvas.toDataURL('image/jpeg', 0.8));
         }
 
-        async function showResult() {
+       async function showResult() {
             loading.style.display = 'block';
             video.style.display = 'none';
             canvas.style.display = 'block';
 
-            // Tunggu frame di-decode agar tidak nge-lag
+            // Tunggu frame di-decode
             try { await frameImg.decode(); } catch(e) {}
 
             canvas.width = frameImg.width;
             canvas.height = frameImg.height;
+
+            // Bersihkan canvas sebelum menggambar
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             let cfg = selectedLayout === 'layoutA' 
                 ? { photoW: 700, photoH: 525, startX: 50, startY: 79.8, gap: 219 }
@@ -229,12 +232,34 @@
                 await new Promise(resolve => {
                     img.onload = () => {
                         const yPos = cfg.startY + (i * (cfg.photoH + cfg.gap));
-                        ctx.drawImage(img, cfg.startX, yPos, cfg.photoW, cfg.photoH);
+                        
+                        // --- LOGIKA ANTI GEPENG (CENTER CROP) ---
+                        const imgRatio = img.width / img.height;
+                        const targetRatio = cfg.photoW / cfg.photoH;
+                        let sw, sh, sx, sy;
+
+                        if (imgRatio > targetRatio) {
+                            // Foto terlalu lebar, potong samping
+                            sh = img.height;
+                            sw = img.height * targetRatio;
+                            sx = (img.width - sw) / 2;
+                            sy = 0;
+                        } else {
+                            // Foto terlalu tinggi, potong atas bawah
+                            sw = img.width;
+                            sh = img.width / targetRatio;
+                            sx = 0;
+                            sy = (img.height - sh) / 2;
+                        }
+
+                        // Gambar foto di bawah frame
+                        ctx.drawImage(img, sx, sy, sw, sh, cfg.startX, yPos, cfg.photoW, cfg.photoH);
                         resolve();
                     }
                 });
             }
 
+            // Gambar frame di paling atas (pastikan PNG transparan)
             ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
             
             loading.style.display = 'none';
@@ -276,4 +301,5 @@
     </script>
 </body>
 </html>
+
 
