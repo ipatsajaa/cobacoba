@@ -59,7 +59,7 @@ header {
 }
 
 .hero-image img {
-    width: 250px;
+    width: 150px;
     border-radius: 10px;
     box-shadow: 0 10px 20px rgba(78, 52, 46, 0.2);
     transform: rotate(-5deg); /* Efek miring estetik */
@@ -297,4 +297,5 @@ header {
         height: 35px;
         font-size: 1rem;
     }
+
 }
