@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photobooth - Fixed Layout</title>
+    <title>Photobooth Pro - Multi Layout</title>
     <style>
-        /* CSS RECOVERY - Memastikan tampilan kembali estetik */
         body {
             background: #F5EBE0;
             color: #4E342E;
@@ -97,7 +96,7 @@
 </head>
 <body>
 
-    <div class="pose-counter" id="poseDisplay">0/3</div>
+    <div class="pose-counter" id="poseDisplay">0/0</div>
 
     <div class="cam-box">
         <div id="flash"></div>
@@ -106,7 +105,7 @@
         <canvas id="resultCanvas"></canvas>
     </div>
 
-    <div id="loading">✨ Menyusun kenanganmu...</div>
+    <div id="loading">✨ Sedang memproses...</div>
 
     <div class="controls">
         <button class="btn-capture" id="startBtn" onclick="startSequence()">Mulai Foto</button>
@@ -139,11 +138,14 @@
         
         let photos = [];
         let currentFilter = 'none';
-        const maxPoses = 3;
+        
+        // Deteksi Layout Otomatis
+        const selectedLayout = localStorage.getItem('selectedLayout') || 'layoutA';
+        const maxPoses = selectedLayout === 'layoutA' ? 3 : 4;
+        document.getElementById('poseDisplay').innerText = `0/${maxPoses}`;
 
-        // Frame setup
         const frameImg = new Image();
-        frameImg.src = 'frames/1.png'; 
+        frameImg.src = selectedLayout === 'layoutA' ? 'frames/1.png' : 'frames/2.png';
 
         async function initCamera() {
             try {
@@ -151,9 +153,7 @@
                     video: { aspectRatio: 4/3, width: { ideal: 1280 } }, audio: false 
                 });
                 video.srcObject = stream;
-            } catch (err) {
-                alert("Kamera tidak dapat diakses!");
-            }
+            } catch (err) { alert("Kamera error!"); }
         }
 
         function setFilter(filter, el) {
@@ -219,14 +219,10 @@
             canvas.width = 800; 
             canvas.height = 2400;
 
-            // --- PERBAIKAN KOORDINAT (Menghilangkan Celah) ---
-            let cfg = { 
-                photoW: 710, // Dilebihkan sedikit agar overlap (anti-celah)
-                photoH: 535, // Dilebihkan sedikit
-                startX: 45,  // Bergeser sedikit ke kiri
-                startY: 75,  // Titik mulai atas
-                gap: 212     // Jarak antar foto dipersempit
-            };
+            // KONFIGURASI PRESISI PER LAYOUT
+            let cfg = selectedLayout === 'layoutA' 
+                ? { photoW: 710, photoH: 535, startX: 45, startY: 65, gap: 212 } // 3 Foto
+                : { photoW: 710, photoH: 435, startX: 45, startY: 65, gap: 145 }; // 4 Foto
 
             for (let i = 0; i < photos.length; i++) {
                 const img = new Image();
@@ -235,7 +231,6 @@
                     img.onload = () => {
                         const yPos = cfg.startY + (i * (cfg.photoH + cfg.gap));
                         
-                        // Center Crop Anti-Gepeng
                         const imgRatio = img.width / img.height;
                         const targetRatio = cfg.photoW / cfg.photoH;
                         let sw, sh, sx, sy;
@@ -254,7 +249,6 @@
                 });
             }
 
-            // Frame ditaruh paling atas
             ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
             
             loading.style.display = 'none';
@@ -265,17 +259,13 @@
 
         function downloadImage() {
             const link = document.createElement('a');
-            link.download = `photobooth_${Date.now()}.jpg`;
+            link.download = `photo_${Date.now()}.jpg`;
             link.href = canvas.toDataURL('image/jpeg', 0.9);
             link.click();
         }
 
         function downloadGIF() {
             const btn = document.getElementById('gifBtn');
-            if (typeof gifshot === 'undefined') {
-                alert("Library GIF sedang dimuat...");
-                return;
-            }
             btn.innerText = "⚡ PROSES...";
             btn.disabled = true;
 
