@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photobooth App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+      
+        <main class="home-content">
+            <!-- <div class="hero-image">
+                <img src="https://via.placeholder.com/300x400/FFD1DC/000000?text=Photobooth+Preview" alt="Photobooth Preview">
+            </div>
+
+            <div class="hero-text">
+                <h1>photobooth</h1>
+                <p>Capture the moment, cherish the magic, relive the love</p>
+            </div> -->
+
+            <button class="btn-start" onclick="startApp()">
+                START <span class="camera-icon">📷</span>
+            </button>
+        </main>
+
+        <footer class="home-footer">
+            <p>Follow us on Instagram @patkepott</p>
+        </footer>
+    </div>
+
+    <script>
+        function startApp() {
+    // Memberikan efek feedback saat tombol ditekan
+    const btn = document.querySelector('.btn-start');
+    btn.innerHTML = "LOADING...";
+    btn.style.opacity = "0.7";
+
+    // Beri jeda 500ms supaya animasi tekan tombol terasa sebelum pindah
+    setTimeout(() => {
+        window.location.href = 'layout.html';
+    }, 500);
+}
+    </script>
+</body>
+</html>

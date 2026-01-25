@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera - Photobooth</title>
+    <style>
+        /* Tema Coklat Estetik & Warm */
+        body {
+            background: #F5EBE0; /* Cream Warm */
+            color: #4E342E;
+            margin: 0;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .pose-counter {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #6D4C41;
+            margin: 20px 0 10px 0;
+            background: white;
+            padding: 5px 25px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .top-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        #timerSelect {
+            padding: 10px 15px;
+            border-radius: 12px;
+            border: 2px solid #D5BDAF;
+            background: white;
+            color: #4E342E;
+            font-weight: bold;
+            outline: none;
+        }
+
+        /* Container Kamera Disesuaikan dengan Rasio Canva (4:3) */
+        .cam-box {
+            width: 90%;
+            max-width: 500px;
+            aspect-ratio: 4 / 3; /* Mengikuti rasio lubang frame 700x525 */
+            background: #000;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(78, 52, 46, 0.2);
+            border: 6px solid white;
+        }
+
+        #videoFeed {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1); /* Mirror effect */
+        }
+
+        #countdown {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 120px;
+            color: white;
+            font-weight: 900;
+            z-index: 5;
+            text-shadow: 0 0 20px rgba(0,0,0,0.5);
+            display: none;
+        }
+
+        #flash {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: white;
+            display: none;
+            z-index: 10;
+        }
+
+        .btn-capture {
+            background: #6D4C41;
+            color: white;
+            border: none;
+            padding: 18px 60px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 8px 20px rgba(109, 76, 65, 0.3);
+        }
+
+        .btn-capture:hover { background: #5D4037; transform: scale(1.05); }
+        .btn-capture:disabled { background: #D5BDAF; cursor: not-allowed; }
+
+        /* Filter Bar Modern Coklat */
+        .filter-bar {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            padding: 10px;
+            max-width: 100%;
+            overflow-x: auto;
+        }
+
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .filter-dot {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid white;
+            transition: 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .filter-item.active .filter-dot {
+            border-color: #6D4C41;
+            transform: translateY(-5px);
+        }
+
+        .filter-item span { font-size: 12px; font-weight: bold; color: #8D6E63; }
+
+        /* Filter Colors */
+        .f-none { background: #e0e0e0; }
+        .f-bw { background: #333; filter: grayscale(1); }
+        .f-retro { background: #d2b48c; filter: sepia(0.8); }
+        .f-soft { background: #ffdbdb; filter: hue-rotate(330deg) brightness(1.1); }
+    </style>
+</head>
+<body>
+
+    <div class="pose-counter" id="poseDisplay">0/3</div>
+
+    <div class="top-controls">
+        <select id="timerSelect">
+            <option value="3">3 Detik</option>
+            <option value="5">5 Detik</option>
+            <option value="7">7 Detik</option>
+        </select>
+    </div>
+
+    <div class="cam-box">
+        <div id="flash"></div>
+        <div id="countdown">3</div>
+        <video id="videoFeed" autoplay playsinline></video>
+    </div>
+
+    <button class="btn-capture" id="startBtn" onclick="startSequence()">Mulai Foto</button>
+
+    <div class="filter-bar">
+        <div class="filter-item active" onclick="setFilter('none', this)">
+            <div class="filter-dot f-none"></div>
+            <span>Normal</span>
+        </div>
+        <div class="filter-item" onclick="setFilter('grayscale(100%)', this)">
+            <div class="filter-dot f-bw"></div>
+            <span>Classic</span>
+        </div>
+        <div class="filter-item" onclick="setFilter('sepia(60%) contrast(1.1) brightness(0.9)', this)">
+            <div class="filter-dot f-retro"></div>
+            <span>Vintage</span>
+        </div>
+        <div class="filter-item" onclick="setFilter('brightness(1.1) saturate(1.2) sepia(20%)', this)">
+            <div class="filter-dot f-soft"></div>
+            <span>Creamy</span>
+        </div>
+    </div>
+
+    <script>
+        const video = document.getElementById('videoFeed');
+        const poseDisplay = document.getElementById('poseDisplay');
+        const countdownEl = document.getElementById('countdown');
+        const startBtn = document.getElementById('startBtn');
+        let photos = [];
+        let currentFilter = 'none';
+        
+        const selectedLayout = localStorage.getItem('selectedLayout') || 'layoutA';
+        const maxPoses = selectedLayout === 'layoutA' ? 3 : 4;
+        poseDisplay.innerText = `0/${maxPoses}`;
+
+        async function initCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: "user", 
+                        aspectRatio: 4/3, // Menyesuaikan rasio lubang Canva (700/525)
+                        width: { ideal: 1280 } 
+                    }, 
+                    audio: false 
+                });
+                video.srcObject = stream;
+            } catch (err) {
+                alert("Kamera tidak dapat diakses. Pastikan izin kamera sudah diberikan.");
+            }
+        }
+
+        function setFilter(filterValue, element) {
+            currentFilter = filterValue;
+            video.style.filter = filterValue;
+            document.querySelectorAll('.filter-item').forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        async function startSequence() {
+            startBtn.disabled = true;
+            startBtn.innerText = "SMILE! 📸";
+            photos = [];
+
+            for (let i = 1; i <= maxPoses; i++) {
+                poseDisplay.innerText = `${i}/${maxPoses}`;
+                await runCountdown();
+                capture();
+                await new Promise(r => setTimeout(r, 800)); // Jeda antar foto
+            }
+
+            localStorage.setItem('capturedPhotos', JSON.stringify(photos));
+            window.location.href = 'result.html';
+        }
+
+        function runCountdown() {
+            return new Promise(resolve => {
+                let count = parseInt(document.getElementById('timerSelect').value);
+                countdownEl.innerText = count;
+                countdownEl.style.display = 'block';
+
+                const timer = setInterval(() => {
+                    count--;
+                    if (count <= 0) {
+                        clearInterval(timer);
+                        countdownEl.style.display = 'none';
+                        resolve();
+                    } else {
+                        countdownEl.innerText = count;
+                    }
+                }, 1000);
+            });
+        }
+
+        function capture() {
+            // Flash Effect
+            const flash = document.getElementById('flash');
+            flash.style.display = 'block';
+            setTimeout(() => flash.style.display = 'none', 100);
+
+            const canvas = document.createElement('canvas');
+            
+            // Simpan dalam resolusi tinggi namun tetap rasio 4:3
+            canvas.width = 1024; 
+            canvas.height = 768; 
+            
+            const ctx = canvas.getContext('2d');
+            
+            // Apply Filter & Mirroring
+            ctx.filter = currentFilter;
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+            
+            // Draw video to canvas (Center Crop)
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            photos.push(canvas.toDataURL('image/jpeg', 0.9));
+        }
+
+        window.onload = initCamera;
+    </script>
+</body>
+</html>

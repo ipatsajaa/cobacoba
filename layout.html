@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Layout - Photobooth</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Tambahan style khusus untuk fungsionalitas slider */
+        .layout-grid {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            width: 100%;
+            padding: 20px 0;
+            scrollbar-width: none; /* Sembunyikan scrollbar di Firefox */
+        }
+
+        .layout-grid::-webkit-scrollbar {
+            display: none; /* Sembunyikan scrollbar di Chrome/Safari */
+        }
+
+        .layout-card {
+            flex: 0 0 calc(50% - 10px); /* Memastikan 2 kartu muat di layar */
+            min-width: 160px;
+        }
+
+        /* Memperjelas tampilan preview strip */
+        .frame-mockup.type-a span { height: 35px; }
+        .frame-mockup.type-b span { height: 25px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header class="layout-header">
+            <button class="btn-back" onclick="window.location.href='index.html'">❮</button>
+            <p class="ig-tag">@patkepott</p>
+        </header>
+
+        <div class="title-section">
+            <h2>choose frame</h2>
+            <p>Select your favorite photo strip style</p>
+        </div>
+
+        <div class="slider-wrapper">
+            <button class="nav-arrow" onclick="scrollGrid(-1)">❮</button>
+        
+            <div class="layout-grid" id="layoutGrid">
+                <div class="layout-card" onclick="selectLayout('layoutA')">
+                    <div class="badge">TRY IT NOW</div>
+                    <div class="layout-preview">
+                        <div class="frame-mockup type-a">
+                            <img src="frames/framea.png" alt="">
+                        </div>
+                    </div>
+                    <h3>Frame A</h3>
+                    <p>6 x 2 Strip<br><b>(3 Poses)</b></p>
+                </div>
+        
+                <div class="layout-card" onclick="selectLayout('layoutB')">
+                    <div class="badge">NEW</div>
+                    <div class="layout-preview">
+                        <div class="frame-mockup type-b">
+                            <img src="frames/frameb.png" alt="">
+                        </div>
+                    </div>
+                    <h3>Frame B</h3>
+                    <p>6 x 2 Strip<br><b>(4 Poses)</b></p>
+                </div>
+
+                
+            </div>
+        
+            <button class="nav-arrow" onclick="scrollGrid(1)">❯</button>
+        </div>
+
+        <div class="dots">
+            <span class="dot active" id="dot1"></span>
+            <span class="dot" id="dot2"></span>
+        </div>
+
+        <div class="promo-banner">
+            ✨ Get digital copy & GIF for every session! ✨
+        </div>
+    </div>
+
+    <script>
+        const grid = document.getElementById('layoutGrid');
+
+        function scrollGrid(direction) {
+            const scrollAmount = grid.offsetWidth / 1.5;
+            grid.scrollBy({
+                left: direction * scrollAmount,
+                behavior: 'smooth'
+            });
+            
+            // Logika sederhana update dot
+            setTimeout(updateDots, 300);
+        }
+
+        function updateDots() {
+            const dot1 = document.getElementById('dot1');
+            const dot2 = document.getElementById('dot2');
+            if (grid.scrollLeft > 50) {
+                dot1.classList.remove('active');
+                dot2.classList.add('active');
+            } else {
+                dot1.classList.add('active');
+                dot2.classList.remove('active');
+            }
+        }
+
+        function selectLayout(type) {
+            localStorage.setItem('selectedLayout', type);
+            // Feedback visual sebelum pindah
+            document.querySelector(`[onclick="selectLayout('${type}')"]`).style.borderColor = "#00c6ff";
+            
+            setTimeout(() => {
+                window.location.href = 'camera.html';
+            }, 300);
+        }
+
+        // Deteksi scroll manual untuk update dot
+        grid.addEventListener('scroll', updateDots);
+        
+    </script>
+</body>
+</html>
