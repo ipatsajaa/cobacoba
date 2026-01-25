@@ -59,12 +59,12 @@ header {
 }
 
 .hero-image img {
-    width: 50px;
+    width: 75px;
     border-radius: 10px;
     box-shadow: 0 10px 20px rgba(78, 52, 46, 0.2);
     transform: rotate(-5deg); /* Efek miring estetik */
     margin-bottom: 30px;
-    border: 5px solid white; /* Frame foto putih */
+    border: 2pxsolid white; /* Frame foto putih */
 }
 
 .hero-text h1 {
@@ -299,4 +299,5 @@ header {
     }
 
 }
+
 
