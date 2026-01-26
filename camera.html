@@ -269,34 +269,52 @@
             canvas.style.display = 'block';
 
             try { await frameImg.decode(); } catch(e) {}
-            canvas.width = 800; canvas.height = 2400;
+            
+            // Ukuran Canvas Standar (2 strip kiri-kanan biasanya 800x2400)
+            canvas.width = 800; 
+            canvas.height = 2400;
 
             let cfg = selectedLayout === 'layoutA' 
                 ? { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 } 
                 : { photoW: 710, photoH: 447, startX: 45, startY: 54, gap: 90 };
 
-            for (let i = 0; i < photos.length; i++) {
+           for (let i = 0; i < photos.length; i++) {
                 const img = new Image();
                 img.src = photos[i];
                 await new Promise(resolve => {
                     img.onload = () => {
                         const yPos = cfg.startY + (i * (cfg.photoH + cfg.gap));
+                        
+                        // LOGIKA ANTI GEPENG (CENTER CROP)
                         const imgRatio = img.width / img.height;
                         const targetRatio = cfg.photoW / cfg.photoH;
-                        let sw, sh, sx, sy;
+                        
+                        let sx, sy, sw, sh;
+
                         if (imgRatio > targetRatio) {
-                            sh = img.height; sw = img.height * targetRatio;
-                            sx = (img.width - sw) / 2; sy = 0;
+                            // Foto terlalu lebar, potong samping kiri-kanan
+                            sh = img.height;
+                            sw = img.height * targetRatio;
+                            sx = (img.width - sw) / 2;
+                            sy = 0;
                         } else {
-                            sw = img.width; sh = img.width / targetRatio;
-                            sx = 0; sy = (img.height - sh) / 2;
+                            // Foto terlalu tinggi, potong atas-bawah
+                            sw = img.width;
+                            sh = img.width / targetRatio;
+                            sx = 0;
+                            sy = (img.height - sh) / 2;
                         }
+
+                        // Gambar foto yang sudah di-crop ke canvas
                         ctx.drawImage(img, sx, sy, sw, sh, cfg.startX, yPos, cfg.photoW, cfg.photoH);
                         resolve();
                     }
                 });
             }
+
+            // Terakhir, tempelkan Frame PNG di atas foto (Layer paling depan)
             ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
+            
             loading.style.display = 'none';
             document.getElementById('dlBtn').style.display = 'block';
             document.getElementById('gifBtn').style.display = 'block';
@@ -333,3 +351,4 @@
     </script>
 </body>
 </html>
+
