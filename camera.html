@@ -180,40 +180,19 @@
         }
 
        function capture() {
-    const flash = document.getElementById('flash');
-    flash.style.display = 'block';
-    setTimeout(() => flash.style.display = 'none', 100);
+     const flash = document.getElementById('flash');
+            flash.style.display = 'block';
+            setTimeout(() => flash.style.display = 'none', 100);
 
-    const tempCanvas = document.createElement('canvas');
-    // Gunakan ukuran standar agar tidak berat tapi tajam
-    tempCanvas.width = 800; 
-    tempCanvas.height = 600;
-    const tempCtx = tempCanvas.getContext('2d');
-
-    // Filter Dasar
-    tempCtx.filter = (currentFilter === 'sunset') ? 'contrast(1.2) saturate(1.5)' : currentFilter;
-
-    // Mirroring (Agar hasil foto sama dengan yang terlihat di layar)
-    tempCtx.translate(tempCanvas.width, 0);
-    tempCtx.scale(-1, 1);
-
-    // Ambil gambar dari video (Otomatis menyesuaikan ukuran ke 800x600)
-    tempCtx.drawImage(video, 0, 0, 800, 600);
-
-    // Tambahkan Overlay Sunset jika aktif
-    if (currentFilter === 'sunset') {
-        tempCtx.setTransform(1, 0, 0, 1, 0, 0); // Reset transform agar gradasi tidak terbalik
-        tempCtx.globalAlpha = 0.4;
-        tempCtx.globalCompositeOperation = 'screen';
-        const grad = tempCtx.createLinearGradient(0, 0, 0, 600);
-        grad.addColorStop(0, '#405de6'); // Biru atas
-        grad.addColorStop(0.5, '#833ab4'); // Ungu tengah
-        grad.addColorStop(1, '#fd1d1d'); // Merah bawah
-        tempCtx.fillStyle = grad;
-        tempCtx.fillRect(0, 0, 800, 600);
-    }
-
-    photos.push(tempCanvas.toDataURL('image/jpeg', 0.9));
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = video.videoWidth;
+            tempCanvas.height = video.videoHeight;
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.filter = currentFilter;
+            tempCtx.translate(tempCanvas.width, 0);
+            tempCtx.scale(-1, 1);
+            tempCtx.drawImage(video, 0, 0);
+            photos.push(tempCanvas.toDataURL('image/jpeg', 0.9));
 }
 
         async function showResult() {
@@ -288,6 +267,7 @@
     </script>
 </body>
 </html>
+
 
 
 
