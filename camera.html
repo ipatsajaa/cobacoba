@@ -25,6 +25,16 @@
         .btn-download { background: #6D4C41; color: white; display: none; }
         .btn-retake { background: transparent; border: 2px solid #6D4C41; color: #6D4C41; display: none; }
         #loading { display: none; font-weight: bold; margin: 10px; color: #6D4C41; }
+        .pixelated {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    transform: scale(0.2); /* Kecilkan lalu besarkan via CSS */
+    width: 500% !important; 
+    height: 500% !important;
+    position: absolute;
+    top: -200%;
+    left: -200%;
+}
     </style>
 </head>
 <body>
@@ -68,14 +78,9 @@
             <span>Rio de janeiro</span>
         </div>
 
-        <div class="filter-item" onclick="setFilter('blur(2px) brightness(1.1) contrast(1.1)', this)">
-            <div class="filter-dot" style="background: #efefef; filter: blur(2px);"></div>
-            <span>Dreamy</span>
-        </div>
-
-        <div class="filter-item" onclick="setFilter('blur(4px)', this)">
-            <div class="filter-dot" style="background: #ccc; filter: blur(4px);"></div>
-            <span>Blur</span>
+       <div class="filter-item" onclick="setFilter('lo-res', this)">
+        <div class="filter-dot" style="background: repeating-conic-gradient(#555 0% 25%, #888 0% 50%) 50% / 10px 10px;"></div>
+        <span>Lo-Res</span>
         </div>
 </div>
         </div>
@@ -133,8 +138,9 @@
        function setFilter(filter, el) {
     const overlay = document.getElementById('filterOverlay');
     
-    // Reset video filter
+    // 1. Reset semua keadaan awal
     video.style.filter = 'none';
+    video.style.imageRendering = 'auto'; // Reset pixelated effect
     overlay.style.display = 'none';
 
     if (filter === 'sunset') {
@@ -142,13 +148,21 @@
         video.style.filter = 'contrast(1.2) saturate(1.5)';
         overlay.style.display = 'block';
         currentFilter = 'sunset'; 
-    } else {
-        // Efek standar lainnya
+    } 
+    else if (filter === 'lo-res') {
+        // Efek Lo-Res untuk preview kamera
+        // Menggunakan pixelated agar kotak-kotak terlihat di layar
+        video.style.imageRendering = 'pixelated'; 
+        video.style.filter = 'contrast(1.1) brightness(1.1)';
+        currentFilter = 'lo-res';
+    } 
+    else {
+        // Efek standar (B&W, Vintage, dll)
         currentFilter = filter;
         video.style.filter = filter;
     }
 
-    // Update UI Active State
+    // 2. Update UI Active State (tanda kotak cokelat di pilihan filter)
     document.querySelectorAll('.filter-item').forEach(i => i.classList.remove('active'));
     el.classList.add('active');
 }
@@ -185,40 +199,57 @@ function capture() {
     setTimeout(() => flash.style.display = 'none', 100);
 
     const tempCanvas = document.createElement('canvas');
-    
-    // Pastikan video sudah ter-load agar ukurannya tersedia
     const vW = video.videoWidth;
     const vH = video.videoHeight;
     
     tempCanvas.width = vW;
     tempCanvas.height = vH;
-    
     const tempCtx = tempCanvas.getContext('2d');
 
-    // 1. Terapkan filter dasar
-    tempCtx.filter = (currentFilter === 'sunset') ? 'contrast(1.2) saturate(1.5)' : currentFilter;
+    // --- LOGIKA FILTER LO-RES ---
+    if (currentFilter === 'lo-res') {
+        const scale = 0.15; // Semakin kecil angka ini (misal 0.1), semakin besar kotak pixelnya
+        const sw = vW * scale;
+        const sh = vH * scale;
 
-    // 2. Gambar video (Mirroring)
-    tempCtx.save(); // Simpan state sebelum mirroring
-    tempCtx.translate(vW, 0);
-    tempCtx.scale(-1, 1);
-    tempCtx.drawImage(video, 0, 0, vW, vH);
-    tempCtx.restore(); // Kembalikan ke normal agar gradasi tidak ikut mirror
+        // Matikan penghalusan gambar agar pixel terlihat kotak-kotak tajam
+        tempCtx.imageSmoothingEnabled = false;
 
-    // 3. Tambahkan Overlay Sunset (Pastikan menutupi seluruh vW dan vH)
-    if (currentFilter === 'sunset') {
-        tempCtx.globalAlpha = 0.4;
-        tempCtx.globalCompositeOperation = 'screen';
+        // Step 1: Gambar video ke ukuran sangat kecil (Downscale)
+        // Kita gunakan mirroring di sini juga
+        tempCtx.save();
+        tempCtx.translate(vW, 0);
+        tempCtx.scale(-1, 1);
+        tempCtx.drawImage(video, 0, 0, sw, sh);
         
-        // Buat gradasi vertikal yang sinkron dengan tinggi canvas
-        const grad = tempCtx.createLinearGradient(0, 0, 0, vH);
-        grad.addColorStop(0, '#405de6');   // Atas
-        grad.addColorStop(0.5, '#833ab4'); // Tengah
-        grad.addColorStop(1, '#fd1d1d');   // Bawah
-        
-        tempCtx.fillStyle = grad;
-        // Gunakan vW dan vH yang sama dengan ukuran canvas
-        tempCtx.fillRect(0, 0, vW, vH);
+        // Step 2: Gambar ulang dari hasil kecil tadi ke ukuran asli (Upscale)
+        // Ini yang membuat efek kotak-kotak muncul
+        tempCtx.drawImage(tempCanvas, 0, 0, sw, sh, 0, 0, vW, vH);
+        tempCtx.restore();
+
+        // Tambahkan sedikit penyesuaian warna agar mirip referensi lo-res
+        tempCtx.filter = 'contrast(1.1) brightness(1.05)';
+    } 
+    // --- LOGIKA FILTER SUNSET & LAINNYA ---
+    else {
+        tempCtx.filter = (currentFilter === 'sunset') ? 'contrast(1.2) saturate(1.5)' : currentFilter;
+
+        tempCtx.save();
+        tempCtx.translate(vW, 0);
+        tempCtx.scale(-1, 1);
+        tempCtx.drawImage(video, 0, 0, vW, vH);
+        tempCtx.restore();
+
+        if (currentFilter === 'sunset') {
+            tempCtx.globalAlpha = 0.4;
+            tempCtx.globalCompositeOperation = 'screen';
+            const grad = tempCtx.createLinearGradient(0, 0, 0, vH);
+            grad.addColorStop(0, '#405de6');
+            grad.addColorStop(0.5, '#833ab4');
+            grad.addColorStop(1, '#fd1d1d');
+            tempCtx.fillStyle = grad;
+            tempCtx.fillRect(0, 0, vW, vH);
+        }
     }
 
     photos.push(tempCanvas.toDataURL('image/jpeg', 0.9));
@@ -296,6 +327,7 @@ function capture() {
     </script>
 </body>
 </html>
+
 
 
 
