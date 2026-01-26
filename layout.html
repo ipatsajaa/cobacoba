@@ -4,9 +4,61 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Choose Layout - Photobooth</title>
-    <link rel="stylesheet" href="style.css">
     <style>
-        /* Tambahan style khusus untuk fungsionalitas slider */
+        :root {
+            --primary: #6D4C41;
+            --bg: #F5EBE0;
+            --accent: #D5BDAF;
+        }
+
+        body {
+            background: var(--bg);
+            color: #4E342E;
+            margin: 0;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .btn-back {
+            background: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+
+        .title-section { text-align: center; margin-bottom: 20px; }
+        .title-section h2 { margin: 0; text-transform: lowercase; font-size: 2rem; }
+        .title-section p { margin: 5px 0; opacity: 0.7; font-size: 0.9rem; }
+
+        /* Slider Logic */
+        .slider-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
         .layout-grid {
             display: flex;
             gap: 20px;
@@ -14,29 +66,111 @@
             scroll-behavior: smooth;
             width: 100%;
             padding: 20px 0;
-            scrollbar-width: none; /* Sembunyikan scrollbar di Firefox */
+            scrollbar-width: none; /* Firefox */
+            scroll-snap-type: x mandatory;
         }
 
-        .layout-grid::-webkit-scrollbar {
-            display: none; /* Sembunyikan scrollbar di Chrome/Safari */
-        }
+        .layout-grid::-webkit-scrollbar { display: none; } /* Chrome/Safari */
 
         .layout-card {
-            flex: 0 0 calc(50% - 10px); /* Memastikan 2 kartu muat di layar */
-            min-width: 160px;
+            flex: 0 0 calc(80% - 20px); /* Ukuran kartu lebih besar agar fokus */
+            background: white;
+            border-radius: 25px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(109, 76, 65, 0.1);
+            cursor: pointer;
+            transition: 0.3s;
+            scroll-snap-align: center;
+            border: 3px solid transparent;
+            position: relative;
         }
 
-        /* Memperjelas tampilan preview strip */
-        .frame-mockup.type-a span { height: 35px; }
-        .frame-mockup.type-b span { height: 25px; }
+        .layout-card:active { transform: scale(0.95); }
+
+        .badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--primary);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: bold;
+            padding: 5px 12px;
+            border-radius: 20px;
+        }
+
+        .layout-preview {
+            background: #f0f0f0;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            height: 250px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .layout-preview img {
+            height: 90%;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .nav-arrow {
+            background: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            position: absolute;
+            z-index: 10;
+            cursor: pointer;
+        }
+        .nav-arrow.left { left: -10px; }
+        .nav-arrow.right { right: -10px; }
+
+        .dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: #D5BDAF;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        .dot.active {
+            width: 25px;
+            border-radius: 10px;
+            background: var(--primary);
+        }
+
+        .promo-banner {
+            margin-top: auto;
+            background: white;
+            padding: 15px;
+            border-radius: 20px;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: var(--primary);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <header class="layout-header">
-            <button class="btn-back" onclick="window.location.href='index.html'">❮</button>
-            <p class="ig-tag">@patkepott</p>
+        <header>
+            <button class="btn-back" onclick="history.back()">❮</button>
+            <span style="font-weight: bold; color: var(--primary);">@patkepott</span>
         </header>
 
         <div class="title-section">
@@ -45,41 +179,42 @@
         </div>
 
         <div class="slider-wrapper">
-            <button class="nav-arrow" onclick="scrollGrid(-1)">❮</button>
+            <button class="nav-arrow left" onclick="scrollGrid(-1)">❮</button>
         
             <div class="layout-grid" id="layoutGrid">
-                <div class="layout-card" onclick="selectLayout('layoutA')">
-                    <div class="badge">TRY IT NOW</div>
+                <div class="layout-card" onclick="selectLayout('layoutA', this)">
+                    <div class="badge">POPULAR</div>
                     <div class="layout-preview">
-                        <div class="frame-mockup type-a">
-                            <img src="frames/framea.png" alt="">
-                        </div>
+                        <img src="frames/framea.png" alt="Frame A">
                     </div>
                     <h3>Frame A</h3>
-                    <p>6 x 2 Strip<br><b>(3 Poses)</b></p>
+                    <p>Classic 6x2 Strip<br><b>(3 Poses)</b></p>
                 </div>
         
-                <div class="layout-card" onclick="selectLayout('layoutB')">
+                <div class="layout-card" onclick="selectLayout('layoutB', this)">
                     <div class="badge">NEW</div>
                     <div class="layout-preview">
-                        <div class="frame-mockup type-b">
-                            <img src="frames/frameb.png" alt="">
-                        </div>
+                        <img src="frames/frameb.png" alt="Frame B">
                     </div>
                     <h3>Frame B</h3>
-                    <p>6 x 2 Strip<br><b>(4 Poses)</b></p>
+                    <p>Modern 6x2 Strip<br><b>(4 Poses)</b></p>
                 </div>
 
-                
+                <div class="layout-card" onclick="selectLayout('layoutC', this)">
+                    <div class="badge">TRENDY</div>
+                    <div class="layout-preview">
+                        <img src="frames/framec.png" alt="Frame C">
+                    </div>
+                    <h3>Frame C</h3>
+                    <p>Elegant Strip<br><b>(3 Poses)</b></p>
+                </div>
             </div>
         
-            <button class="nav-arrow" onclick="scrollGrid(1)">❯</button>
+            <button class="nav-arrow right" onclick="scrollGrid(1)">❯</button>
         </div>
 
-        <div class="dots">
-            <span class="dot active" id="dot1"></span>
-            <span class="dot" id="dot2"></span>
-        </div>
+        <div class="dots" id="dotContainer">
+            </div>
 
         <div class="promo-banner">
             ✨ Get digital copy & GIF for every session! ✨
@@ -88,43 +223,53 @@
 
     <script>
         const grid = document.getElementById('layoutGrid');
+        const dotContainer = document.getElementById('dotContainer');
+        const cards = document.querySelectorAll('.layout-card');
 
-        function scrollGrid(direction) {
-            const scrollAmount = grid.offsetWidth / 1.5;
-            grid.scrollBy({
-                left: direction * scrollAmount,
-                behavior: 'smooth'
+        // 1. Generate Dot secara otomatis berdasarkan jumlah kartu
+        function initDots() {
+            dotContainer.innerHTML = ''; // bersihkan
+            cards.forEach((_, i) => {
+                const dot = document.createElement('div');
+                dot.className = `dot ${i === 0 ? 'active' : ''}`;
+                dot.id = `dot-${i}`;
+                dotContainer.appendChild(dot);
             });
-            
-            // Logika sederhana update dot
-            setTimeout(updateDots, 300);
         }
 
+        // 2. Fungsi Scroll
+        function scrollGrid(direction) {
+            const cardWidth = cards[0].offsetWidth + 20;
+            grid.scrollBy({ left: direction * cardWidth, behavior: 'smooth' });
+        }
+
+        // 3. Update Dot saat di-scroll
         function updateDots() {
-            const dot1 = document.getElementById('dot1');
-            const dot2 = document.getElementById('dot2');
-            if (grid.scrollLeft > 50) {
-                dot1.classList.remove('active');
-                dot2.classList.add('active');
-            } else {
-                dot1.classList.add('active');
-                dot2.classList.remove('active');
-            }
+            const scrollLeft = grid.scrollLeft;
+            const cardWidth = cards[0].offsetWidth + 20;
+            const activeIndex = Math.round(scrollLeft / cardWidth);
+            
+            document.querySelectorAll('.dot').forEach((dot, index) => {
+                dot.classList.toggle('active', index === activeIndex);
+            });
         }
 
-        function selectLayout(type) {
+        // 4. Pilih Layout
+        function selectLayout(type, element) {
             localStorage.setItem('selectedLayout', type);
-            // Feedback visual sebelum pindah
-            document.querySelector(`[onclick="selectLayout('${type}')"]`).style.borderColor = "#00c6ff";
+            
+            // Efek visual klik
+            element.style.borderColor = "#6D4C41";
+            element.style.background = "#FFF8F0";
             
             setTimeout(() => {
                 window.location.href = 'camera.html';
-            }, 300);
+            }, 400);
         }
 
-        // Deteksi scroll manual untuk update dot
+        // Event Listeners
         grid.addEventListener('scroll', updateDots);
-        
+        window.onload = initDots;
     </script>
 </body>
 </html>
