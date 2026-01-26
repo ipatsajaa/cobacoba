@@ -71,7 +71,7 @@
         document.getElementById('poseDisplay').innerText = `0/${maxPoses}`;
 
         const frameImg = new Image();
-        frameImg.src = selectedLayout === 'layoutA' ? 'frames/1.png' : 'frames/2.png';
+        frameImg.src = selectedLayout === 'layoutA' ? 'frames/1.png' : 'frames/2.png' : 'frames/3.png';
 
         async function initCamera() {
             try {
@@ -143,7 +143,8 @@
             // KONFIGURASI KOORDINAT (Sesuaikan agar pas di lubang frame PNG Anda)
             let cfg = selectedLayout === 'layoutA' 
                 ? { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 } 
-                : { photoW: 710, photoH: 447, startX: 45, startY: 54, gap: 90 };
+                : { photoW: 710, photoH: 447, startX: 45, startY: 54, gap: 90 }
+                : { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 };
 
             for (let i = 0; i < photos.length; i++) {
                 const img = new Image();
@@ -195,3 +196,4 @@
     </script>
 </body>
 </html>
+
