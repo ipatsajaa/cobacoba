@@ -192,6 +192,21 @@
             tempCtx.translate(tempCanvas.width, 0);
             tempCtx.scale(-1, 1);
             tempCtx.drawImage(video, 0, 0);
+           
+           if (currentFilter === 'sunset') {
+        tempCtx.scale(-1, 1); // kembalikan scale untuk gambar overlay
+        tempCtx.translate(-tempCanvas.width, 0);
+        
+        tempCtx.globalAlpha = 0.4; // transparansi gradasi
+        tempCtx.globalCompositeOperation = 'screen'; // mode blend agar menyatu dengan wajah
+        const grad = tempCtx.createLinearGradient(0, 0, 800, 600);
+        grad.addColorStop(0, '#405de6');
+        grad.addColorStop(0.5, '#833ab4');
+        grad.addColorStop(1, '#fd1d1d');
+        tempCtx.fillStyle = grad;
+        tempCtx.fillRect(0, 0, 800, 600);
+    }
+           
             photos.push(tempCanvas.toDataURL('image/jpeg', 0.9));
 }
 
@@ -267,6 +282,7 @@
     </script>
 </body>
 </html>
+
 
 
 
