@@ -31,13 +31,14 @@
 
     <div class="pose-counter" id="poseDisplay">0/0</div>
 
-    <div class="cam-box">
-        <div id="flash"></div>
-        <div id="countdown">3</div>
-        <video id="videoFeed" autoplay playsinline></video>
-        <canvas id="resultCanvas"></canvas>
+   <div class="cam-box">
+    <div id="flash"></div>
+    <div id="countdown">3</div>
+    <div id="filterOverlay" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:2; display:none; mix-blend-mode: screen; opacity: 0.5; background: linear-gradient(45deg, #405de6, #833ab4, #fd1d1d, #fcaf45);"></div>
+    
+    <video id="videoFeed" autoplay playsinline></video>
+    <canvas id="resultCanvas"></canvas>
     </div>
-
     <div id="loading">✨ Memproses Gambar...</div>
 
     <div class="filter-container" id="filterContainer">
@@ -62,9 +63,9 @@
             <span>Vivid</span>
         </div>
 
-        <div class="filter-item" onclick="setFilter('saturate(1.6) brightness(1.2) sepia(0.2) contrast(1.1)', this)">
-            <div class="filter-dot" style="background: linear-gradient(45deg, #FFD700, #FFA500)"></div>
-            <span>Rio</span>
+        <div class="filter-item" onclick="setFilter('sunset', this)">
+            <div class="filter-dot" style="background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d);"></div>
+            <span>Sunset</span>
         </div>
 
         <div class="filter-item" onclick="setFilter('blur(2px) brightness(1.1) contrast(1.1)', this)">
@@ -129,12 +130,28 @@
             } catch (err) { alert("Kamera error!"); }
         }
 
-        function setFilter(filter, el) {
-            currentFilter = filter;
-            video.style.filter = filter;
-            document.querySelectorAll('.filter-item').forEach(i => i.classList.remove('active'));
-            el.classList.add('active');
-        }
+       function setFilter(filter, el) {
+    const overlay = document.getElementById('filterOverlay');
+    
+    // Reset video filter
+    video.style.filter = 'none';
+    overlay.style.display = 'none';
+
+    if (filter === 'sunset') {
+        // Efek Instagram Sunset
+        video.style.filter = 'contrast(1.2) saturate(1.5)';
+        overlay.style.display = 'block';
+        currentFilter = 'sunset'; 
+    } else {
+        // Efek standar lainnya
+        currentFilter = filter;
+        video.style.filter = filter;
+    }
+
+    // Update UI Active State
+    document.querySelectorAll('.filter-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+}
 
         async function startSequence() {
             startBtn.style.display = 'none';
@@ -163,20 +180,36 @@
         }
 
         function capture() {
-            const flash = document.getElementById('flash');
-            flash.style.display = 'block';
-            setTimeout(() => flash.style.display = 'none', 100);
+    // ... kode flash tetap sama ...
 
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = video.videoWidth;
-            tempCanvas.height = video.videoHeight;
-            const tempCtx = tempCanvas.getContext('2d');
-            tempCtx.filter = currentFilter;
-            tempCtx.translate(tempCanvas.width, 0);
-            tempCtx.scale(-1, 1);
-            tempCtx.drawImage(video, 0, 0);
-            photos.push(tempCanvas.toDataURL('image/jpeg', 0.9));
-        }
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = 800;
+    tempCanvas.height = 600;
+    const tempCtx = tempCanvas.getContext('2d');
+
+    // Gambar video asli dengan filter (contrast/saturate)
+    tempCtx.filter = (currentFilter === 'sunset') ? 'contrast(1.2) saturate(1.5)' : currentFilter;
+    tempCtx.translate(tempCanvas.width, 0);
+    tempCtx.scale(-1, 1);
+    tempCtx.drawImage(video, 0, 0, 800, 600);
+
+    // Jika filter sunset, gambar gradasi di atas foto
+    if (currentFilter === 'sunset') {
+        tempCtx.scale(-1, 1); // kembalikan scale untuk gambar overlay
+        tempCtx.translate(-tempCanvas.width, 0);
+        
+        tempCtx.globalAlpha = 0.4; // transparansi gradasi
+        tempCtx.globalCompositeOperation = 'screen'; // mode blend agar menyatu dengan wajah
+        const grad = tempCtx.createLinearGradient(0, 0, 800, 600);
+        grad.addColorStop(0, '#405de6');
+        grad.addColorStop(0.5, '#833ab4');
+        grad.addColorStop(1, '#fd1d1d');
+        tempCtx.fillStyle = grad;
+        tempCtx.fillRect(0, 0, 800, 600);
+    }
+
+    photos.push(tempCanvas.toDataURL('image/jpeg', 0.9));
+}
 
         async function showResult() {
             loading.style.display = 'block';
@@ -250,6 +283,7 @@
     </script>
 </body>
 </html>
+
 
 
 
