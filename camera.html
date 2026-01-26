@@ -153,7 +153,7 @@
             photos.push(tempCanvas.toDataURL('image/jpeg', 0.9));
         }
 
-        async function showResult() {
+       async function showResult() {
             loading.style.display = 'block';
             video.style.display = 'none';
             canvas.style.display = 'block';
@@ -167,30 +167,34 @@
                 ? { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 } 
                 : { photoW: 710, photoH: 447, startX: 45, startY: 54, gap: 90 };
 
-            for (let i = 0; i < photos.length; i++) {
+           for (let i = 0; i < photos.length; i++) {
                 const img = new Image();
                 img.src = photos[i];
                 await new Promise(resolve => {
                     img.onload = () => {
                         const yPos = cfg.startY + (i * (cfg.photoH + cfg.gap));
                         
-                        // LOGIKA ANTI-GEPENG (CENTER CROP)
-                        let sW = img.width;
-                        let sH = img.height;
+                        // LOGIKA CENTER CROP (Mencegah Gepeng)
+                        let sourceWidth = img.width;
+                        let sourceHeight = img.height;
                         let targetRatio = cfg.photoW / cfg.photoH;
-                        let currentRatio = sW / sH;
+                        let sourceRatio = sourceWidth / sourceHeight;
 
-                        let cropX = 0, cropY = 0, cropW = sW, cropH = sH;
+                        let sX, sY, sW, sH;
 
-                        if (currentRatio > targetRatio) {
-                            cropW = sH * targetRatio;
-                            cropX = (sW - cropW) / 2;
+                        if (sourceRatio > targetRatio) {
+                            sW = sourceHeight * targetRatio;
+                            sH = sourceHeight;
+                            sX = (sourceWidth - sW) / 2;
+                            sY = 0;
                         } else {
-                            cropH = sW / targetRatio;
-                            cropY = (sH - cropH) / 2;
+                            sW = sourceWidth;
+                            sH = sourceWidth / targetRatio;
+                            sX = 0;
+                            sY = (sourceHeight - sH) / 2;
                         }
 
-                        ctx.drawImage(img, cropX, cropY, cropW, cropH, cfg.startX, yPos, cfg.photoW, cfg.photoH);
+                        ctx.drawImage(img, sX, sY, sW, sH, cfg.startX, yPos, cfg.photoW, cfg.photoH);
                         resolve();
                     }
                 });
@@ -199,17 +203,15 @@
             ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
             loading.style.display = 'none';
             document.getElementById('dlBtn').style.display = 'block';
-            document.getElementById('gifBtn').style.display = 'block';
             document.getElementById('reBtn').style.display = 'block';
         }
 
         function downloadImage() {
             const link = document.createElement('a');
-            link.download = `photo_${Date.now()}.jpg`;
+            link.download = `photobooth_${Date.now()}.jpg`;
             link.href = canvas.toDataURL('image/jpeg', 1.0);
             link.click();
         }
-
         function downloadGIF() {
             const btn = document.getElementById('gifBtn');
             btn.innerText = "⚡ PROSES GIF...";
@@ -237,3 +239,4 @@
     </script>
 </body>
 </html>
+
