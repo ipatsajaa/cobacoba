@@ -157,10 +157,17 @@
             canvas.height = 2400;
 
             // KONFIGURASI KOORDINAT (Sesuaikan agar pas di lubang frame PNG Anda)
-            let cfg = selectedLayout === 'layoutA' 
-                ? { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 } 
-                : { photoW: 710, photoH: 447, startX: 45, startY: 54, gap: 90 }
-                : { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 };
+            let cfg;
+    if (selectedLayout === 'layoutB') {
+        // Konfigurasi Frame B (4 Poses)
+        cfg = { photoW: 710, photoH: 447, startX: 45, startY: 54, gap: 90 };
+    } else if (selectedLayout === 'layoutC') {
+        // Konfigurasi Frame C (3 Poses) - Sesuaikan angka ini dengan desain Frame C Anda
+        cfg = { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 };
+    } else {
+        // Konfigurasi Frame A (3 Poses / Default)
+        cfg = { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 };
+    }
 
             for (let i = 0; i < photos.length; i++) {
                 const img = new Image();
@@ -212,6 +219,7 @@
     </script>
 </body>
 </html>
+
 
 
 
