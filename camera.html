@@ -198,42 +198,41 @@ function capture() {
     flash.style.display = 'block';
     setTimeout(() => flash.style.display = 'none', 100);
 
-    const tempCanvas = document.createElement('canvas');
     const vW = video.videoWidth;
     const vH = video.videoHeight;
     
+    const tempCanvas = document.createElement('canvas');
     tempCanvas.width = vW;
     tempCanvas.height = vH;
     const tempCtx = tempCanvas.getContext('2d');
 
-    // --- LOGIKA FILTER LO-RES ---
     if (currentFilter === 'lo-res') {
-        const scale = 0.15; // Semakin kecil angka ini (misal 0.1), semakin besar kotak pixelnya
-        const sw = vW * scale;
-        const sh = vH * scale;
+        // 1. Tentukan skala (0.05 = sangat pecah/kotak besar, 0.1 = sedang)
+        const scale = 0.05; 
+        const sw = Math.floor(vW * scale);
+        const sh = Math.floor(vH * scale);
 
-        // Matikan penghalusan gambar agar pixel terlihat kotak-kotak tajam
-        tempCtx.imageSmoothingEnabled = false;
+        // 2. Buat canvas kecil sementara untuk proses 'perusakan' resolusi
+        const smallCanvas = document.createElement('canvas');
+        smallCanvas.width = sw;
+        smallCanvas.height = sh;
+        const smallCtx = smallCanvas.getContext('2d');
 
-        // Step 1: Gambar video ke ukuran sangat kecil (Downscale)
-        // Kita gunakan mirroring di sini juga
-        tempCtx.save();
-        tempCtx.translate(vW, 0);
-        tempCtx.scale(-1, 1);
-        tempCtx.drawImage(video, 0, 0, sw, sh);
+        // 3. Gambar video ke canvas kecil (Mirroring)
+        smallCtx.translate(sw, 0);
+        smallCtx.scale(-1, 1);
+        smallCtx.drawImage(video, 0, 0, sw, sh);
+
+        // 4. Pindahkan hasil kecil ke canvas utama (Upscale)
+        tempCtx.imageSmoothingEnabled = false; // MATIKAN SMOOTHING
+        tempCtx.drawImage(smallCanvas, 0, 0, sw, sh, 0, 0, vW, vH);
         
-        // Step 2: Gambar ulang dari hasil kecil tadi ke ukuran asli (Upscale)
-        // Ini yang membuat efek kotak-kotak muncul
-        tempCtx.drawImage(tempCanvas, 0, 0, sw, sh, 0, 0, vW, vH);
-        tempCtx.restore();
-
-        // Tambahkan sedikit penyesuaian warna agar mirip referensi lo-res
-        tempCtx.filter = 'contrast(1.1) brightness(1.05)';
+        // Tambahkan noise/kontras sedikit agar tidak flat
+        tempCtx.filter = 'contrast(1.2) brightness(1.1)';
     } 
-    // --- LOGIKA FILTER SUNSET & LAINNYA ---
     else {
+        // Logika Normal & Sunset (Tetap sama agar tidak rusak)
         tempCtx.filter = (currentFilter === 'sunset') ? 'contrast(1.2) saturate(1.5)' : currentFilter;
-
         tempCtx.save();
         tempCtx.translate(vW, 0);
         tempCtx.scale(-1, 1);
@@ -254,7 +253,6 @@ function capture() {
 
     photos.push(tempCanvas.toDataURL('image/jpeg', 0.9));
 }
-
         async function showResult() {
             loading.style.display = 'block';
             video.style.display = 'none';
@@ -327,6 +325,7 @@ function capture() {
     </script>
 </body>
 </html>
+
 
 
 
