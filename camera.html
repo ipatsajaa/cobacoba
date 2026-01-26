@@ -67,7 +67,7 @@
         let currentFilter = 'none';
         
         const selectedLayout = localStorage.getItem('selectedLayout') || 'layoutA';
-        const maxPoses = selectedLayout === 'layoutA' ? 3 : 4;
+        const maxPoses = selectedLayout === 'layoutA' ? 3 : 4 : 3;
         document.getElementById('poseDisplay').innerText = `0/${maxPoses}`;
 
         const frameImg = new Image();
@@ -196,4 +196,5 @@
     </script>
 </body>
 </html>
+
 
