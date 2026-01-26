@@ -67,12 +67,28 @@
         let currentFilter = 'none';
         
         const selectedLayout = localStorage.getItem('selectedLayout') || 'layoutA';
-        const maxPoses = selectedLayout === 'layoutA' ? 3 : 4 : 3;
+
+// Menentukan jumlah pose berdasarkan layout yang dipilih
+        let maxPoses = 3; // default
+        if (selectedLayout === 'layoutA') {
+            maxPoses = 3;
+        } else if (selectedLayout === 'layoutB') {
+            maxPoses = 4;
+        } else if (selectedLayout === 'layoutC') {
+            maxPoses = 3; // Sesuaikan jika Frame C mau 4 pose, ganti jadi 4
+        }
+        
         document.getElementById('poseDisplay').innerText = `0/${maxPoses}`;
-
+        
+        // Jangan lupa update source frame gambarnya juga
         const frameImg = new Image();
-        frameImg.src = selectedLayout === 'layoutA' ? 'frames/1.png' : 'frames/2.png' : 'frames/3.png';
-
+        if (selectedLayout === 'layoutA') {
+            frameImg.src = 'frames/1.png';
+        } else if (selectedLayout === 'layoutB') {
+            frameImg.src = 'frames/2.png';
+        } else if (selectedLayout === 'layoutC') {
+            frameImg.src = 'frames/3.png';
+        }
         async function initCamera() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ 
@@ -196,5 +212,6 @@
     </script>
 </body>
 </html>
+
 
 
