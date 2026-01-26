@@ -141,9 +141,10 @@
             canvas.height = 2400;
 
             // KONFIGURASI KOORDINAT (Sesuaikan agar pas di lubang frame PNG Anda)
-            let cfg = selectedLayout === 'layoutA' 
-                ? { photoW: 686, photoH: 490, startX: 57, startY: 60, gap: 175 } 
-                : { photoW: 686, photoH: 410, startX: 57, startY: 60, gap: 110 };
+              let cfg = selectedLayout === 'layoutA' 
+                ? { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 } 
+                : { photoW: 710, photoH: 447, startX: 45, startY: 54, gap: 90 };
+
 
             for (let i = 0; i < photos.length; i++) {
                 const img = new Image();
@@ -195,3 +196,4 @@
     </script>
 </body>
 </html>
+
