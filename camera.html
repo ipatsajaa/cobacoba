@@ -188,10 +188,10 @@
             tempCanvas.width = video.videoWidth;
             tempCanvas.height = video.videoHeight;
             const tempCtx = tempCanvas.getContext('2d');
-            tempCtx.filter = currentFilter;
-            tempCtx.translate(tempCanvas.width, 0);
-            tempCtx.scale(-1, 1);
-            tempCtx.drawImage(video, 0, 0);
+            tempCtx.filter = (currentFilter === 'sunset') ? 'contrast(1.2) saturate(1.5)' : currentFilter;
+            tempCtx.translate(tempCanvas.width, 0);
+            tempCtx.scale(-1, 1);
+            tempCtx.drawImage(video, 0, 0, 800, 600);
            
            if (currentFilter === 'sunset') {
         tempCtx.scale(-1, 1); // kembalikan scale untuk gambar overlay
@@ -282,6 +282,7 @@
     </script>
 </body>
 </html>
+
 
 
 
