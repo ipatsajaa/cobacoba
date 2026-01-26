@@ -180,31 +180,50 @@
         }
 
        function capture() {
-     const flash = document.getElementById('flash');
-            flash.style.display = 'block';
-            setTimeout(() => flash.style.display = 'none', 100);
+function capture() {
+    const flash = document.getElementById('flash');
+    flash.style.display = 'block';
+    setTimeout(() => flash.style.display = 'none', 100);
 
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = video.videoWidth;
-            tempCanvas.height = video.videoHeight;
-            const tempCtx = tempCanvas.getContext('2d');
-            tempCtx.filter = (currentFilter === 'sunset') ? 'contrast(1.2) saturate(1.5)' : currentFilter;
-            tempCtx.translate(tempCanvas.width, 0);
-            tempCtx.scale(-1, 1);
-            tempCtx.drawImage(video, 0, 0, 800, 600);
-           
-           if (currentFilter === 'sunset') {
-        tempCtx.scale(-1, 1); // kembalikan scale untuk gambar overlay
-        tempCtx.translate(-tempCanvas.width, 0);
+    const tempCanvas = document.createElement('canvas');
+    
+    // Pastikan video sudah ter-load agar ukurannya tersedia
+    const vW = video.videoWidth;
+    const vH = video.videoHeight;
+    
+    tempCanvas.width = vW;
+    tempCanvas.height = vH;
+    
+    const tempCtx = tempCanvas.getContext('2d');
+
+    // 1. Terapkan filter dasar
+    tempCtx.filter = (currentFilter === 'sunset') ? 'contrast(1.2) saturate(1.5)' : currentFilter;
+
+    // 2. Gambar video (Mirroring)
+    tempCtx.save(); // Simpan state sebelum mirroring
+    tempCtx.translate(vW, 0);
+    tempCtx.scale(-1, 1);
+    tempCtx.drawImage(video, 0, 0, vW, vH);
+    tempCtx.restore(); // Kembalikan ke normal agar gradasi tidak ikut mirror
+
+    // 3. Tambahkan Overlay Sunset (Pastikan menutupi seluruh vW dan vH)
+    if (currentFilter === 'sunset') {
+        tempCtx.globalAlpha = 0.4;
+        tempCtx.globalCompositeOperation = 'screen';
         
-        tempCtx.globalAlpha = 0.4; // transparansi gradasi
-        tempCtx.globalCompositeOperation = 'screen'; // mode blend agar menyatu dengan wajah
-        const grad = tempCtx.createLinearGradient(0, 0, 800, 600);
-        grad.addColorStop(0, '#405de6');
-        grad.addColorStop(0.5, '#833ab4');
-        grad.addColorStop(1, '#fd1d1d');
+        // Buat gradasi vertikal yang sinkron dengan tinggi canvas
+        const grad = tempCtx.createLinearGradient(0, 0, 0, vH);
+        grad.addColorStop(0, '#405de6');   // Atas
+        grad.addColorStop(0.5, '#833ab4'); // Tengah
+        grad.addColorStop(1, '#fd1d1d');   // Bawah
+        
         tempCtx.fillStyle = grad;
-        tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+        // Gunakan vW dan vH yang sama dengan ukuran canvas
+        tempCtx.fillRect(0, 0, vW, vH);
+    }
+
+    photos.push(tempCanvas.toDataURL('image/jpeg', 0.9));
+}
     }
            
             photos.push(tempCanvas.toDataURL('image/jpeg', 0.9));
@@ -282,6 +301,7 @@
     </script>
 </body>
 </html>
+
 
 
 
