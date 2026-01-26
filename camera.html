@@ -204,7 +204,7 @@
         grad.addColorStop(0.5, '#833ab4');
         grad.addColorStop(1, '#fd1d1d');
         tempCtx.fillStyle = grad;
-        tempCtx.fillRect(0, 0, 800, 600);
+        tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
     }
            
             photos.push(tempCanvas.toDataURL('image/jpeg', 0.9));
@@ -282,6 +282,7 @@
     </script>
 </body>
 </html>
+
 
 
 
