@@ -103,28 +103,35 @@
         let photos = [];
         let currentFilter = 'none';
         
-       const selectedLayout = localStorage.getItem('selectedLayout') || 'layoutA';
+      let maxPoses = 3; // Nilai default
+const frameImg = new Image();
 
-// Menentukan jumlah pose dan sumber frame secara bersamaan
-        let maxPoses = 3; 
-        const frameImg = new Image();
-        
-        if (selectedLayout === 'layoutB') {
-            maxPoses = 4;
-            frameImg.src = 'frames/2.png';
-        } else if (selectedLayout === 'layoutC') {
-            maxPoses = 3;
-            frameImg.src = 'frames/3.png';
-        } else if (selectedLayout === 'layoutD') {
-            maxPoses = 3;
-            frameImg.src = 'frames/4.png'; // Pastikan path file benar
-        } else {
-            // Default Layout A
-            maxPoses = 3;
-            frameImg.src = 'frames/1(2).png';
-        }
-        
-        document.getElementById('poseDisplay').innerText = `0/${maxPoses}`;
+// Fungsi untuk setting layout saat halaman dibuka
+function setupLayout() {
+    const selectedLayout = localStorage.getItem('selectedLayout') || 'layoutA';
+    console.log("Layout yang terpilih:", selectedLayout); // Untuk cek di inspect element
+
+    if (selectedLayout === 'layoutB') {
+        maxPoses = 4;
+        frameImg.src = 'frames/2.png';
+    } else if (selectedLayout === 'layoutC') {
+        maxPoses = 3;
+        frameImg.src = 'frames/3.png';
+    } else if (selectedLayout === 'layoutD') {
+        maxPoses = 3;
+        frameImg.src = 'frames/4.png';
+    } else {
+        // Default Layout A
+        maxPoses = 3;
+        frameImg.src = 'frames/1(2).png';
+    }
+
+    // Update tampilan counter di layar
+    document.getElementById('poseDisplay').innerText = `0/${maxPoses}`;
+}
+
+// Panggil fungsi setup
+setupLayout();
         
         // Jangan lupa update source frame gambarnya juga
         const frameImg = new Image();
@@ -339,6 +346,7 @@ function capture() {
     </script>
 </body>
 </html>
+
 
 
 
