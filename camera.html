@@ -103,18 +103,25 @@
         let photos = [];
         let currentFilter = 'none';
         
-        const selectedLayout = localStorage.getItem('selectedLayout') || 'layoutA';
+       const selectedLayout = localStorage.getItem('selectedLayout') || 'layoutA';
 
-// Menentukan jumlah pose berdasarkan layout yang dipilih
-        let maxPoses = 3; // default
-        if (selectedLayout === 'layoutA') {
-            maxPoses = 3;
-        } else if (selectedLayout === 'layoutB') {
+// Menentukan jumlah pose dan sumber frame secara bersamaan
+        let maxPoses = 3; 
+        const frameImg = new Image();
+        
+        if (selectedLayout === 'layoutB') {
             maxPoses = 4;
+            frameImg.src = 'frames/2.png';
         } else if (selectedLayout === 'layoutC') {
-            maxPoses = 3; // Sesuaikan jika Frame C mau 4 pose, ganti jadi 4
+            maxPoses = 3;
+            frameImg.src = 'frames/3.png';
         } else if (selectedLayout === 'layoutD') {
-            maxPoses = 3; // Sesuaikan jika Frame D mau 4 pose, ganti jadi 4
+            maxPoses = 3;
+            frameImg.src = 'frames/4.png'; // Pastikan path file benar
+        } else {
+            // Default Layout A
+            maxPoses = 3;
+            frameImg.src = 'frames/1(2).png';
         }
         
         document.getElementById('poseDisplay').innerText = `0/${maxPoses}`;
@@ -332,6 +339,7 @@ function capture() {
     </script>
 </body>
 </html>
+
 
 
 
