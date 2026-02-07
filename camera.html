@@ -103,47 +103,29 @@
         let photos = [];
         let currentFilter = 'none';
         
-      let maxPoses = 3; // Nilai default
+    const selectedLayout = localStorage.getItem('selectedLayout') || 'layoutA';
+
+// Menentukan jumlah pose dan sumber frame secara bersamaan
+let maxPoses = 3; 
 const frameImg = new Image();
 
-// Fungsi untuk setting layout saat halaman dibuka
-function setupLayout() {
-    const selectedLayout = localStorage.getItem('selectedLayout') || 'layoutA';
-    console.log("Layout yang terpilih:", selectedLayout); // Untuk cek di inspect element
-
-    if (selectedLayout === 'layoutB') {
-        maxPoses = 4;
-        frameImg.src = 'frames/2.png';
-    } else if (selectedLayout === 'layoutC') {
-        maxPoses = 3;
-        frameImg.src = 'frames/3.png';
-    } else if (selectedLayout === 'layoutD') {
-        maxPoses = 3;
-        frameImg.src = 'frames/4.png';
-    } else {
-        // Default Layout A
-        maxPoses = 3;
-        frameImg.src = 'frames/1(2).png';
-    }
-
-    // Update tampilan counter di layar
-    document.getElementById('poseDisplay').innerText = `0/${maxPoses}`;
+if (selectedLayout === 'layoutB') {
+    maxPoses = 4;
+    frameImg.src = 'frames/2.png';
+} else if (selectedLayout === 'layoutC') {
+    maxPoses = 3;
+    frameImg.src = 'frames/3.png';
+} else if (selectedLayout === 'layoutD') {
+    maxPoses = 3;
+    frameImg.src = 'frames/4.png'; // Pastikan path file benar
+} else {
+    // Default Layout A
+    maxPoses = 3;
+    frameImg.src = 'frames/1(2).png';
 }
 
-// Panggil fungsi setup
-setupLayout();
+document.getElementById('poseDisplay').innerText = `0/${maxPoses}`;
         
-        // Jangan lupa update source frame gambarnya juga
-        const frameImg = new Image();
-        if (selectedLayout === 'layoutA') {
-            frameImg.src = 'frames/1(2).png';
-        } else if (selectedLayout === 'layoutB') {
-            frameImg.src = 'frames/2.png';
-        } else if (selectedLayout === 'layoutC') {
-            frameImg.src = 'frames/3.png';
-        }  else if (selectedLayout === 'layoutD') {
-            frameImg.src = 'frames/4.png';
-        }
         async function initCamera() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ 
@@ -346,6 +328,7 @@ function capture() {
     </script>
 </body>
 </html>
+
 
 
 
