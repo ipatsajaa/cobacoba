@@ -41,7 +41,7 @@
 
     <div class="pose-counter" id="poseDisplay">0/0</div>
 
-   <div class="cam-box">
+   <div class="cam-box" id="camBox">
     <div id="flash"></div>
     <div id="countdown">3</div>
     <div id="filterOverlay" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:2; display:none; mix-blend-mode: screen; opacity: 0.5; background: linear-gradient(45deg, #405de6, #833ab4, #fd1d1d, #fcaf45);"></div>
@@ -104,6 +104,7 @@
         let currentFilter = 'none';
         
     const selectedLayout = localStorage.getItem('selectedLayout') || 'layoutA';
+        const camBox = document.getElementById('camBox');
 
 // Menentukan jumlah pose dan sumber frame secara bersamaan
 let maxPoses = 3; 
@@ -123,7 +124,8 @@ if (selectedLayout === 'layoutB') {
     frameImg.src = 'frames/5.png'; // Pastikan path file benar
 } else if (selectedLayout === 'layoutF') {
     maxPoses = 2;
-    frameImg.src = 'frames/6.png'; // Pastikan path file benar
+    frameImg.src = 'frames/6.png';
+    camBox.style.aspectRatio = "640/788";// Pastikan path file benar
 } else {
     // Default Layout A
     maxPoses = 3;
@@ -340,6 +342,7 @@ function capture() {
     </script>
 </body>
 </html>
+
 
 
 
