@@ -121,6 +121,9 @@ if (selectedLayout === 'layoutB') {
 } else if (selectedLayout === 'layoutE') {
     maxPoses = 3;
     frameImg.src = 'frames/5.png'; // Pastikan path file benar
+} else if (selectedLayout === 'layoutF') {
+    maxPoses = 2;
+    frameImg.src = 'frames/6.png'; // Pastikan path file benar
 } else {
     // Default Layout A
     maxPoses = 3;
@@ -279,7 +282,10 @@ function capture() {
     }  else if (selectedLayout === 'layoutE') {
         // Konfigurasi Frame C (3 Poses) - Sesuaikan angka ini dengan desain Frame C Anda
         cfg = { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 };
-    } else {
+    }else if (selectedLayout === 'layoutF') {
+        // Konfigurasi Frame C (3 Poses) - Sesuaikan angka ini dengan desain Frame C Anda
+        cfg = { photoW: 640, photoH: 788, startX: 80, startY: 290, gap: 193 };
+    }  else {
         // Konfigurasi Frame A (3 Poses / Default)
         cfg = { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 };
     }
@@ -334,6 +340,7 @@ function capture() {
     </script>
 </body>
 </html>
+
 
 
 
