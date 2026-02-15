@@ -55,79 +55,63 @@
             transform: translate(3px, 3px);
             box-shadow: 0px 0px 0px #000;
         }
+/* --- PERBAIKAN GRID BIAR GAK RAKSASA DI DESKTOP --- */
+.layout-section {
+    display: none;
+    width: 100%;
+    /* Batasin lebar maksimal seluruh gallery di desktop */
+    max-width: 900px; 
+    margin: 0 auto;
+    padding: 0 20px;
+    animation: slideUp 0.5s cubic-bezier(0.2, 1, 0.2, 1) both;
+}
 
-        /* --- LAYOUT SECTIONS --- */
-        .layout-section {
-            display: none;
-            max-width: 1200px;
-            margin: 0 auto;
-            animation: slideUp 0.5s cubic-bezier(0.2, 1, 0.2, 1) both;
-        }
+.layout-section.active { display: block; }
 
-        .layout-section.active { display: block; }
+.grid-container { 
+    display: grid; 
+    /* Di desktop maksimal 3 kolom, di HP menyesuaikan */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+    gap: 40px; 
+    padding: 20px 0 100px 0;
+    justify-items: center; /* Biar kartu anteng di tengah */
+}
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+/* --- UKURAN KARTU FRAME --- */
+.frame-card { 
+    background: #fff; 
+    padding: 15px; 
+    border: 4px solid #fff;
+    cursor: pointer; 
+    transition: 0.3s; 
+    width: 100%;
+    /* Batasin lebar kartu biar gak melar pas layar gede */
+    max-width: 280px; 
+    box-shadow: 10px 10px 0px #ff4d00;
+}
 
-        .grid-container { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
-            gap: 30px; 
-            padding-bottom: 100px;
-        }
+/* Khusus IG Story biar gak kepanjangan di layar */
+#story .frame-card {
+    max-width: 300px;
+}
 
-        /* --- FRAME CARD BRUTAL --- */
-        .frame-card { 
-            background: #fff; 
-            padding: 15px; 
-            border: 4px solid #fff;
-            cursor: pointer; 
-            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            position: relative;
-            box-shadow: 10px 10px 0px #ff4d00;
-        }
+#story .frame-card img {
+    aspect-ratio: 9/16;
+    object-fit: cover;
+}
 
-        .frame-card:hover { 
-            transform: scale(1.05) rotate(-2deg); 
-            box-shadow: 15px 15px 0px #fff;
-            z-index: 10;
-        }
-
-        .frame-card img { 
-            width: 100%; 
-            display: block;
-            filter: grayscale(100%);
-            transition: 0.3s;
-            background: #eee;
-        }
-
-        .frame-card:hover img { filter: grayscale(0); }
-
-        .frame-card p { 
-            font-family: 'Archivo Black', sans-serif;
-            color: #000;
-            text-transform: uppercase;
-            margin-top: 15px; 
-            font-size: 0.9rem;
-            text-align: center;
-        }
-
-        .selected { 
-            background: #ff4d00;
-            border-color: #fff;
-        }
-        
-        .selected p { color: #fff; }
-
-        /* Mobile Adjustments */
-        @media (max-width: 600px) {
-            h1 { font-size: 2rem; }
-            .tab-btn { padding: 12px 15px; font-size: 0.8rem; }
-            .grid-container { grid-template-columns: 1fr 1fr; gap: 15px; }
-            .frame-card { padding: 10px; }
-        }
+/* --- RESPONSIVE ADJUSTMENT --- */
+@media (max-width: 600px) {
+    .grid-container { 
+        grid-template-columns: 1fr 1fr; /* Di HP tetep 2 kolom biar enak */
+        gap: 15px; 
+    }
+    .frame-card { 
+        padding: 10px; 
+        max-width: 100%; /* Di HP biarin menuhin kolom */
+    }
+    h1 { font-size: 2.2rem; }
+}
     </style>
 </head>
 <body>
@@ -202,3 +186,4 @@
     </script>
 </body>
 </html>
+
