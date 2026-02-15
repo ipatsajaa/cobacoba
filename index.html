@@ -26,9 +26,6 @@
             display: flex;
             overflow: hidden;
             border-bottom: 2px solid #fff;
-            position: sticky;
-            top: 0;
-            z-index: 100;
         }
         .marquee-content {
             display: flex;
@@ -56,24 +53,23 @@
 
         /* --- HERO SECTION --- */
         .hero {
-            min-height: 80vh;
+            min-height: 70vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             position: relative;
-            padding: 40px 0;
+            padding: 20px 0;
+            text-align: center;
         }
 
         .hero h1 {
             font-family: 'Archivo Black', sans-serif;
             font-size: clamp(3.5rem, 18vw, 10rem);
             line-height: 0.85;
-            text-align: center;
             text-transform: uppercase;
             z-index: 2;
             mix-blend-mode: difference;
-            pointer-events: none;
         }
 
         /* --- PREVIEW BOX --- */
@@ -86,37 +82,34 @@
 
         .card {
             position: absolute;
-            width: 120px; /* Lebih kecil buat HP */
+            width: 110px;
             background: #fff;
             padding: 8px 8px 24px 8px;
-            transition: 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-            box-shadow: 8px 8px 0px #ff4d00;
+            box-shadow: 6px 6px 0px #ff4d00;
         }
+        .card img { width: 100%; display: block; filter: grayscale(1); }
 
-        .card img { width: 100%; filter: grayscale(1); display: block; }
+        /* Posisi Desktop */
+        .card-1 { top: 10%; left: 10%; transform: rotate(-12deg); }
+        .card-2 { bottom: 15%; right: 10%; transform: rotate(8deg); }
 
-        /* Responsif Posisi Kartu */
-        .card-1 { top: 5%; left: 8%; transform: rotate(-12deg); }
-        .card-2 { bottom: 10%; right: 8%; transform: rotate(8deg); }
-
+        /* --- RESPONSIVE MOBILE (HP) --- */
         @media (max-width: 600px) {
-            .hero { min-height: 70vh; justify-content: space-around; }
-            .card { width: 100px; }
-            .card-1 { top: 0%; left: 5%; }
-            .card-2 { bottom: 15%; right: 5%; }
-            .btn-start { width: 90vw; padding: 20px !important; font-size: 1.2rem !important; }
+            .hero { min-height: 60vh; }
+            /* Kartu dipindah biar gak ganggu teks di tengah */
+            .card-1 { top: -5%; left: 5%; transform: scale(0.8) rotate(-10deg); }
+            .card-2 { bottom: 5%; right: 5%; transform: scale(0.8) rotate(5deg); }
+            
+            .btn-start { 
+                width: 90%; 
+                padding: 18px !important; 
+                font-size: 1.1rem !important;
+            }
         }
-
-        .card:hover {
-            transform: scale(1.2) rotate(0deg) !important;
-            z-index: 50;
-            box-shadow: 15px 15px 0px #fff;
-        }
-        .card:hover img { filter: grayscale(0); }
 
         /* --- BUTTON --- */
         .btn-wrapper { 
-            margin-top: 20px; 
+            margin-top: 30px; 
             z-index: 10; 
             width: 100%; 
             display: flex; 
@@ -125,65 +118,48 @@
         .btn-start {
             background: #fff;
             color: #000;
-            padding: 25px 50px;
+            padding: 22px 50px;
             font-family: 'Archivo Black', sans-serif;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             border: none;
             cursor: pointer;
             text-transform: uppercase;
-            position: relative;
             transition: 0.2s;
-            max-width: 100%;
         }
-        .btn-start:active { transform: scale(0.95) skew(-5deg); }
-        .btn-start:hover { background: #ff4d00; color: #fff; }
+        .btn-start:hover { background: #ff4d00; color: #fff; transform: skew(-5deg); }
 
         /* --- FOOTER BRUTAL --- */
         .main-footer {
             background: #fff;
             color: #000;
-            padding: 60px 5% 30px;
+            padding: 40px 5%;
             border-top: 5px solid #ff4d00;
         }
         .footer-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 40px;
-            margin-bottom: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
         }
         .footer-logo h2 {
             font-family: 'Archivo Black', sans-serif;
-            font-size: 3rem;
+            font-size: 2.5rem;
             line-height: 0.9;
-            margin-bottom: 15px;
         }
-        .footer-info h3, .footer-socials h3 {
-            font-family: 'Archivo Black', sans-serif;
-            background: #000;
-            color: #fff;
-            display: inline-block;
-            padding: 4px 8px;
-            margin-bottom: 15px;
-            font-size: 1rem;
-        }
-        .footer-socials ul { list-style: none; }
         .footer-socials a {
             color: #000;
             text-decoration: none;
             font-weight: 700;
             display: block;
-            margin-bottom: 8px;
+            margin-top: 5px;
         }
-
         .footer-bottom {
-            border-top: 2px solid #000;
-            padding-top: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            gap: 10px;
+            margin-top: 30px;
+            border-top: 1px solid #000;
+            padding-top: 15px;
             font-family: 'Archivo Black', sans-serif;
             font-size: 0.7rem;
+            display: flex;
+            justify-content: space-between;
         }
     </style>
 </head>
@@ -191,23 +167,19 @@
 
     <div class="marquee">
         <div class="marquee-content">
-            SAY CHEESE — NO BAD ANGLES — LIMITED EDITION — CAPTURE THE MAGIC — SAY CHEESE — NO BAD ANGLES — LIMITED EDITION — CAPTURE THE MAGIC — 
+            SAY CHEESE — NO BAD ANGLES — LIMITED EDITION — CAPTURE THE MAGIC — 
         </div>
     </div>
 
     <nav>
         <div class="logo">Timeless*</div>
-        <div style="font-weight: 700; font-size: 0.8rem;">@patkepott</div>
+        <div style="font-weight: 700;">@patkepott</div>
     </nav>
 
     <main class="hero">
         <div class="preview-box">
-            <div class="card card-1">
-                <img src="frames/conto.png" alt="Shot 1">
-            </div>
-            <div class="card card-2">
-                <img src="frames/1(2).png" alt="Shot 2">
-            </div>
+            <div class="card card-1"><img src="frames/conto.png"></div>
+            <div class="card card-2"><img src="frames/1(2).png"></div>
         </div>
 
         <h1>PHOTO<br>BOOTH</h1>
@@ -223,23 +195,17 @@
         <div class="footer-grid">
             <div class="footer-logo">
                 <h2>TIMELESS<br>STUDIO*</h2>
-                <p style="font-weight: 800; font-size: 0.9rem;">[ EST. 2024 — NO RULES ]</p>
             </div>
-            <div class="footer-info">
-                <h3>LOCATION</h3>
-                <p style="font-weight: 700;">MAJALAYA / WEST JAVA<br>INDONESIA</p>
+            <div>
+                <p style="font-weight: 800;">MAJALAYA / WEST JAVA</p>
             </div>
             <div class="footer-socials">
-                <h3>CONNECT</h3>
-                <ul>
-                    <li><a href="https://instagram.com/patkepott">INSTAGRAM ↗</a></li>
-                    <li><a href="#">TIKTOK ↗</a></li>
-                </ul>
+                <a href="https://instagram.com/patkepott">INSTAGRAM ↗</a>
             </div>
         </div>
         <div class="footer-bottom">
-            <span>&copy;2024 TIMELESS STUDIO</span>
-            <span>V.02 BETA</span>
+            <span>&copy;2024 TIMELESS</span>
+            <span>V.02</span>
         </div>
     </footer>
 
@@ -249,10 +215,7 @@
             btn.innerHTML = "LOADING...";
             btn.style.background = "#ff4d00";
             btn.style.color = "#fff";
-            
-            setTimeout(() => {
-                window.location.href = 'layout.html';
-            }, 800);
+            setTimeout(() => { window.location.href = 'layout.html'; }, 800);
         }
     </script>
 </body>
