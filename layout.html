@@ -3,194 +3,201 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pilih Frame - Photobooth</title>
+    <title>SELECT YOUR VIBE — TIMELESS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #6D4C41;
-            --bg: #F5EBE0;
-            --white: #ffffff;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body { 
-            background: var(--bg); 
-            color: #4E342E; 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-            text-align: center; 
-            padding: 20px; 
-            margin: 0;
+            background: #0e0e0e; 
+            color: #fff; 
+            font-family: 'Space Grotesk', sans-serif; 
+            padding: 20px;
+            overflow-x: hidden;
         }
 
-        h1 { margin-bottom: 25px; font-weight: 800; color: var(--primary); }
+        h1 { 
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 3rem;
+            text-align: center;
+            text-transform: uppercase;
+            margin: 40px 0;
+            letter-spacing: -2px;
+            color: #fff;
+        }
 
-        /* Filter Tab Estetik */
+        /* --- TAB SYSTEM GOKIL --- */
         .tab-container {
             display: flex;
             justify-content: center;
-            gap: 10px;
-            margin-bottom: 30px;
+            gap: 15px;
+            margin-bottom: 50px;
             position: sticky;
-            top: 0;
-            background: var(--bg);
-            padding: 15px 0;
-            z-index: 100;
+            top: 20px;
+            z-index: 1000;
         }
 
         .tab-btn {
-            background: white;
-            border: 2px solid var(--primary);
-            color: var(--primary);
-            padding: 12px 25px;
-            border-radius: 50px;
+            background: #fff;
+            border: 3px solid #000;
+            color: #000;
+            padding: 15px 30px;
+            font-family: 'Archivo Black', sans-serif;
+            text-transform: uppercase;
             cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
+            transition: 0.2s;
+            box-shadow: 6px 6px 0px #ff4d00;
         }
 
         .tab-btn.active {
-            background: var(--primary);
-            color: white;
+            background: #ff4d00;
+            color: #fff;
+            transform: translate(3px, 3px);
+            box-shadow: 0px 0px 0px #000;
         }
 
-        /* Kontainer Layout */
+        /* --- LAYOUT SECTIONS --- */
         .layout-section {
-            display: none; /* Sembunyikan semua secara default */
-            max-width: 1000px;
+            display: none;
+            max-width: 1200px;
             margin: 0 auto;
-            animation: fadeIn 0.4s ease-in-out;
+            animation: slideUp 0.5s cubic-bezier(0.2, 1, 0.2, 1) both;
         }
 
-        .layout-section.active {
-            display: block; /* Tampilkan yang aktif */
+        .layout-section.active { display: block; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .grid-container { 
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); 
-            gap: 20px; 
-            padding: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 30px; 
+            padding-bottom: 100px;
         }
 
+        /* --- FRAME CARD BRUTAL --- */
         .frame-card { 
-            background: var(--white); 
-            padding: 12px; 
-            border-radius: 18px; 
+            background: #fff; 
+            padding: 15px; 
+            border: 4px solid #fff;
             cursor: pointer; 
-            transition: 0.3s; 
-            border: 4px solid transparent;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            position: relative;
+            box-shadow: 10px 10px 0px #ff4d00;
         }
 
         .frame-card:hover { 
-            transform: translateY(-8px); 
-            box-shadow: 0 12px 25px rgba(0,0,0,0.1); 
+            transform: scale(1.05) rotate(-2deg); 
+            box-shadow: 15px 15px 0px #fff;
+            z-index: 10;
         }
 
         .frame-card img { 
             width: 100%; 
-            border-radius: 10px; 
-            aspect-ratio: 2/3;
-            object-fit: contain;
-            background: #f9f9f9;
+            display: block;
+            filter: grayscale(100%);
+            transition: 0.3s;
+            background: #eee;
         }
 
-        /* Khusus thumbnail Story IG agar tidak terlalu panjang di preview */
-        .story-grid img {
-            aspect-ratio: 9/16;
-        }
+        .frame-card:hover img { filter: grayscale(0); }
 
         .frame-card p { 
-            font-weight: bold; 
-            margin-top: 12px; 
-            font-size: 13px; 
-            color: var(--primary);
-        }
-        
-        .selected { 
-            border-color: var(--primary); 
-            background: #EFE5D9; 
+            font-family: 'Archivo Black', sans-serif;
+            color: #000;
+            text-transform: uppercase;
+            margin-top: 15px; 
+            font-size: 0.9rem;
+            text-align: center;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .selected { 
+            background: #ff4d00;
+            border-color: #fff;
+        }
+        
+        .selected p { color: #fff; }
+
+        /* Mobile Adjustments */
+        @media (max-width: 600px) {
+            h1 { font-size: 2rem; }
+            .tab-btn { padding: 12px 15px; font-size: 0.8rem; }
+            .grid-container { grid-template-columns: 1fr 1fr; gap: 15px; }
+            .frame-card { padding: 10px; }
         }
     </style>
 </head>
 <body>
 
-    <h1>Photobooth ✨</h1>
+    <h1>SELECT FRAME*</h1>
 
     <div class="tab-container">
-        <button class="tab-btn active" onclick="switchTab('strip', this)">Classic Strip</button>
-        <button class="tab-btn" onclick="switchTab('story', this)">Instagram Story</button>
+        <button class="tab-btn active" onclick="switchTab('strip', this)">CLASSIC STRIP</button>
+        <button class="tab-btn" onclick="switchTab('story', this)">IG STORY</button>
     </div>
 
     <div id="strip" class="layout-section active">
         <div class="grid-container">
             <div class="frame-card" onclick="selectLayout('layoutA', this)">
                 <img src="frames/1(2).png" alt="Frame 1">
-                <p>Classic White (3 Poses)</p>
+                <p>WHITE STRIP</p>
             </div>
             <div class="frame-card" onclick="selectLayout('layoutB', this)">
                 <img src="frames/2.png" alt="Frame 2">
-                <p>Modern Black (4 Poses)</p>
+                <p>BLACK CORE</p>
             </div>
             <div class="frame-card" onclick="selectLayout('layoutC', this)">
                 <img src="frames/3.png" alt="Frame 3">
-                <p>Retro Vibe (3 Poses)</p>
+                <p>RETRO VIBE</p>
             </div>
             <div class="frame-card" onclick="selectLayout('layoutD', this)">
                 <img src="frames/4.png" alt="Frame 4">
-                <p>Vintage Paper (3 Poses)</p>
+                <p>VINTAGE</p>
             </div>
             <div class="frame-card" onclick="selectLayout('layoutE', this)">
                 <img src="frames/5.png" alt="Frame 5">
-                <p>Soft Pastel (3 Poses)</p>
+                <p>PASTEL</p>
             </div>
             <div class="frame-card" onclick="selectLayout('layoutF', this)">
                 <img src="frames/6.png" alt="Frame 6">
-                <p>Cute (2 Poses)</p>
+                <p>CUTE-2P</p>
             </div>
         </div>
     </div>
 
     <div id="story" class="layout-section">
-        <div class="grid-container story-grid">
+        <div class="grid-container">
             <div class="frame-card" onclick="selectLayout('layoutG', this)">
-                <img src="frames/7.png" alt="Frame 7">
-                <p>Windows XP (2 Poses)</p>
+                <img src="frames/7.png" alt="Frame 7" style="aspect-ratio: 9/16; object-fit: cover;">
+                <p>WIN 98 STORY</p>
             </div>
         </div>
     </div>
 
     <script>
-        // Fungsi ganti Tab
         function switchTab(tabId, btn) {
-            // Sembunyikan semua kategori
-            document.querySelectorAll('.layout-section').forEach(section => {
-                section.classList.remove('active');
-            });
-            // Reset warna tombol
+            document.querySelectorAll('.layout-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
 
-            // Aktifkan yang dipilih
             document.getElementById(tabId).classList.add('active');
             btn.classList.add('active');
         }
 
-        // Fungsi Pilih Layout
         function selectLayout(layoutName, element) {
-            // Simpan ke localStorage agar bisa dibaca di camera.html
             localStorage.setItem('selectedLayout', layoutName);
             
-            // Highlight card yang dipilih
-            document.querySelectorAll('.frame-card').forEach(card => card.classList.remove('selected'));
+            document.querySelectorAll('.frame-card').forEach(c => c.classList.remove('selected'));
             element.classList.add('selected');
 
-            // Pindah ke kamera setelah jeda singkat
+            // Feedback suara (opsional) atau vibrasi
+            if (navigator.vibrate) navigator.vibrate(50);
+
             setTimeout(() => {
                 window.location.href = 'camera.html';
-            }, 400);
+            }, 500);
         }
     </script>
 </body>
