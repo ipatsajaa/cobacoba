@@ -3,93 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photobooth Pro - Fixed Ratio</title>
+    <title>SHOOTING SESSION — TIMELESS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
     <style>
-        /* CSS Tetap Sama Seperti Sebelumnya */
-        body { background: #F5EBE0; color: #4E342E; margin: 0; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .pose-counter { font-size: 1.5rem; font-weight: 800; color: #6D4C41; margin-bottom: 15px; background: white; padding: 8px 30px; border-radius: 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .cam-box { wwidth: 100%; max-width: 450px; aspect-ratio: 4/3; background: #000; border-radius: 20px; position: relative; overflow: hidden; border: 6px solid white; }
-        #videoFeed, #resultCanvas { width: 100%; height: 100%; object-fit: cover; }
+        /* --- RESET & CORE --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            background: #0e0e0e; 
+            color: #fff; 
+            font-family: 'Space Grotesk', sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 20px; 
+            min-height: 100vh;
+        }
+
+        /* --- UI ELEMENTS --- */
+        .pose-counter { 
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 1.2rem; 
+            background: #ff4d00; 
+            color: #fff; 
+            padding: 10px 40px; 
+            margin-bottom: 20px; 
+            border: 3px solid #fff;
+            box-shadow: 5px 5px 0px #fff;
+            text-transform: uppercase;
+        }
+
+        .cam-box { 
+            width: 100%; 
+            max-width: 480px; 
+            aspect-ratio: 4/3; 
+            background: #000; 
+            position: relative; 
+            overflow: hidden; 
+            border: 8px solid #fff;
+            box-shadow: 15px 15px 0px #ff4d00;
+        }
+
+        #videoFeed, #resultCanvas { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+        }
+
         #videoFeed { transform: scaleX(-1); }
-        #resultCanvas {display: none; background: white;  }
-        #countdown { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 80px; color: white; font-weight: 900; z-index: 5; text-shadow: 0 0 20px rgba(0,0,0,0.5); display: none; }
-        #flash { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; display: none; z-index: 10; }
-        .filter-container { width: 100%; max-width: 450px; margin-top: 20px; overflow-x: auto; }
-        .filter-bar { display: flex; gap: 10px; padding: 10px; width: max-content; }
-        .filter-item { cursor: pointer; text-align: center; font-size: 10px; }
-        .filter-dot { width: 50px; height: 50px; border-radius: 10px; border: 2px solid white; margin-bottom: 5px; }
-        .active .filter-dot { border-color: #6D4C41; transform: scale(1.1); }
-        .controls { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 320px; }
-        button { padding: 15px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        .btn-capture { background: #6D4C41; color: white; }
-        .btn-download { background: #6D4C41; color: white; display: none; }
-        .btn-retake { background: transparent; border: 2px solid #6D4C41; color: #6D4C41; display: none; }
-        #loading { display: none; font-weight: bold; margin: 10px; color: #6D4C41; }
-        .pixelated {
-    image-rendering: pixelated;
-    image-rendering: crisp-edges;
-    transform: scale(0.2); /* Kecilkan lalu besarkan via CSS */
-    width: 500% !important; 
-    height: 500% !important;
-    position: absolute;
-    top: -200%;
-    left: -200%;
-}
+        #resultCanvas { display: none; background: #fff; }
+
+        /* --- FEEDBACK OVERLAYS --- */
+        #countdown { 
+            position: absolute; 
+            top: 50%; left: 50%; 
+            transform: translate(-50%, -50%); 
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 120px; 
+            color: #ff4d00; 
+            z-index: 5; 
+            text-shadow: 4px 4px 0px #fff; 
+            display: none; 
+        }
+
+        #flash { 
+            position: absolute; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            background: #fff; 
+            display: none; 
+            z-index: 10; 
+        }
+
+        /* --- FILTER BAR (EDGY STYLE) --- */
+        .filter-container { 
+            width: 100%; 
+            max-width: 480px; 
+            margin-top: 30px; 
+            background: #1a1a1a;
+            border: 3px solid #fff;
+            padding: 10px;
+        }
+
+        .filter-bar { 
+            display: flex; 
+            gap: 15px; 
+            overflow-x: auto; 
+            padding: 5px;
+            scrollbar-width: none;
+        }
+
+        .filter-item { 
+            cursor: pointer; 
+            text-align: center; 
+            min-width: 70px;
+            transition: 0.2s;
+        }
+
+        .filter-dot { 
+            width: 60px; 
+            height: 60px; 
+            border: 3px solid #333; 
+            margin-bottom: 8px; 
+            background-size: cover;
+            transition: 0.2s;
+        }
+
+        .active .filter-dot { 
+            border-color: #ff4d00; 
+            transform: translateY(-5px);
+            box-shadow: 0px 5px 0px #fff;
+        }
+
+        .filter-item span {
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: #888;
+        }
+
+        .active span { color: #fff; }
+
+        /* --- CONTROLS --- */
+        .controls { 
+            margin-top: 30px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            width: 100%; 
+            max-width: 320px; 
+        }
+
+        button { 
+            padding: 20px; 
+            border: 3px solid #000; 
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 1.1rem;
+            cursor: pointer; 
+            text-transform: uppercase; 
+            transition: 0.1s;
+        }
+
+        .btn-capture { 
+            background: #fff; 
+            color: #000; 
+            box-shadow: 8px 8px 0px #ff4d00;
+        }
+
+        .btn-capture:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0px 0px 0px;
+        }
+
+        .btn-download { background: #ff4d00; color: #fff; display: none; box-shadow: 8px 8px 0px #fff; border-color: #fff; }
+        .btn-retake { background: #000; color: #fff; border: 3px solid #fff; display: none; margin-top: 10px; }
+
+        #loading { 
+            display: none; 
+            font-family: 'Archivo Black', sans-serif;
+            color: #ff4d00; 
+            margin: 20px;
+            animation: blink 0.5s infinite;
+        }
+
+        @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
 <body>
 
-    <div class="pose-counter" id="poseDisplay">0/0</div>
+    <div class="pose-counter" id="poseDisplay">READY</div>
 
-   <div class="cam-box" id="camBox">
-    <div id="flash"></div>
-    <div id="countdown">3</div>
-    <div id="filterOverlay" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:2; display:none; mix-blend-mode: screen; opacity: 0.5; background: linear-gradient(45deg, #405de6, #833ab4, #fd1d1d, #fcaf45);"></div>
-    
-    <video id="videoFeed" autoplay playsinline></video>
-    <canvas id="resultCanvas"></canvas>
+    <div class="cam-box" id="camBox">
+        <div id="flash"></div>
+        <div id="countdown">3</div>
+        <div id="filterOverlay" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:2; display:none; mix-blend-mode: screen; opacity: 0.5; background: linear-gradient(45deg, #405de6, #833ab4, #fd1d1d, #fcaf45);"></div>
+        
+        <video id="videoFeed" autoplay playsinline></video>
+        <canvas id="resultCanvas"></canvas>
     </div>
-    <div id="loading">✨ Memproses Gambar...</div>
+
+    <div id="loading">PROCESSING SHOTS...</div>
 
     <div class="filter-container" id="filterContainer">
-    <div class="filter-bar">
-        <div class="filter-item active" onclick="setFilter('none', this)">
-            <div class="filter-dot" style="background:#ddd"></div>
-            <span>Normal</span>
-        </div>
-
-        <div class="filter-item" onclick="setFilter('grayscale(100%)', this)">
-            <div class="filter-dot" style="background:#333"></div>
-            <span>B&W</span>
-        </div>
-
-        <div class="filter-item" onclick="setFilter('sepia(0.5) contrast(1.2)', this)">
-            <div class="filter-dot" style="background:#d2b48c"></div>
-            <span>Vintage</span>
-        </div>
-
-        <div class="filter-item" onclick="setFilter('saturate(1.8) contrast(1.1)', this)">
-            <div class="filter-dot" style="background:#e9967a"></div>
-            <span>Vivid</span>
-        </div>
-
-        <div class="filter-item" onclick="setFilter('sunset', this)">
-            <div class="filter-dot" style="background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d);"></div>
-            <span>Rio de janeiro</span>
-        </div>
-
-       <div class="filter-item" onclick="setFilter('lo-res', this)">
-        <div class="filter-dot" style="background: repeating-conic-gradient(#555 0% 25%, #888 0% 50%) 50% / 10px 10px;"></div>
-        <span>Lo-Res</span>
-        </div>
-</div>
+        <div class="filter-bar">
+            <div class="filter-item active" onclick="setFilter('none', this)">
+                <div class="filter-dot" style="background:#444"></div>
+                <span>Normal</span>
+            </div>
+            <div class="filter-item" onclick="setFilter('grayscale(100%)', this)">
+                <div class="filter-dot" style="background:#222"></div>
+                <span>B&W</span>
+            </div>
+            <div class="filter-item" onclick="setFilter('sepia(0.5) contrast(1.2)', this)">
+                <div class="filter-dot" style="background:#5d4037"></div>
+                <span>Vintage</span>
+            </div>
+            <div class="filter-item" onclick="setFilter('sunset', this)">
+                <div class="filter-dot" style="background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);"></div>
+                <span>Sunset</span>
+            </div>
+            <div class="filter-item" onclick="setFilter('lo-res', this)">
+                <div class="filter-dot" style="background: repeating-conic-gradient(#333 0% 25%, #666 0% 50%) 50% / 8px 8px;"></div>
+                <span>Lo-Res</span>
+            </div>
         </div>
     </div>
 
     <div class="controls">
-        <button class="btn-capture" id="startBtn" onclick="startSequence()">Mulai Foto</button>
-        <button class="btn-download" id="dlBtn" onclick="downloadImage()">Download</button>
-        <button class="btn-retake" id="reBtn" onclick="location.reload()">Ulangi</button>
+        <button class="btn-capture" id="startBtn" onclick="startSequence()">START CAPTURE</button>
+        <button class="btn-download" id="dlBtn" onclick="downloadImage()">SAVE PHOTOS</button>
+        <button class="btn-retake" id="reBtn" onclick="location.reload()">TRY AGAIN</button>
     </div>
 
     <script>
@@ -103,88 +226,68 @@
         let photos = [];
         let currentFilter = 'none';
         
-    const selectedLayout = localStorage.getItem('selectedLayout') || 'layoutA';
+        const selectedLayout = localStorage.getItem('selectedLayout') || 'layoutA';
         const camBox = document.getElementById('camBox');
 
-// Menentukan jumlah pose dan sumber frame secara bersamaan
-let maxPoses = 3; 
-const frameImg = new Image();
+        let maxPoses = 3; 
+        const frameImg = new Image();
 
-if (selectedLayout === 'layoutB') {
-    maxPoses = 4;
-    frameImg.src = 'frames/2.png';
-} else if (selectedLayout === 'layoutC') {
-    maxPoses = 3;
-    frameImg.src = 'frames/3.png';
-} else if (selectedLayout === 'layoutD') {
-    maxPoses = 3;
-    frameImg.src = 'frames/4.png'; // Pastikan path file benar
-} else if (selectedLayout === 'layoutE') {
-    maxPoses = 3;
-    frameImg.src = 'frames/5.png'; // Pastikan path file benar
-} else if (selectedLayout === 'layoutF') {
-    maxPoses = 2;
-    frameImg.src = 'frames/6.png';
-    camBox.style.aspectRatio = "640/788";// Pastikan path file benar
-} else if (selectedLayout === 'layoutG') {
-    maxPoses = 1;
-    frameImg.src = 'frames/7.png';
-    camBox.style.aspectRatio = "640/788";// Pastikan path file benar
-} else {
-    // Default Layout A
-    maxPoses = 3;
-    frameImg.src = 'frames/1(2).png';
-}
+        // Load Config Berdasarkan Layout
+        const layoutConfigs = {
+            'layoutA': { poses: 3, src: 'frames/1(2).png' },
+            'layoutB': { poses: 4, src: 'frames/2.png' },
+            'layoutC': { poses: 3, src: 'frames/3.png' },
+            'layoutD': { poses: 3, src: 'frames/4.png' },
+            'layoutE': { poses: 3, src: 'frames/5.png' },
+            'layoutF': { poses: 2, src: 'frames/6.png', ratio: "640/788" },
+            'layoutG': { poses: 1, src: 'frames/7.png', ratio: "640/788" }
+        };
 
-document.getElementById('poseDisplay').innerText = `0/${maxPoses}`;
-        
+        const config = layoutConfigs[selectedLayout] || layoutConfigs['layoutA'];
+        maxPoses = config.poses;
+        frameImg.src = config.src;
+        if(config.ratio) camBox.style.aspectRatio = config.ratio;
+
+        document.getElementById('poseDisplay').innerText = `READY: 0/${maxPoses}`;
+
         async function initCamera() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ 
                     video: { width: 1280, height: 960 }, audio: false 
                 });
                 video.srcObject = stream;
-            } catch (err) { alert("Kamera error!"); }
+            } catch (err) { alert("Camera Error: Check Permissions!"); }
         }
 
-       function setFilter(filter, el) {
-    const overlay = document.getElementById('filterOverlay');
-    
-    // 1. Reset semua keadaan awal
-    video.style.filter = 'none';
-    video.style.imageRendering = 'auto'; // Reset pixelated effect
-    overlay.style.display = 'none';
+        function setFilter(filter, el) {
+            const overlay = document.getElementById('filterOverlay');
+            video.style.filter = 'none';
+            video.style.imageRendering = 'auto';
+            overlay.style.display = 'none';
 
-    if (filter === 'sunset') {
-        // Efek Instagram Sunset
-        video.style.filter = 'contrast(1.2) saturate(1.5)';
-        overlay.style.display = 'block';
-        currentFilter = 'sunset'; 
-    } 
-    else if (filter === 'lo-res') {
-        // Efek Lo-Res untuk preview kamera
-        // Menggunakan pixelated agar kotak-kotak terlihat di layar
-        video.style.imageRendering = 'pixelated'; 
-        video.style.filter = 'contrast(1.1) brightness(1.1)';
-        currentFilter = 'lo-res';
-    } 
-    else {
-        // Efek standar (B&W, Vintage, dll)
-        currentFilter = filter;
-        video.style.filter = filter;
-    }
+            if (filter === 'sunset') {
+                video.style.filter = 'contrast(1.2) saturate(1.5)';
+                overlay.style.display = 'block';
+                currentFilter = 'sunset'; 
+            } else if (filter === 'lo-res') {
+                video.style.imageRendering = 'pixelated'; 
+                video.style.filter = 'contrast(1.1) brightness(1.1)';
+                currentFilter = 'lo-res';
+            } else {
+                currentFilter = filter;
+                video.style.filter = filter;
+            }
 
-    // 2. Update UI Active State (tanda kotak cokelat di pilihan filter)
-    document.querySelectorAll('.filter-item').forEach(i => i.classList.remove('active'));
-    el.classList.add('active');
-}
+            document.querySelectorAll('.filter-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+        }
 
         async function startSequence() {
             startBtn.style.display = 'none';
             document.getElementById('filterContainer').style.display = 'none';
             photos = [];
             for (let i = 1; i <= maxPoses; i++) {
-                document.getElementById('poseDisplay').innerText = `${i}/${maxPoses}`;
+                document.getElementById('poseDisplay').innerText = `SHOT ${i}/${maxPoses}`;
                 await runCountdown(3);
                 capture();
                 await new Promise(r => setTimeout(r, 600));
@@ -199,112 +302,83 @@ document.getElementById('poseDisplay').innerText = `0/${maxPoses}`;
                 countdownEl.innerText = count;
                 const timer = setInterval(() => {
                     count--;
-                    if(count <= 0) { clearInterval(timer); countdownEl.style.display = 'none'; resolve(); }
-                    else { countdownEl.innerText = count; }
+                    if(count <= 0) { 
+                        clearInterval(timer); 
+                        countdownEl.style.display = 'none'; 
+                        resolve(); 
+                    } else { 
+                        countdownEl.innerText = count; 
+                    }
                 }, 1000);
             });
         }
 
-function capture() {
-    const flash = document.getElementById('flash');
-    flash.style.display = 'block';
-    setTimeout(() => flash.style.display = 'none', 100);
+        function capture() {
+            const flash = document.getElementById('flash');
+            flash.style.display = 'block';
+            setTimeout(() => flash.style.display = 'none', 100);
 
-    const vW = video.videoWidth;
-    const vH = video.videoHeight;
-    
-    const tempCanvas = document.createElement('canvas');
-    tempCanvas.width = vW;
-    tempCanvas.height = vH;
-    const tempCtx = tempCanvas.getContext('2d');
+            const vW = video.videoWidth;
+            const vH = video.videoHeight;
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = vW;
+            tempCanvas.height = vH;
+            const tempCtx = tempCanvas.getContext('2d');
 
-    if (currentFilter === 'lo-res') {
-        // 1. Tentukan skala (0.05 = sangat pecah/kotak besar, 0.1 = sedang)
-        const scale = 10000; 
-        const sw = Math.floor(vW * scale);
-        const sh = Math.floor(vH * scale);
+            if (currentFilter === 'lo-res') {
+                const scale = 0.1; 
+                const sw = vW * scale;
+                const sh = vH * scale;
+                const smallCanvas = document.createElement('canvas');
+                smallCanvas.width = sw;
+                smallCanvas.height = sh;
+                const smallCtx = smallCanvas.getContext('2d');
 
-        // 2. Buat canvas kecil sementara untuk proses 'perusakan' resolusi
-        const smallCanvas = document.createElement('canvas');
-        smallCanvas.width = sw;
-        smallCanvas.height = sh;
-        const smallCtx = smallCanvas.getContext('2d');
+                smallCtx.translate(sw, 0);
+                smallCtx.scale(-1, 1);
+                smallCtx.drawImage(video, 0, 0, sw, sh);
 
-        // 3. Gambar video ke canvas kecil (Mirroring)
-        smallCtx.translate(sw, 0);
-        smallCtx.scale(-1, 1);
-        smallCtx.drawImage(video, 0, 0, sw, sh);
+                tempCtx.imageSmoothingEnabled = false;
+                tempCtx.drawImage(smallCanvas, 0, 0, sw, sh, 0, 0, vW, vH);
+            } else {
+                tempCtx.filter = (currentFilter === 'sunset') ? 'contrast(1.2) saturate(1.5)' : currentFilter;
+                tempCtx.save();
+                tempCtx.translate(vW, 0);
+                tempCtx.scale(-1, 1);
+                tempCtx.drawImage(video, 0, 0, vW, vH);
+                tempCtx.restore();
 
-        // 4. Pindahkan hasil kecil ke canvas utama (Upscale)
-        tempCtx.imageSmoothingEnabled = false; // MATIKAN SMOOTHING
-        tempCtx.drawImage(smallCanvas, 0, 0, sw, sh, 0, 0, vW, vH);
-        
-        // Tambahkan noise/kontras sedikit agar tidak flat
-        tempCtx.filter = 'contrast(1.2) brightness(1.1)';
-    } 
-    else {
-        // Logika Normal & Sunset (Tetap sama agar tidak rusak)
-        tempCtx.filter = (currentFilter === 'sunset') ? 'contrast(1.2) saturate(1.5)' : currentFilter;
-        tempCtx.save();
-        tempCtx.translate(vW, 0);
-        tempCtx.scale(-1, 1);
-        tempCtx.drawImage(video, 0, 0, vW, vH);
-        tempCtx.restore();
-
-        if (currentFilter === 'sunset') {
-            tempCtx.globalAlpha = 0.4;
-            tempCtx.globalCompositeOperation = 'screen';
-            const grad = tempCtx.createLinearGradient(0, 0, 0, vH);
-            grad.addColorStop(0, '#405de6');
-            grad.addColorStop(0.5, '#833ab4');
-            grad.addColorStop(1, '#fd1d1d');
-            tempCtx.fillStyle = grad;
-            tempCtx.fillRect(0, 0, vW, vH);
+                if (currentFilter === 'sunset') {
+                    tempCtx.globalAlpha = 0.4;
+                    tempCtx.globalCompositeOperation = 'screen';
+                    const grad = tempCtx.createLinearGradient(0, 0, 0, vH);
+                    grad.addColorStop(0, '#405de6');
+                    grad.addColorStop(0.5, '#833ab4');
+                    grad.addColorStop(1, '#fd1d1d');
+                    tempCtx.fillStyle = grad;
+                    tempCtx.fillRect(0, 0, vW, vH);
+                }
+            }
+            photos.push(tempCanvas.toDataURL('image/jpeg', 0.9));
         }
-    }
 
-    photos.push(tempCanvas.toDataURL('image/jpeg', 0.9));
-}
         async function showResult() {
             loading.style.display = 'block';
             video.style.display = 'none';
             canvas.style.display = 'block';
-
             await frameImg.decode();
 
-            // --- PERBAIKAN: UKURAN CANVAS DINAMIS ---
-            if (selectedLayout === 'layoutG') {
-                canvas.width = 1080;  // Ukuran standar Story IG
-                canvas.height = 1920;
-            } else {
-                canvas.width = 800;   // Ukuran standar Strip
-                canvas.height = 2400;
-            }
+            canvas.width = (selectedLayout === 'layoutG') ? 1080 : 800;
+            canvas.height = (selectedLayout === 'layoutG') ? 1920 : 2400;
 
-            // KONFIGURASI KOORDINAT (Sesuaikan agar pas di lubang frame PNG Anda)
-            let cfg;
-    if (selectedLayout === 'layoutB') {
-        // Konfigurasi Frame B (4 Poses)
-        cfg = { photoW: 710, photoH: 447, startX: 45, startY: 54, gap: 90 };
-    } else if (selectedLayout === 'layoutC') {
-        // Konfigurasi Frame C (3 Poses) - Sesuaikan angka ini dengan desain Frame C Anda
-        cfg = { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 };
-    } else if (selectedLayout === 'layoutD') {
-        // Konfigurasi Frame C (3 Poses) - Sesuaikan angka ini dengan desain Frame C Anda
-        cfg = { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 };
-    }  else if (selectedLayout === 'layoutE') {
-        // Konfigurasi Frame C (3 Poses) - Sesuaikan angka ini dengan desain Frame C Anda
-        cfg = { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 };
-    }else if (selectedLayout === 'layoutF') {
-        // Konfigurasi Frame C (3 Poses) - Sesuaikan angka ini dengan desain Frame C Anda
-        cfg = { photoW: 640, photoH: 788, startX: 80, startY: 290, gap: 193 };
-    }else if (selectedLayout === 'layoutG') {
-        // Konfigurasi Frame C (3 Poses) - Sesuaikan angka ini dengan desain Frame C Anda
-        cfg = { photoW: 586, photoH: 798, startX: 343, startY: 372, gap: 0};
-    }  else {
-        // Konfigurasi Frame A (3 Poses / Default)
-        cfg = { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 };
-    }
+            const drawConfigs = {
+                'layoutB': { photoW: 710, photoH: 447, startX: 45, startY: 54, gap: 90 },
+                'layoutF': { photoW: 640, photoH: 788, startX: 80, startY: 290, gap: 193 },
+                'layoutG': { photoW: 586, photoH: 798, startX: 343, startY: 372, gap: 0 },
+                'default': { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 }
+            };
+
+            const cfg = drawConfigs[selectedLayout] || drawConfigs['default'];
 
             for (let i = 0; i < photos.length; i++) {
                 const img = new Image();
@@ -312,30 +386,20 @@ function capture() {
                 await new Promise(resolve => {
                     img.onload = () => {
                         const yPos = cfg.startY + (i * (cfg.photoH + cfg.gap));
-                        
-                        // LOGIKA CENTER CROP (Mencegah Gepeng)
-                        let sourceWidth = img.width;
-                        let sourceHeight = img.height;
+                        let sW = img.width, sH = img.height;
                         let targetRatio = cfg.photoW / cfg.photoH;
-                        let sourceRatio = sourceWidth / sourceHeight;
+                        let sX = 0, sY = 0;
 
-                        let sX, sY, sW, sH;
-
-                        if (sourceRatio > targetRatio) {
-                            sW = sourceHeight * targetRatio;
-                            sH = sourceHeight;
-                            sX = (sourceWidth - sW) / 2;
-                            sY = 0;
+                        if ((sW / sH) > targetRatio) {
+                            sW = sH * targetRatio;
+                            sX = (img.width - sW) / 2;
                         } else {
-                            sW = sourceWidth;
-                            sH = sourceWidth / targetRatio;
-                            sX = 0;
-                            sY = (sourceHeight - sH) / 2;
+                            sH = sW / targetRatio;
+                            sY = (img.height - sH) / 2;
                         }
-
                         ctx.drawImage(img, sX, sY, sW, sH, cfg.startX, yPos, cfg.photoW, cfg.photoH);
                         resolve();
-                    }
+                    };
                 });
             }
 
@@ -343,11 +407,12 @@ function capture() {
             loading.style.display = 'none';
             document.getElementById('dlBtn').style.display = 'block';
             document.getElementById('reBtn').style.display = 'block';
+            document.getElementById('poseDisplay').innerText = "COMPLETE";
         }
 
         function downloadImage() {
             const link = document.createElement('a');
-            link.download = `photobooth_${Date.now()}.jpg`;
+            link.download = `timeless_${Date.now()}.jpg`;
             link.href = canvas.toDataURL('image/jpeg', 1.0);
             link.click();
         }
@@ -356,41 +421,3 @@ function capture() {
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
