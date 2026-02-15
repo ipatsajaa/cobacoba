@@ -126,6 +126,10 @@ if (selectedLayout === 'layoutB') {
     maxPoses = 2;
     frameImg.src = 'frames/6.png';
     camBox.style.aspectRatio = "640/788";// Pastikan path file benar
+} else if (selectedLayout === 'layoutG') {
+    maxPoses = 1;
+    frameImg.src = 'frames/7.png';
+    camBox.style.aspectRatio = "640/788";// Pastikan path file benar
 } else {
     // Default Layout A
     maxPoses = 3;
@@ -266,9 +270,16 @@ function capture() {
             video.style.display = 'none';
             canvas.style.display = 'block';
 
-            await frameImg.decode();
-            canvas.width = 800;
-            canvas.height = 2400;
+            aawait frameImg.decode();
+
+            // --- PERBAIKAN: UKURAN CANVAS DINAMIS ---
+            if (selectedLayout === 'layoutG') {
+                canvas.width = 1080;  // Ukuran standar Story IG
+                canvas.height = 1920;
+            } else {
+                canvas.width = 800;   // Ukuran standar Strip
+                canvas.height = 2400;
+            }
 
             // KONFIGURASI KOORDINAT (Sesuaikan agar pas di lubang frame PNG Anda)
             let cfg;
@@ -287,6 +298,9 @@ function capture() {
     }else if (selectedLayout === 'layoutF') {
         // Konfigurasi Frame C (3 Poses) - Sesuaikan angka ini dengan desain Frame C Anda
         cfg = { photoW: 640, photoH: 788, startX: 80, startY: 290, gap: 193 };
+    }else if (selectedLayout === 'layoutG') {
+        // Konfigurasi Frame C (3 Poses) - Sesuaikan angka ini dengan desain Frame C Anda
+        cfg = { photoW: 586, photoH: 798, startX: 343, startY: 372, gap: 0};
     }  else {
         // Konfigurasi Frame A (3 Poses / Default)
         cfg = { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 };
@@ -342,6 +356,7 @@ function capture() {
     </script>
 </body>
 </html>
+
 
 
 
