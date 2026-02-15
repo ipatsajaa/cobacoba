@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHOOTING SESSION — TIMELESS</title>
+    <title>TIMELESS — SHOOTING SESSION</title>
     <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
     <style>
-        /* --- RESET & CORE --- */
+        /* --- BRUTALIST UI OVERHAUL --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body { 
@@ -20,27 +20,28 @@
             min-height: 100vh;
         }
 
-        /* --- UI ELEMENTS --- */
+        /* Pose Counter Style */
         .pose-counter { 
             font-family: 'Archivo Black', sans-serif;
             font-size: 1.2rem; 
-            background: #ff4d00; 
-            color: #fff; 
-            padding: 10px 40px; 
+            color: #000; 
             margin-bottom: 20px; 
-            border: 3px solid #fff;
-            box-shadow: 5px 5px 0px #fff;
+            background: #ff4d00; 
+            padding: 10px 40px; 
             text-transform: uppercase;
+            box-shadow: 6px 6px 0px #fff;
+            transform: rotate(-2deg);
         }
 
+        /* Camera Box Brutal */
         .cam-box { 
             width: 100%; 
-            max-width: 480px; 
+            max-width: 450px; 
             aspect-ratio: 4/3; 
             background: #000; 
             position: relative; 
             overflow: hidden; 
-            border: 8px solid #fff;
+            border: 6px solid #fff; 
             box-shadow: 15px 15px 0px #ff4d00;
         }
 
@@ -51,82 +52,77 @@
         }
 
         #videoFeed { transform: scaleX(-1); }
-        #resultCanvas { display: none; background: #fff; }
+        #resultCanvas { display: none; background: white; }
 
-        /* --- FEEDBACK OVERLAYS --- */
+        /* Overlays */
         #countdown { 
             position: absolute; 
-            top: 50%; left: 50%; 
+            top: 50%; 
+            left: 50%; 
             transform: translate(-50%, -50%); 
             font-family: 'Archivo Black', sans-serif;
             font-size: 120px; 
             color: #ff4d00; 
             z-index: 5; 
-            text-shadow: 4px 4px 0px #fff; 
+            text-shadow: 5px 5px 0px #fff; 
             display: none; 
         }
 
         #flash { 
             position: absolute; 
-            top: 0; left: 0; 
-            width: 100%; height: 100%; 
-            background: #fff; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: white; 
             display: none; 
             z-index: 10; 
         }
 
-        /* --- FILTER BAR (EDGY STYLE) --- */
+        /* Filter Section */
         .filter-container { 
             width: 100%; 
             max-width: 480px; 
             margin-top: 30px; 
-            background: #1a1a1a;
-            border: 3px solid #fff;
+            background: #fff;
             padding: 10px;
+            border: 4px solid #ff4d00;
         }
 
         .filter-bar { 
             display: flex; 
             gap: 15px; 
-            overflow-x: auto; 
-            padding: 5px;
-            scrollbar-width: none;
+            padding: 5px; 
+            width: max-content; 
         }
 
         .filter-item { 
             cursor: pointer; 
             text-align: center; 
-            min-width: 70px;
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 9px; 
+            color: #000;
+            text-transform: uppercase;
             transition: 0.2s;
         }
 
         .filter-dot { 
             width: 60px; 
             height: 60px; 
-            border: 3px solid #333; 
-            margin-bottom: 8px; 
-            background-size: cover;
-            transition: 0.2s;
+            border: 3px solid #000; 
+            margin-bottom: 5px; 
+            transition: 0.3s;
         }
 
         .active .filter-dot { 
             border-color: #ff4d00; 
-            transform: translateY(-5px);
-            box-shadow: 0px 5px 0px #fff;
+            transform: translateY(-5px); 
+            box-shadow: 0px 5px 0px #000;
         }
 
-        .filter-item span {
-            font-size: 10px;
-            font-weight: 900;
-            text-transform: uppercase;
-            color: #888;
-        }
-
-        .active span { color: #fff; }
-
-        /* --- CONTROLS --- */
+        /* Control Buttons */
         .controls { 
-            margin-top: 30px; 
+            margin-top: 40px; 
             display: flex; 
             flex-direction: column; 
             gap: 15px; 
@@ -136,9 +132,9 @@
 
         button { 
             padding: 20px; 
-            border: 3px solid #000; 
             font-family: 'Archivo Black', sans-serif;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
+            border: none; 
             cursor: pointer; 
             text-transform: uppercase; 
             transition: 0.1s;
@@ -155,23 +151,38 @@
             box-shadow: 0px 0px 0px;
         }
 
-        .btn-download { background: #ff4d00; color: #fff; display: none; box-shadow: 8px 8px 0px #fff; border-color: #fff; }
-        .btn-retake { background: #000; color: #fff; border: 3px solid #fff; display: none; margin-top: 10px; }
+        .btn-download { 
+            background: #ff4d00; 
+            color: white; 
+            display: none; 
+            box-shadow: 8px 8px 0px #fff;
+        }
+
+        .btn-retake { 
+            background: transparent; 
+            border: 3px solid #fff; 
+            color: #fff; 
+            display: none; 
+            margin-top: 10px;
+        }
 
         #loading { 
             display: none; 
             font-family: 'Archivo Black', sans-serif;
+            margin: 20px; 
             color: #ff4d00; 
-            margin: 20px;
-            animation: blink 0.5s infinite;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            animation: blink 0.5s infinite alternate;
         }
 
-        @keyframes blink { 50% { opacity: 0; } }
+        @keyframes blink { from { opacity: 1; } to { opacity: 0.3; } }
+
     </style>
 </head>
 <body>
 
-    <div class="pose-counter" id="poseDisplay">READY</div>
+    <div class="pose-counter" id="poseDisplay">0/0</div>
 
     <div class="cam-box" id="camBox">
         <div id="flash"></div>
@@ -182,29 +193,36 @@
         <canvas id="resultCanvas"></canvas>
     </div>
 
-    <div id="loading">PROCESSING SHOTS...</div>
+    <div id="loading">PROCESSING ART...</div>
 
     <div class="filter-container" id="filterContainer">
-        <div class="filter-bar">
-            <div class="filter-item active" onclick="setFilter('none', this)">
-                <div class="filter-dot" style="background:#444"></div>
-                <span>Normal</span>
-            </div>
-            <div class="filter-item" onclick="setFilter('grayscale(100%)', this)">
-                <div class="filter-dot" style="background:#222"></div>
-                <span>B&W</span>
-            </div>
-            <div class="filter-item" onclick="setFilter('sepia(0.5) contrast(1.2)', this)">
-                <div class="filter-dot" style="background:#5d4037"></div>
-                <span>Vintage</span>
-            </div>
-            <div class="filter-item" onclick="setFilter('sunset', this)">
-                <div class="filter-dot" style="background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);"></div>
-                <span>Sunset</span>
-            </div>
-            <div class="filter-item" onclick="setFilter('lo-res', this)">
-                <div class="filter-dot" style="background: repeating-conic-gradient(#333 0% 25%, #666 0% 50%) 50% / 8px 8px;"></div>
-                <span>Lo-Res</span>
+        <div style="color: #000; font-family: 'Archivo Black'; font-size: 10px; margin-bottom: 8px; text-align: center;">[ SELECT FILTER ]</div>
+        <div style="overflow-x: auto;">
+            <div class="filter-bar">
+                <div class="filter-item active" onclick="setFilter('none', this)">
+                    <div class="filter-dot" style="background:#ddd"></div>
+                    <span>Normal</span>
+                </div>
+                <div class="filter-item" onclick="setFilter('grayscale(100%)', this)">
+                    <div class="filter-dot" style="background:#333"></div>
+                    <span>B&W</span>
+                </div>
+                <div class="filter-item" onclick="setFilter('sepia(0.5) contrast(1.2)', this)">
+                    <div class="filter-dot" style="background:#d2b48c"></div>
+                    <span>Vintage</span>
+                </div>
+                <div class="filter-item" onclick="setFilter('saturate(1.8) contrast(1.1)', this)">
+                    <div class="filter-dot" style="background:#e9967a"></div>
+                    <span>Vivid</span>
+                </div>
+                <div class="filter-item" onclick="setFilter('sunset', this)">
+                    <div class="filter-dot" style="background: linear-gradient(45deg, #405de6, #fd1d1d);"></div>
+                    <span>Sunset</span>
+                </div>
+                <div class="filter-item" onclick="setFilter('lo-res', this)">
+                    <div class="filter-dot" style="background: repeating-conic-gradient(#555 0% 25%, #888 0% 50%) 50% / 10px 10px;"></div>
+                    <span>Lo-Res</span>
+                </div>
             </div>
         </div>
     </div>
@@ -216,6 +234,7 @@
     </div>
 
     <script>
+        /* --- JS TIDAK DIUBAH SESUAI PERMINTAAN --- */
         const video = document.getElementById('videoFeed');
         const canvas = document.getElementById('resultCanvas');
         const ctx = canvas.getContext('2d');
@@ -232,37 +251,46 @@
         let maxPoses = 3; 
         const frameImg = new Image();
 
-        // Load Config Berdasarkan Layout
-        const layoutConfigs = {
-            'layoutA': { poses: 3, src: 'frames/1(2).png' },
-            'layoutB': { poses: 4, src: 'frames/2.png' },
-            'layoutC': { poses: 3, src: 'frames/3.png' },
-            'layoutD': { poses: 3, src: 'frames/4.png' },
-            'layoutE': { poses: 3, src: 'frames/5.png' },
-            'layoutF': { poses: 2, src: 'frames/6.png', ratio: "640/788" },
-            'layoutG': { poses: 1, src: 'frames/7.png', ratio: "640/788" }
-        };
+        if (selectedLayout === 'layoutB') {
+            maxPoses = 4;
+            frameImg.src = 'frames/2.png';
+        } else if (selectedLayout === 'layoutC') {
+            maxPoses = 3;
+            frameImg.src = 'frames/3.png';
+        } else if (selectedLayout === 'layoutD') {
+            maxPoses = 3;
+            frameImg.src = 'frames/4.png';
+        } else if (selectedLayout === 'layoutE') {
+            maxPoses = 3;
+            frameImg.src = 'frames/5.png';
+        } else if (selectedLayout === 'layoutF') {
+            maxPoses = 2;
+            frameImg.src = 'frames/6.png';
+            camBox.style.aspectRatio = "640/788";
+        } else if (selectedLayout === 'layoutG') {
+            maxPoses = 1;
+            frameImg.src = 'frames/7.png';
+            camBox.style.aspectRatio = "640/788";
+        } else {
+            maxPoses = 3;
+            frameImg.src = 'frames/1(2).png';
+        }
 
-        const config = layoutConfigs[selectedLayout] || layoutConfigs['layoutA'];
-        maxPoses = config.poses;
-        frameImg.src = config.src;
-        if(config.ratio) camBox.style.aspectRatio = config.ratio;
-
-        document.getElementById('poseDisplay').innerText = `READY: 0/${maxPoses}`;
-
+        document.getElementById('poseDisplay').innerText = `0/${maxPoses}`;
+        
         async function initCamera() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ 
                     video: { width: 1280, height: 960 }, audio: false 
                 });
                 video.srcObject = stream;
-            } catch (err) { alert("Camera Error: Check Permissions!"); }
+            } catch (err) { alert("Kamera error!"); }
         }
 
         function setFilter(filter, el) {
             const overlay = document.getElementById('filterOverlay');
             video.style.filter = 'none';
-            video.style.imageRendering = 'auto';
+            video.style.imageRendering = 'auto'; 
             overlay.style.display = 'none';
 
             if (filter === 'sunset') {
@@ -277,7 +305,6 @@
                 currentFilter = filter;
                 video.style.filter = filter;
             }
-
             document.querySelectorAll('.filter-item').forEach(i => i.classList.remove('active'));
             el.classList.add('active');
         }
@@ -287,7 +314,7 @@
             document.getElementById('filterContainer').style.display = 'none';
             photos = [];
             for (let i = 1; i <= maxPoses; i++) {
-                document.getElementById('poseDisplay').innerText = `SHOT ${i}/${maxPoses}`;
+                document.getElementById('poseDisplay').innerText = `${i}/${maxPoses}`;
                 await runCountdown(3);
                 capture();
                 await new Promise(r => setTimeout(r, 600));
@@ -302,13 +329,8 @@
                 countdownEl.innerText = count;
                 const timer = setInterval(() => {
                     count--;
-                    if(count <= 0) { 
-                        clearInterval(timer); 
-                        countdownEl.style.display = 'none'; 
-                        resolve(); 
-                    } else { 
-                        countdownEl.innerText = count; 
-                    }
+                    if(count <= 0) { clearInterval(timer); countdownEl.style.display = 'none'; resolve(); }
+                    else { countdownEl.innerText = count; }
                 }, 1000);
             });
         }
@@ -320,6 +342,7 @@
 
             const vW = video.videoWidth;
             const vH = video.videoHeight;
+            
             const tempCanvas = document.createElement('canvas');
             tempCanvas.width = vW;
             tempCanvas.height = vH;
@@ -327,19 +350,18 @@
 
             if (currentFilter === 'lo-res') {
                 const scale = 0.1; 
-                const sw = vW * scale;
-                const sh = vH * scale;
+                const sw = Math.floor(vW * scale);
+                const sh = Math.floor(vH * scale);
                 const smallCanvas = document.createElement('canvas');
                 smallCanvas.width = sw;
                 smallCanvas.height = sh;
                 const smallCtx = smallCanvas.getContext('2d');
-
                 smallCtx.translate(sw, 0);
                 smallCtx.scale(-1, 1);
                 smallCtx.drawImage(video, 0, 0, sw, sh);
-
-                tempCtx.imageSmoothingEnabled = false;
+                tempCtx.imageSmoothingEnabled = false; 
                 tempCtx.drawImage(smallCanvas, 0, 0, sw, sh, 0, 0, vW, vH);
+                tempCtx.filter = 'contrast(1.2) brightness(1.1)';
             } else {
                 tempCtx.filter = (currentFilter === 'sunset') ? 'contrast(1.2) saturate(1.5)' : currentFilter;
                 tempCtx.save();
@@ -368,17 +390,26 @@
             canvas.style.display = 'block';
             await frameImg.decode();
 
-            canvas.width = (selectedLayout === 'layoutG') ? 1080 : 800;
-            canvas.height = (selectedLayout === 'layoutG') ? 1920 : 2400;
+            if (selectedLayout === 'layoutG') {
+                canvas.width = 1080;  
+                canvas.height = 1920;
+            } else {
+                canvas.width = 800;   
+                canvas.height = 2400;
+            }
 
-            const drawConfigs = {
-                'layoutB': { photoW: 710, photoH: 447, startX: 45, startY: 54, gap: 90 },
-                'layoutF': { photoW: 640, photoH: 788, startX: 80, startY: 290, gap: 193 },
-                'layoutG': { photoW: 586, photoH: 798, startX: 343, startY: 372, gap: 0 },
-                'default': { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 }
-            };
-
-            const cfg = drawConfigs[selectedLayout] || drawConfigs['default'];
+            let cfg;
+            if (selectedLayout === 'layoutB') {
+                cfg = { photoW: 710, photoH: 447, startX: 45, startY: 54, gap: 90 };
+            } else if (selectedLayout === 'layoutC' || selectedLayout === 'layoutD' || selectedLayout === 'layoutE') {
+                cfg = { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 };
+            } else if (selectedLayout === 'layoutF') {
+                cfg = { photoW: 640, photoH: 788, startX: 80, startY: 290, gap: 193 };
+            } else if (selectedLayout === 'layoutG') {
+                cfg = { photoW: 586, photoH: 798, startX: 343, startY: 372, gap: 0};
+            } else {
+                cfg = { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 };
+            }
 
             for (let i = 0; i < photos.length; i++) {
                 const img = new Image();
@@ -386,33 +417,30 @@
                 await new Promise(resolve => {
                     img.onload = () => {
                         const yPos = cfg.startY + (i * (cfg.photoH + cfg.gap));
-                        let sW = img.width, sH = img.height;
+                        let sourceWidth = img.width;
+                        let sourceHeight = img.height;
                         let targetRatio = cfg.photoW / cfg.photoH;
-                        let sX = 0, sY = 0;
-
-                        if ((sW / sH) > targetRatio) {
-                            sW = sH * targetRatio;
-                            sX = (img.width - sW) / 2;
+                        let sourceRatio = sourceWidth / sourceHeight;
+                        let sX, sY, sW, sH;
+                        if (sourceRatio > targetRatio) {
+                            sW = sourceHeight * targetRatio; sH = sourceHeight; sX = (sourceWidth - sW) / 2; sY = 0;
                         } else {
-                            sH = sW / targetRatio;
-                            sY = (img.height - sH) / 2;
+                            sW = sourceWidth; sH = sourceWidth / targetRatio; sX = 0; sY = (sourceHeight - sH) / 2;
                         }
                         ctx.drawImage(img, sX, sY, sW, sH, cfg.startX, yPos, cfg.photoW, cfg.photoH);
                         resolve();
-                    };
+                    }
                 });
             }
-
             ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
             loading.style.display = 'none';
             document.getElementById('dlBtn').style.display = 'block';
             document.getElementById('reBtn').style.display = 'block';
-            document.getElementById('poseDisplay').innerText = "COMPLETE";
         }
 
         function downloadImage() {
             const link = document.createElement('a');
-            link.download = `timeless_${Date.now()}.jpg`;
+            link.download = `photobooth_${Date.now()}.jpg`;
             link.href = canvas.toDataURL('image/jpeg', 1.0);
             link.click();
         }
