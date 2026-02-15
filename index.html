@@ -3,50 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photobooth App</title>
-    <link rel="stylesheet" href="style.css">
+    <title>TimelessBooth - Capture the Magic</title>
+    <style>
+        /* CSS RESET & BASE */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: #F5EBE0; color: #4E342E; min-height: 100vh; display: flex; flex-direction: column; }
+
+        /* NAVBAR */
+        nav {
+            background: white;
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo { font-size: 1.5rem; font-weight: 800; color: #6D4C41; text-decoration: none; }
+        .nav-links { display: flex; gap: 20px; list-style: none; }
+        .nav-links a { text-decoration: none; color: #4E342E; font-weight: 500; font-size: 0.9rem; }
+
+        /* HERO CONTENT */
+        .home-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .hero-text h1 { font-size: 3rem; color: #6D4C41; margin-bottom: 10px; }
+        .hero-text p { font-size: 1.1rem; opacity: 0.8; margin-bottom: 40px; }
+
+        /* PREVIEW AREA (2 CONTOH HASIL) */
+        .preview-container {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 50px;
+            perspective: 1000px;
+        }
+
+        .preview-card {
+            width: 180px;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.5s ease;
+            transform: rotate(-3deg); /* Efek miring seperti foto asli */
+        }
+
+        .preview-card:nth-child(2) { transform: rotate(3deg); }
+
+        .preview-card img { width: 100%; border-radius: 2px; }
+
+        /* ANIMASI MENGAMBANG */
+        .preview-card:hover {
+            transform: scale(1.1) rotate(0deg) translateY(-20px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            z-index: 10;
+        }
+
+        /* BUTTON START */
+        .btn-start {
+            background: #6D4C41;
+            color: white;
+            border: none;
+            padding: 18px 45px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 6px 20px rgba(109, 76, 65, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .btn-start:hover {
+            background: #5D4037;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(109, 76, 65, 0.4);
+        }
+
+        .btn-start:active { transform: translateY(0); }
+
+        /* FOOTER */
+        footer {
+            background: #6D4C41;
+            color: #D7CCC8;
+            padding: 30px 5%;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .footer-content { margin-bottom: 15px; }
+        .footer-socials { display: flex; justify-content: center; gap: 15px; margin-top: 10px; }
+        .footer-socials a { color: white; text-decoration: none; font-size: 0.8rem; border: 1px solid rgba(255,255,255,0.3); padding: 5px 12px; border-radius: 20px; }
+        .copyright { font-size: 0.75rem; opacity: 0.6; margin-top: 20px; }
+
+        /* RESPONSIVE */
+        @media (max-width: 600px) {
+            .preview-container { flex-direction: row; gap: 15px; }
+            .preview-card { width: 140px; }
+            .hero-text h1 { font-size: 2.2rem; }
+        }
+    </style>
 </head>
 <body>
 
-    <div class="container">
-      
-        <main class="home-content">
-            <div class="hero-image">
-                <img src="frames/conto.png" alt="Photobooth Preview">
+    <nav>
+        <a href="#" class="logo">TimelessBooth</a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="layout.html">Layouts</a></li>
+            <li><a href="#">Gallery</a></li>
+        </ul>
+    </nav>
+
+    <main class="home-content">
+        <div class="hero-text">
+            <h1>TimelessBooth</h1>
+            <p>Capture the moment, cherish the magic, relive the love</p>
+        </div>
+
+        <div class="preview-container">
+            <div class="preview-card">
+                <img src="frames/1(2).png" alt="Contoh Hasil 1">
             </div>
-
-            <div class="hero-text">
-                <h1>TimelessBooth</h1>
-                <p>Capture the moment, cherish the magic, relive the love</p>
+            <div class="preview-card">
+                <img src="frames/conto.png" alt="Contoh Hasil 2">
             </div>
+        </div>
 
-            <button class="btn-start" onclick="startApp()">
-                START <span class="camera-icon">📷</span>
-            </button>
-        </main>
+        <button class="btn-start" onclick="startApp()">
+            START APP 📷
+        </button>
+    </main>
 
-        <footer class="home-footer">
-            <p>Follow us on Instagram @patkepott</p>
-        </footer>
-    </div>
+    <footer>
+        <div class="footer-content">
+            <p>Dibuat dengan ❤️ oleh Patkepott</p>
+            <div class="footer-socials">
+                <a href="https://instagram.com/patkepott" target="_blank">Instagram</a>
+                <a href="#">TikTok</a>
+                <a href="#">WhatsApp</a>
+            </div>
+        </div>
+        <p class="copyright">&copy; 2024 TimelessBooth. All rights reserved.</p>
+    </footer>
 
     <script>
         function startApp() {
-    // Memberikan efek feedback saat tombol ditekan
-    const btn = document.querySelector('.btn-start');
-    btn.innerHTML = "LOADING...";
-    btn.style.opacity = "0.7";
+            const btn = document.querySelector('.btn-start');
+            btn.innerHTML = "PREPARING...";
+            btn.style.opacity = "0.7";
 
-    // Beri jeda 500ms supaya animasi tekan tombol terasa sebelum pindah
-    setTimeout(() => {
-        window.location.href = 'layout.html';
-    }, 500);
-}
+            setTimeout(() => {
+                window.location.href = 'layout.html';
+            }, 600);
+        }
     </script>
 </body>
-
 </html>
-
-
-
-
