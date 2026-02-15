@@ -147,14 +147,76 @@
             border-color: #ff4d00;
         }
 
-        footer {
-            padding: 50px;
-            text-align: center;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            opacity: 0.5;
-        }
+      /* --- FOOTER BRUTAL SECTION --- */
+.main-footer {
+    background: #fff; /* Kontras sama body yang item */
+    color: #000;
+    padding: 80px 5% 20px 5%;
+    margin-top: 100px;
+    position: relative;
+    border-top: 5px solid #ff4d00;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 60px;
+}
+
+.footer-logo h2 {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 4rem;
+    line-height: 0.9;
+    text-transform: uppercase;
+    letter-spacing: -3px;
+}
+
+.footer-info h3, .footer-socials h3 {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    background: #000;
+    color: #fff;
+    display: inline-block;
+    padding: 5px 10px;
+}
+
+.footer-info p, .footer-socials ul {
+    font-weight: 700;
+    line-height: 1.6;
+}
+
+.footer-socials ul { list-style: none; }
+.footer-socials a {
+    color: #000;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 10px;
+    transition: 0.2s;
+}
+
+.footer-socials a:hover {
+    color: #ff4d00;
+    transform: translateX(10px);
+}
+
+.footer-bottom {
+    border-top: 2px solid #000;
+    padding-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 0.8rem;
+}
+
+/* Biar Mobile tetep galak */
+@media (max-width: 768px) {
+    .footer-grid { grid-template-columns: 1fr; gap: 50px; }
+    .footer-logo h2 { font-size: 2.5rem; }
+}
     </style>
 </head>
 <body>
@@ -190,9 +252,34 @@
         </div>
     </main>
 
-    <footer>
-        &copy;2024 TIMELESS STUDIO BOOTH // ALL RIGHTS RESERVED
-    </footer>
+    <footer class="main-footer">
+    <div class="footer-grid">
+        <div class="footer-logo">
+            <h2>TIMELESS<br>STUDIO*</h2>
+            <p style="margin-top: 20px; font-weight: 900;">[ EST. 2024 — NO RULES ]</p>
+        </div>
+
+        <div class="footer-info">
+            <h3>LOCATION</h3>
+            <p>MAJALAYA CORE /<br>WEST JAVA — INDONESIA</p>
+            <p style="margin-top: 10px; font-size: 0.8rem;">AVAILABLE FOR EVENTS & POP-UPS</p>
+        </div>
+
+        <div class="footer-socials">
+            <h3>CONNECT</h3>
+            <ul>
+                <li><a href="https://instagram.com/patkepott">INSTAGRAM ↗</a></li>
+                <li><a href="#">TIKTOK ↗</a></li>
+                <li><a href="#">WHATSAPP ↗</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <span>&copy;2024 ALL RIGHTS RESERVED TO TIMELESS STUDIO</span>
+        <span>V.02 — BETA</span>
+    </div>
+</footer>
 
     <script>
         function startApp() {
@@ -210,3 +297,4 @@
     </script>
 </body>
 </html>
+
