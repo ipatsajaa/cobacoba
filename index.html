@@ -2,290 +2,118 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TIMELESS BOOTH</title>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
     <style>
-        /* --- RESET & CORE --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Archivo Black', sans-serif; }
         
-        body { 
-            background: #0e0e0e; 
-            color: #fff; 
-            font-family: 'Space Grotesk', sans-serif;
-            overflow-x: hidden;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-        }
+        body { background: #0e0e0e; color: #fff; overflow-x: hidden; }
 
         /* --- MARQUEE --- */
         .marquee {
             background: #ff4d00;
             color: #000;
-            padding: 12px 0;
-            font-family: 'Archivo Black', sans-serif;
-            font-size: 1rem;
+            padding: 10px 0;
+            border-bottom: 2px solid #fff;
+            text-transform: uppercase;
+            font-size: 0.9rem;
             display: flex;
             overflow: hidden;
-            border-bottom: 2px solid #fff;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
         }
-        .marquee-content {
-            display: flex;
-            white-space: nowrap;
-            animation: marquee 12s linear infinite;
-        }
-        @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
+        .m-txt { display: flex; white-space: nowrap; animation: m 10s linear infinite; }
+        @keyframes m { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-        /* --- NAVBAR --- */
-        nav {
-            padding: 20px 6%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 100;
-        }
-        .logo { 
-            font-family: 'Archivo Black', sans-serif;
-            font-size: 1.4rem;
-            text-transform: uppercase;
-            letter-spacing: -1px;
-        }
-        .handle { font-weight: 700; font-size: 0.8rem; opacity: 0.8; }
-
-        /* --- HERO SECTION --- */
-        .hero {
-            position: relative;
-            height: 75vh;
+        /* --- MAIN CONTAINER --- */
+        .container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             padding: 20px;
-            overflow: hidden;
-        }
-
-        /* Teks "PHOTO BOOTH" - Dioptimalkan agar tidak pecah di HP */
-        .hero h1 {
-            font-family: 'Archivo Black', sans-serif;
-            font-size: clamp(3.2rem, 22vw, 10rem);
-            line-height: 0.8;
+            min-height: 90vh;
             text-align: center;
-            text-transform: uppercase;
-            z-index: 5;
-            mix-blend-mode: difference; /* Efek visual kontras tinggi */
-            pointer-events: none;
-            width: 100%;
         }
 
-        /* --- PREVIEW CARDS SYSTEM --- */
-        .preview-box {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 2;
-        }
-
-        .card {
-            position: absolute;
-            width: 110px; /* Ukuran pas untuk layar HP */
-            background: #fff;
-            padding: 8px 8px 20px 8px;
-            box-shadow: 6px 6px 0px #ff4d00;
-            transition: 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-
-        .card img { width: 100%; display: block; filter: grayscale(100%); }
-
-        /* Penempatan strategis agar tidak menutupi tombol utama */
-        .card-1 { 
-            top: 10%; 
-            left: 5%; 
-            transform: rotate(-12deg); 
-            animation: float-mobile 4s ease-in-out infinite;
-        }
-        .card-2 { 
-            bottom: 12%; 
-            right: 5%; 
-            transform: rotate(8deg); 
-            animation: float-mobile 5s ease-in-out infinite reverse;
-        }
-
-        @keyframes float-mobile {
-            0%, 100% { transform: rotate(-12deg) translateY(0); }
-            50% { transform: rotate(-8deg) translateY(-15px); }
-        }
-
-        .card:active, .card:hover {
-            z-index: 100;
-            transform: scale(1.1) rotate(0deg) !important;
-            box-shadow: 12px 12px 0px #fff;
-        }
-        .card:active img, .card:hover img { filter: grayscale(0); }
-
-        /* --- BUTTON GILA (MOBILE READY) --- */
-        .btn-wrapper { 
-            position: relative;
-            z-index: 20; 
-            margin-top: -20px;
-            width: 100%;
-            padding: 0 6%;
-        }
-        .btn-start {
-            width: 100%;
-            background: #fff;
-            color: #000;
-            padding: 22px;
-            font-family: 'Archivo Black', sans-serif;
-            font-size: 1.3rem;
-            border: none;
-            cursor: pointer;
-            text-transform: uppercase;
-            box-shadow: 8px 8px 0px #ff4d00;
-            transition: 0.2s;
-        }
-        .btn-start:active {
-            transform: translate(4px, 4px);
-            box-shadow: 0px 0px 0px #ff4d00;
-            background: #ff4d00;
-            color: #fff;
-        }
-
-        /* --- FOOTER BRUTAL (RESPONSIVE GRID) --- */
-        .main-footer {
-            background: #fff;
-            color: #000;
-            padding: 60px 6% 30px;
-            margin-top: 60px;
-            border-top: 5px solid #ff4d00;
-        }
-        .footer-logo h2 {
-            font-family: 'Archivo Black', sans-serif;
-            font-size: clamp(2.5rem, 12vw, 4rem);
+        .hero-title {
+            font-size: clamp(3rem, 15vw, 8rem);
             line-height: 0.9;
-            margin-bottom: 25px;
-            letter-spacing: -2px;
+            margin: 40px 0;
+            text-transform: uppercase;
         }
-        .footer-grid {
-            display: grid;
-            grid-template-columns: 1fr; /* Stack vertikal di HP */
-            gap: 40px;
+
+        /* --- PREVIEW SECTION (SIMPLE & CLEAN) --- */
+        .preview-grid {
+            display: flex;
+            gap: 15px;
             margin-bottom: 40px;
         }
-
-        @media (min-width: 768px) {
-            .footer-grid { grid-template-columns: 1.5fr 1fr 1fr; }
-            .card { width: 150px; }
+        .pic {
+            width: 120px;
+            background: #fff;
+            padding: 5px 5px 20px 5px;
+            transform: rotate(-3deg);
+            box-shadow: 5px 5px 0 #ff4d00;
         }
+        .pic:last-child { transform: rotate(3deg); }
+        .pic img { width: 100%; grayscale: 1; display: block; }
 
-        .footer-section h3 {
-            font-family: 'Archivo Black', sans-serif;
-            font-size: 0.9rem;
-            background: #000;
-            color: #fff;
-            display: inline-block;
-            padding: 4px 10px;
-            margin-bottom: 15px;
-        }
-        .footer-section a {
+        /* --- BUTTON --- */
+        .btn-start {
+            width: 100%;
+            max-width: 350px;
+            background: #fff;
             color: #000;
-            text-decoration: none;
-            font-weight: 700;
-            display: block;
-            margin-bottom: 10px;
-            font-size: 1.1rem;
+            padding: 20px;
+            font-size: 1.5rem;
+            border: none;
+            cursor: pointer;
+            box-shadow: 8px 8px 0 #ff4d00;
+            transition: 0.1s;
         }
+        .btn-start:active { transform: translate(4px, 4px); box-shadow: 0 0 0; background: #ff4d00; color: #fff; }
 
-        .footer-bottom {
-            border-top: 2px solid #000;
-            padding-top: 20px;
-            display: flex;
-            justify-content: space-between;
-            font-family: 'Archivo Black', sans-serif;
-            font-size: 0.65rem;
-            letter-spacing: 1px;
+        /* --- FOOTER --- */
+        footer {
+            background: #fff;
+            color: #000;
+            padding: 40px 20px;
+            margin-top: 50px;
+            border-top: 5px solid #ff4d00;
         }
+        .f-top { font-size: 2.5rem; margin-bottom: 20px; line-height: 1; }
+        .f-links { display: flex; flex-direction: column; gap: 10px; font-size: 1.2rem; }
+        .f-links a { color: #000; text-decoration: none; border-bottom: 2px solid #000; width: fit-content; }
     </style>
 </head>
 <body>
 
     <div class="marquee">
-        <div class="marquee-content">
-            SAY CHEESE — NO BAD ANGLES — LIMITED EDITION — CAPTURE THE MAGIC — SAY CHEESE — NO BAD ANGLES — LIMITED EDITION — CAPTURE THE MAGIC — 
+        <div class="m-txt">
+            &nbsp;READY TO SHOOT — NO RULES — LIMITED — START NOW — READY TO SHOOT — NO RULES — LIMITED — START NOW —
         </div>
     </div>
 
-    <nav>
-        <div class="logo">Timeless</div>
-        <div class="handle">@patkepott</div>
-    </nav>
+    <div class="container">
+        <h1 class="hero-title">TIMELESS<br>BOOTH*</h1>
 
-    <main class="hero">
-        <div class="preview-box">
-            <div class="card card-1">
-                <img src="frames/conto.png" alt="Shot 1">
-            </div>
-            <div class="card card-2">
-                <img src="frames/1(2).png" alt="Shot 2">
-            </div>
+        <div class="preview-grid">
+            <div class="pic"><img src="frames/conto.png"></div>
+            <div class="pic"><img src="frames/1(2).png"></div>
         </div>
 
-        <h1>TIMELESS<br>BOOTH</h1>
-    </main>
-
-    <div class="btn-wrapper">
-        <button class="btn-start" onclick="startApp()">
-            [ START SESSION ]
+        <button class="btn-start" onclick="location.href='layout.html'">
+            START SESSION
         </button>
     </div>
 
-    <footer class="main-footer">
-        <div class="footer-logo">
-            <h2>TIMELESS<br>STUDIO*</h2>
+    <footer>
+        <div class="f-top">TIMELESS STUDIO*</div>
+        <div class="f-links">
+            <a href="https://instagram.com/patkepott">INSTAGRAM ↗</a>
+            <a href="#">TIKTOK ↗</a>
         </div>
-        
-        <div class="footer-grid">
-            <div class="footer-section">
-                <h3>VIBE</h3>
-                <p style="font-weight: 800;">EST. 2024 / MAJALAYA<br>NO RULES — ONLY ART.</p>
-            </div>
-            <div class="footer-section">
-                <h3>SOCIALS</h3>
-                <a href="https://instagram.com/patkepott">INSTAGRAM ↗</a>
-                <a href="#">TIKTOK ↗</a>
-            </div>
-        </div>
-
-        <div class="footer-bottom">
-            <span>&copy;2024 TIMELESS.STDT</span>
-            <span>V.02-MOBILE-FIX</span>
-        </div>
+        <p style="margin-top: 30px; font-size: 0.7rem;">©2024 MAJALAYA CORE</p>
     </footer>
 
-    <script>
-        function startApp() {
-            const btn = document.querySelector('.btn-start');
-            btn.innerHTML = "INITIALIZING...";
-            btn.style.background = "#ff4d00";
-            btn.style.color = "#fff";
-            
-            // Vibrasi ringan untuk feedback HP (jika didukung)
-            if (window.navigator.vibrate) {
-                window.navigator.vibrate(50);
-            }
-
-            setTimeout(() => {
-                window.location.href = 'layout.html';
-            }, 700);
-        }
-    </script>
 </body>
 </html>
