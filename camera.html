@@ -270,7 +270,7 @@ function capture() {
             video.style.display = 'none';
             canvas.style.display = 'block';
 
-            aawait frameImg.decode();
+            await frameImg.decode();
 
             // --- PERBAIKAN: UKURAN CANVAS DINAMIS ---
             if (selectedLayout === 'layoutG') {
@@ -356,6 +356,7 @@ function capture() {
     </script>
 </body>
 </html>
+
 
 
 
