@@ -5,108 +5,103 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TIMELESS — PRO SESSION</title>
     <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gifshot/0.3.2/gifshot.min.js"></script>
     <style>
-        /* --- STYLES TETEP BRUTAL --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #0e0e0e; color: #fff; font-family: 'Space Grotesk', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 10px; min-height: 100vh; overflow-x: hidden; }
+        body { background: #0e0e0e; color: #fff; font-family: 'Space Grotesk', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 15px; min-height: 100vh; overflow-x: hidden; }
 
-        /* Status Bar */
-        .status-bar { display: flex; gap: 10px; margin-bottom: 15px; width: 100%; max-width: 450px; justify-content: space-between; }
-        .mode-tag { background: #ff4d00; color: #000; padding: 5px 15px; font-family: 'Archivo Black'; font-size: 12px; text-transform: uppercase; box-shadow: 4px 4px 0 #fff; }
-        .pose-counter { background: #fff; color: #000; padding: 5px 15px; font-family: 'Archivo Black'; font-size: 12px; }
+        /* Header UI */
+        .header-ui { display: flex; justify-content: space-between; width: 100%; max-width: 450px; margin-bottom: 15px; }
+        .badge { background: #ff4d00; color: #000; padding: 5px 15px; font-family: 'Archivo Black'; font-size: 12px; box-shadow: 4px 4px 0 #fff; text-transform: uppercase; }
 
         /* Cam Box */
-        .cam-box { width: 100%; max-width: 450px; aspect-ratio: 4/3; background: #000; position: relative; overflow: hidden; border: 5px solid #fff; box-shadow: 10px 10px 0 #ff4d00; }
+        .cam-box { width: 100%; max-width: 450px; aspect-ratio: 4/3; background: #000; border: 4px solid #fff; position: relative; overflow: hidden; box-shadow: 10px 10px 0 #ff4d00; }
         #videoFeed { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
-        #flash { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #fff; display: none; z-index: 20; }
-        #countdown { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Archivo Black'; font-size: 100px; color: #ff4d00; text-shadow: 4px 4px 0 #fff; z-index: 10; display: none; }
-
-        /* Inventory / Gallery Preview */
-        .inventory-section { width: 100%; max-width: 450px; margin-top: 15px; }
-        .inventory-label { font-family: 'Archivo Black'; font-size: 10px; margin-bottom: 5px; color: #ff4d00; text-transform: uppercase; }
-        .inventory-grid { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
-        .inv-item { position: relative; width: 80px; height: 60px; border: 2px solid #fff; flex-shrink: 0; background: #222; }
-        .inv-item img { width: 100%; height: 100%; object-fit: cover; }
-        .inv-item .retake-btn { position: absolute; top: -5px; right: -5px; background: #ff4d00; color: #fff; border: none; font-size: 10px; width: 18px; height: 18px; cursor: pointer; font-weight: bold; border-radius: 50%; }
+        .live-indicator { position: absolute; top: 15px; left: 15px; display: flex; align-items: center; gap: 5px; background: rgba(0,0,0,0.6); padding: 5px 10px; border-radius: 20px; z-index: 5; }
+        .dot { width: 8px; height: 8px; background: red; border-radius: 50%; animation: blink 0.8s infinite; }
+        
+        /* INVENTORY PREVIEW */
+        .inventory-container { width: 100%; max-width: 450px; margin-top: 20px; }
+        .inventory-title { font-family: 'Archivo Black'; font-size: 14px; margin-bottom: 10px; color: #ff4d00; text-transform: uppercase; }
+        .inventory-grid { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; min-height: 120px; }
+        .inv-card { width: 100px; flex-shrink: 0; position: relative; border: 2px solid #fff; background: #222; }
+        .inv-card img { width: 100%; height: 100%; object-fit: cover; }
+        .btn-remove { position: absolute; top: -5px; right: -5px; background: red; color: white; border: none; width: 20px; height: 20px; font-size: 12px; cursor: pointer; border-radius: 50%; font-weight: bold; }
 
         /* Controls */
-        .main-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 450px; margin-top: 15px; }
-        .btn { padding: 15px; font-family: 'Archivo Black'; border: none; cursor: pointer; text-transform: uppercase; font-size: 14px; transition: 0.1s; }
-        .btn-live { background: #00ff00; color: #000; box-shadow: 4px 4px 0 #fff; }
-        .btn-capture { background: #fff; color: #000; box-shadow: 4px 4px 0 #ff4d00; }
-        .btn-finish { grid-column: span 2; background: #ff4d00; color: #fff; margin-top: 5px; display: none; box-shadow: 4px 4px 0 #fff; }
-        .btn:active { transform: translate(2px, 2px); box-shadow: 0 0 0; }
-        .recording { animation: pulse 1s infinite; background: #ff0000 !important; color: #fff; }
-        
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-        
-        #resultCanvas { display: none; }
+        .controls { width: 100%; max-width: 450px; display: flex; gap: 10px; margin-top: 20px; }
+        .btn { flex: 1; padding: 15px; font-family: 'Archivo Black'; border: none; cursor: pointer; text-transform: uppercase; transition: 0.1s; }
+        .btn-main { background: #fff; color: #000; box-shadow: 6px 6px 0 #ff4d00; }
+        .btn-main:active { transform: translate(3px, 3px); box-shadow: 0 0 0; }
+        .btn-done { background: #ff4d00; color: #fff; box-shadow: 6px 6px 0 #fff; display: none; }
+
+        #countdown { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Archivo Black'; font-size: 80px; color: #ff4d00; z-index: 10; text-shadow: 4px 4px 0 #fff; display: none; }
+        #flash { position: absolute; inset: 0; background: #fff; z-index: 20; display: none; }
+
+        @keyframes blink { from { opacity: 1; } to { opacity: 0.2; } }
     </style>
 </head>
 <body>
 
-    <div class="status-bar">
-        <div class="mode-tag" id="modeTag">PHOTO MODE</div>
-        <div class="pose-counter" id="poseDisplay">0/0</div>
+    <div class="header-ui">
+        <div class="badge">POSE: <span id="countDisplay">0</span>/<span id="maxDisplay">3</span></div>
+        <div class="badge" style="background: #00ff00;">LIVE ACTIVE</div>
     </div>
 
     <div class="cam-box">
         <div id="flash"></div>
         <div id="countdown">3</div>
+        <div class="live-indicator"><div class="dot"></div> LIVE</div>
         <video id="videoFeed" autoplay playsinline></video>
+        <canvas id="resultCanvas" style="display:none;"></canvas>
     </div>
 
-    <div class="inventory-section">
-        <div class="inventory-label">Inventory / Last Shots (Click X to Retake)</div>
+    <div class="inventory-container">
+        <div class="inventory-title">Your Inventory*</div>
         <div class="inventory-grid" id="inventoryGrid">
             </div>
     </div>
 
-    <div class="main-controls">
-        <button class="btn btn-live" id="liveBtn" onclick="toggleLive()">LIVE (GIF)</button>
-        <button class="btn btn-capture" id="capBtn" onclick="startSingleCapture()">CAPTURE</button>
-        <button class="btn btn-finish" id="finishBtn" onclick="processFinalFrame()">GENERATE FRAME</button>
+    <div class="controls">
+        <button class="btn btn-main" id="snapBtn" onclick="takePhoto()">CAPTURE*</button>
+        <button class="btn btn-done" id="processBtn" onclick="processFrame()">GENERATE FRAME*</button>
     </div>
-
-    <canvas id="resultCanvas"></canvas>
 
     <script>
         const video = document.getElementById('videoFeed');
         const invGrid = document.getElementById('inventoryGrid');
-        const modeTag = document.getElementById('modeTag');
-        const finishBtn = document.getElementById('finishBtn');
-        const countdownEl = document.getElementById('countdown');
-        
-        let photos = []; // Simpan data URL foto
-        let isRecording = false;
-        let mediaRecorder;
-        let recordedChunks = [];
+        const countDisplay = document.getElementById('countDisplay');
+        const processBtn = document.getElementById('processBtn');
+        const snapBtn = document.getElementById('snapBtn');
 
-        // Konfigurasi Layout dari Halaman Sebelumnya
+        let photos = []; // Nyimpen base64 foto
+        let gifs = [];   // Nyimpen data GIF kalau mau dikembangkan
         const selectedLayout = localStorage.getItem('selectedLayout') || 'layoutA';
-        let maxPoses = (selectedLayout === 'layoutB') ? 4 : (selectedLayout === 'layoutF' ? 2 : (selectedLayout === 'layoutG' ? 1 : 3));
         
-        document.getElementById('poseDisplay').innerText = `SHOTS: 0/${maxPoses}`;
+        // Atur Max Pose berdasarkan Layout
+        let maxPoses = (selectedLayout === 'layoutB') ? 4 : (selectedLayout === 'layoutG') ? 1 : 3;
+        document.getElementById('maxDisplay').innerText = maxPoses;
 
         // Init Kamera
-        async function initCamera() {
+        async function init() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 960 } });
                 video.srcObject = stream;
-            } catch (err) { alert("Camera Error!"); }
+            } catch (err) { alert("Camera Error! Check Permissions."); }
         }
 
-        // --- FITUR CAPTURE + INVENTORY ---
-        async function startSingleCapture() {
-            if (photos.length >= maxPoses) return alert("Inventory Full! Remove or Finish.");
+        async function takePhoto() {
+            if (photos.length >= maxPoses) return alert("Inventory Full! Hapus dulu kalau mau ganti.");
             
+            snapBtn.disabled = true;
             await runCountdown(3);
-            
-            // Flash Effect
+
+            // Efek Flash
             const flash = document.getElementById('flash');
             flash.style.display = 'block';
             setTimeout(() => flash.style.display = 'none', 100);
 
+            // FITUR LIVE: Capture Frame buat GIF (Simple Implementation via Canvas)
             const canvas = document.createElement('canvas');
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
@@ -115,22 +110,38 @@
             ctx.scale(-1, 1);
             ctx.drawImage(video, 0, 0);
             
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
             photos.push(dataUrl);
             updateInventory();
+
+            snapBtn.disabled = false;
+        }
+
+        function runCountdown(sec) {
+            return new Promise(res => {
+                let c = sec;
+                const el = document.getElementById('countdown');
+                el.style.display = 'block';
+                el.innerText = c;
+                const t = setInterval(() => {
+                    c--;
+                    if (c <= 0) { clearInterval(t); el.style.display = 'none'; res(); }
+                    else { el.innerText = c; }
+                }, 1000);
+            });
         }
 
         function updateInventory() {
             invGrid.innerHTML = '';
-            photos.forEach((src, index) => {
+            photos.forEach((src, idx) => {
                 const div = document.createElement('div');
-                div.className = 'inv-item';
-                div.innerHTML = `<img src="${src}"><button class="retake-btn" onclick="removePhoto(${index})">X</button>`;
+                div.className = 'inv-card';
+                div.innerHTML = `<img src="${src}"><button class="btn-remove" onclick="removePhoto(${idx})">X</button>`;
                 invGrid.appendChild(div);
             });
             
-            document.getElementById('poseDisplay').innerText = `SHOTS: ${photos.length}/${maxPoses}`;
-            finishBtn.style.display = (photos.length === maxPoses) ? 'block' : 'none';
+            countDisplay.innerText = photos.length;
+            processBtn.style.display = (photos.length === maxPoses) ? 'block' : 'none';
         }
 
         function removePhoto(index) {
@@ -138,65 +149,13 @@
             updateInventory();
         }
 
-        // --- FITUR LIVE (GIF/VIDEO RECORDER) ---
-        function toggleLive() {
-            if (!isRecording) {
-                startRecording();
-            } else {
-                stopRecording();
-            }
-        }
-
-        function startRecording() {
-            recordedChunks = [];
-            const stream = video.srcObject;
-            mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
-            
-            mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
-            mediaRecorder.onstop = () => {
-                const blob = new Blob(recordedChunks, { type: 'video/webm' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `live_moment_${Date.now()}.webm`;
-                a.click();
-            };
-
-            mediaRecorder.start();
-            isRecording = true;
-            modeTag.innerText = "REC LIVE";
-            document.getElementById('liveBtn').classList.add('recording');
-            document.getElementById('liveBtn').innerText = "STOP LIVE";
-        }
-
-        function stopRecording() {
-            mediaRecorder.stop();
-            isRecording = false;
-            modeTag.innerText = "PHOTO MODE";
-            document.getElementById('liveBtn').classList.remove('recording');
-            document.getElementById('liveBtn').innerText = "LIVE (GIF)";
-        }
-
-        // --- UTILS ---
-        function runCountdown(sec) {
-            return new Promise(resolve => {
-                let count = sec;
-                countdownEl.style.display = 'block';
-                countdownEl.innerText = count;
-                const timer = setInterval(() => {
-                    count--;
-                    if(count <= 0) { clearInterval(timer); countdownEl.style.display = 'none'; resolve(); }
-                    else { countdownEl.innerText = count; }
-                }, 1000);
-            });
-        }
-
-        function processFinalFrame() {
+        function processFrame() {
+            // Simpan array foto ke LocalStorage buat dirender di hasil akhir
             localStorage.setItem('capturedPhotos', JSON.stringify(photos));
-            window.location.href = 'result.html'; // Pindah ke halaman hasil final
+            window.location.href = 'result.html'; // Pindah ke halaman hasil
         }
 
-        window.onload = initCamera;
+        window.onload = init;
     </script>
 </body>
 </html>
