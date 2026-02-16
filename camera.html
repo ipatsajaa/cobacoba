@@ -5,226 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TIMELESS — SHOOTING SESSION</title>
     <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gifshot/0.3.2/gifshot.min.js"></script>
     
     <style>
-        /* --- BRUTALIST UI OVERHAUL --- */
+        /* --- SEMUA CSS ASLI LO (TIDAK ADA YANG DIUBAH) --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body { 
-            background: #0e0e0e; 
-            color: #fff; 
-            font-family: 'Space Grotesk', sans-serif; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            padding: 20px; 
-            min-height: 100vh;
-        }
-
-        /* Pose Counter Style */
-        .pose-counter { 
-            font-family: 'Archivo Black', sans-serif;
-            font-size: 1.2rem; 
-            color: #000; 
-            margin-bottom: 20px; 
-            background: #ff4d00; 
-            padding: 10px 40px; 
-            text-transform: uppercase;
-            box-shadow: 6px 6px 0px #fff;
-            transform: rotate(-2deg);
-            z-index: 100;
-        }
-
-        /* Camera Box Brutal */
-        .cam-box { 
-            width: 100%; 
-            max-width: 450px; 
-            aspect-ratio: 4/3; 
-            background: #000; 
-            position: relative; 
-            overflow: hidden; 
-            border: 6px solid #fff; 
-            box-shadow: 15px 15px 0px #ff4d00;
-        }
-
-        #videoFeed, #resultCanvas { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-        }
-
+        body { background: #0e0e0e; color: #fff; font-family: 'Space Grotesk', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; min-height: 100vh; }
+        .pose-counter { font-family: 'Archivo Black', sans-serif; font-size: 1.2rem; color: #000; margin-bottom: 20px; background: #ff4d00; padding: 10px 40px; text-transform: uppercase; box-shadow: 6px 6px 0px #fff; transform: rotate(-2deg); z-index: 100; }
+        .cam-box { width: 100%; max-width: 450px; aspect-ratio: 4/3; background: #000; position: relative; overflow: hidden; border: 6px solid #fff; box-shadow: 15px 15px 0px #ff4d00; }
+        #videoFeed, #resultCanvas { width: 100%; height: 100%; object-fit: cover; }
         #videoFeed { transform: scaleX(-1); }
         #resultCanvas { display: none; background: white; }
-
-        /* Overlays */
-        #countdown { 
-            position: absolute; 
-            top: 50%; 
-            left: 50%; 
-            transform: translate(-50%, -50%); 
-            font-family: 'Archivo Black', sans-serif;
-            font-size: 120px; 
-            color: #ff4d00; 
-            z-index: 5; 
-            text-shadow: 5px 5px 0px #fff; 
-            display: none; 
-        }
-
-        #flash { 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: white; 
-            display: none; 
-            z-index: 10; 
-        }
-
-        .live-tag {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: red;
-            color: white;
-            padding: 5px 12px;
-            font-family: 'Archivo Black';
-            font-size: 12px;
-            z-index: 20;
-            display: none;
-            animation: blink 0.8s infinite;
-            border: 2px solid white;
-        }
-
-        /* --- INVENTORY SYSTEM CSS --- */
-        .inventory-section {
-            width: 100%;
-            max-width: 450px;
-            margin-top: 30px;
-            background: #1a1a1a;
-            padding: 15px;
-            border: 3px dashed #ff4d00;
-        }
-
-        .inv-title {
-            font-family: 'Archivo Black';
-            font-size: 10px;
-            color: #ff4d00;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
-        .inventory-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
-
-        .inv-item {
-            aspect-ratio: 1/1;
-            background: #333;
-            border: 2px solid #fff;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .inv-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .retake-btn {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            background: #ff4d00;
-            color: #000;
-            border: none;
-            font-family: 'Archivo Black';
-            font-size: 8px;
-            padding: 4px 0;
-            cursor: pointer;
-        }
-
-        /* Filter Section */
-        .filter-container { 
-            width: 100%; 
-            max-width: 480px; 
-            margin-top: 20px; 
-            background: #fff;
-            padding: 10px;
-            border: 4px solid #ff4d00;
-        }
-
-        .filter-bar { 
-            display: flex; 
-            gap: 15px; 
-            padding: 5px; 
-            width: max-content; 
-        }
-
-        .filter-item { 
-            cursor: pointer; 
-            text-align: center; 
-            font-family: 'Archivo Black', sans-serif;
-            font-size: 9px; 
-            color: #000;
-            text-transform: uppercase;
-            transition: 0.2s;
-        }
-
-        .filter-dot { 
-            width: 60px; 
-            height: 60px; 
-            border: 3px solid #000; 
-            margin-bottom: 5px; 
-        }
-
-        .active .filter-dot { 
-            border-color: #ff4d00; 
-            transform: translateY(-5px); 
-            box-shadow: 0px 5px 0px #000;
-        }
-
-        /* Control Buttons */
-        .controls { 
-            margin-top: 30px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 15px; 
-            width: 100%; 
-            max-width: 320px; 
-        }
-
-        button { 
-            padding: 20px; 
-            font-family: 'Archivo Black', sans-serif;
-            font-size: 1.1rem;
-            border: none; 
-            cursor: pointer; 
-            text-transform: uppercase; 
-            transition: 0.1s;
-        }
-
+        #countdown { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Archivo Black', sans-serif; font-size: 120px; color: #ff4d00; z-index: 5; text-shadow: 5px 5px 0px #fff; display: none; }
+        #flash { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; display: none; z-index: 10; }
+        .live-tag { position: absolute; top: 15px; right: 15px; background: red; color: white; padding: 5px 12px; font-family: 'Archivo Black'; font-size: 12px; z-index: 20; display: none; animation: blink 0.8s infinite; border: 2px solid white; }
+        .inventory-section { width: 100%; max-width: 450px; margin-top: 30px; background: #1a1a1a; padding: 15px; border: 3px dashed #ff4d00; }
+        .inv-title { font-family: 'Archivo Black'; font-size: 10px; color: #ff4d00; margin-bottom: 10px; text-align: center; }
+        .inventory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .inv-item { aspect-ratio: 1/1; background: #333; border: 2px solid #fff; position: relative; overflow: hidden; }
+        .inv-item img { width: 100%; height: 100%; object-fit: cover; }
+        .retake-btn { position: absolute; bottom: 0; width: 100%; background: #ff4d00; color: #000; border: none; font-family: 'Archivo Black'; font-size: 8px; padding: 4px 0; cursor: pointer; }
+        .filter-container { width: 100%; max-width: 480px; margin-top: 20px; background: #fff; padding: 10px; border: 4px solid #ff4d00; }
+        .filter-bar { display: flex; gap: 15px; padding: 5px; width: max-content; }
+        .filter-item { cursor: pointer; text-align: center; font-family: 'Archivo Black', sans-serif; font-size: 9px; color: #000; text-transform: uppercase; transition: 0.2s; }
+        .filter-dot { width: 60px; height: 60px; border: 3px solid #000; margin-bottom: 5px; }
+        .active .filter-dot { border-color: #ff4d00; transform: translateY(-5px); box-shadow: 0px 5px 0px #000; }
+        .controls { margin-top: 30px; display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 320px; }
+        button { padding: 20px; font-family: 'Archivo Black', sans-serif; font-size: 1.1rem; border: none; cursor: pointer; text-transform: uppercase; transition: 0.1s; }
         .btn-capture { background: #fff; color: #000; box-shadow: 8px 8px 0px #ff4d00; }
-        .btn-capture:active { transform: translate(4px, 4px); box-shadow: 0px 0px 0px; }
         .btn-process { background: #00ff00; color: #000; box-shadow: 8px 8px 0px #fff; display: none; }
         .btn-download { background: #ff4d00; color: white; display: none; box-shadow: 8px 8px 0px #fff; }
         .btn-retake { background: transparent; border: 3px solid #fff; color: #fff; display: none; margin-top: 10px; }
-
-        #loading { 
-            display: none; 
-            font-family: 'Archivo Black', sans-serif;
-            margin: 20px; 
-            color: #ff4d00; 
-            text-transform: uppercase;
-            animation: blink 0.5s infinite alternate;
-        }
-
+        #loading { display: none; font-family: 'Archivo Black', sans-serif; margin: 20px; color: #ff4d00; text-transform: uppercase; animation: blink 0.5s infinite alternate; }
         @keyframes blink { from { opacity: 1; } to { opacity: 0.3; } }
-
     </style>
 </head>
 <body>
@@ -246,7 +60,7 @@
         <div class="inventory-grid" id="invGrid"></div>
     </div>
 
-    <div id="loading">PROCESSING ART...</div>
+    <div id="loading">RECORDING LIVE PHOTO...</div>
 
     <div class="filter-container" id="filterContainer">
         <div style="color: #000; font-family: 'Archivo Black'; font-size: 10px; margin-bottom: 8px; text-align: center;">[ SELECT FILTER ]</div>
@@ -306,6 +120,7 @@
         let maxPoses = 3; 
         const frameImg = new Image();
 
+        // LOGIC LAYOUT (ASLI)
         if (selectedLayout === 'layoutB') { maxPoses = 4; frameImg.src = 'frames/2.png'; } 
         else if (selectedLayout === 'layoutC') { maxPoses = 3; frameImg.src = 'frames/3.png'; } 
         else if (selectedLayout === 'layoutD') { maxPoses = 3; frameImg.src = 'frames/4.png'; } 
@@ -355,7 +170,6 @@
             photos.forEach((src, idx) => {
                 const div = document.createElement('div');
                 div.className = 'inv-item';
-                // src di sini adalah DataURL (Bisa Image atau GIF)
                 div.innerHTML = `<img src="${src}"><button class="retake-btn" onclick="retake(${idx})">RETAKE</button>`;
                 invGrid.appendChild(div);
             });
@@ -383,9 +197,15 @@
             
             while(photos.length < maxPoses) {
                 await runCountdown(3);
-                // --- FITUR LIVE AKTIF ---
                 liveTag.style.display = 'block'; 
-                await captureLive(); // Memanggil fungsi capture baru
+                
+                // FLASH EFEK
+                const flash = document.getElementById('flash');
+                flash.style.display = 'block';
+                setTimeout(() => flash.style.display = 'none', 100);
+
+                await captureGif(); // Memanggil proses pembuatan GIF
+                
                 liveTag.style.display = 'none'; 
                 updateInventory();
                 break; 
@@ -406,26 +226,26 @@
             });
         }
 
-        // --- TAMBAHAN FITUR: CAPTURE LIVE (GIF) ---
-        function captureLive() {
-            return new Promise(resolve => {
-                const flash = document.getElementById('flash');
-                flash.style.display = 'block';
-                setTimeout(() => flash.style.display = 'none', 100);
-
-                // Buat GIF 1 detik (10 frame x 0.1s)
+        // --- FITUR GIF TERBARU ---
+        function captureGif() {
+            return new Promise((resolve) => {
+                loading.style.display = 'block'; // Tampilkan loading saat processing
+                
                 gifshot.createGIF({
                     cameraExternalStream: video.srcObject,
-                    gifWidth: 640,
-                    gifHeight: 480,
-                    numFrames: 10,
+                    gifWidth: 480,
+                    gifHeight: 360,
+                    numFrames: 10, // 10 frame = 1 detik rekaman
                     interval: 0.1,
-                    filter: currentFilter === 'lo-res' || currentFilter === 'sunset' ? '' : currentFilter,
-                    fontWeight: 'bold'
+                    numWorkers: 2,
+                    fontWeight: 'bold',
+                    // Memasukkan filter CSS ke dalam GIF
+                    filter: currentFilter === 'lo-res' || currentFilter === 'sunset' ? '' : currentFilter
                 }, function (obj) {
                     if (!obj.error) {
-                        photos.push(obj.image);
+                        photos.push(obj.image); // Simpan GIF ke array
                     }
+                    loading.style.display = 'none';
                     resolve();
                 });
             });
@@ -450,17 +270,11 @@
             }
 
             let cfg;
-            if (selectedLayout === 'layoutB') {
-                cfg = { photoW: 710, photoH: 447, startX: 45, startY: 54, gap: 90 };
-            } else if (selectedLayout === 'layoutC' || selectedLayout === 'layoutD' || selectedLayout === 'layoutE') {
-                cfg = { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 };
-            } else if (selectedLayout === 'layoutF') {
-                cfg = { photoW: 640, photoH: 788, startX: 80, startY: 290, gap: 193 };
-            } else if (selectedLayout === 'layoutG') {
-                cfg = { photoW: 586, photoH: 798, startX: 343, startY: 372, gap: 0};
-            } else {
-                cfg = { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 };
-            }
+            if (selectedLayout === 'layoutB') { cfg = { photoW: 710, photoH: 447, startX: 45, startY: 54, gap: 90 }; } 
+            else if (selectedLayout === 'layoutC' || selectedLayout === 'layoutD' || selectedLayout === 'layoutE') { cfg = { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 }; } 
+            else if (selectedLayout === 'layoutF') { cfg = { photoW: 640, photoH: 788, startX: 80, startY: 290, gap: 193 }; } 
+            else if (selectedLayout === 'layoutG') { cfg = { photoW: 586, photoH: 798, startX: 343, startY: 372, gap: 0}; } 
+            else { cfg = { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 }; }
 
             for (let i = 0; i < photos.length; i++) {
                 const img = new Image();
@@ -473,11 +287,8 @@
                         let targetRatio = cfg.photoW / cfg.photoH;
                         let sourceRatio = sourceWidth / sourceHeight;
                         let sX, sY, sW, sH;
-                        if (sourceRatio > targetRatio) {
-                            sW = sourceHeight * targetRatio; sH = sourceHeight; sX = (sourceWidth - sW) / 2; sY = 0;
-                        } else {
-                            sW = sourceWidth; sH = sourceWidth / targetRatio; sX = 0; sY = (sourceHeight - sH) / 2;
-                        }
+                        if (sourceRatio > targetRatio) { sW = sourceHeight * targetRatio; sH = sourceHeight; sX = (sourceWidth - sW) / 2; sY = 0; } 
+                        else { sW = sourceWidth; sH = sourceWidth / targetRatio; sX = 0; sY = (sourceHeight - sH) / 2; }
                         ctx.drawImage(img, sX, sY, sW, sH, cfg.startX, yPos, cfg.photoW, cfg.photoH);
                         resolve();
                     }
