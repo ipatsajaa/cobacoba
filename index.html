@@ -78,77 +78,56 @@
         }
 
         /* --- PREVIEW GRID: MUSEUM STYLE --- */
-        .gallery-preview {
-            display: flex;
-            gap: 40px;
-            margin: 60px 0;
-            z-index: 2;
-        }
+       /* --- PREVIEW GRID --- */
+    .gallery-preview {
+        display: flex;
+        gap: 40px;
+        margin: 60px 0;
+        z-index: 2;
+    }
 
-        .photo-frame {
-            width: 100px;
-            background: #fff;
-            border: 1px solid var(--ink);
-            padding: 10px 10px 40px 10px;
-            position: relative;
-            box-shadow: 20px 20px 0px rgba(0,0,0,0.05);
-            transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-        }
-         .photo-frame2 {
-            width: 100px;
-            background: #fff;
-            border: 1px solid var(--ink);
-            padding: 5px 5px 5px;
-            position: relative;
-            box-shadow: 20px 20px 0px rgba(0,0,0,0.05);
-            transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-        }
+    /* KITA SAMAIN SEMUA FRAME BIAR KONSISTEN POLAROID */
+    .photo-frame {
+        width: 120px; /* Gue lebarin dikit biar lebih keliatan */
+        background: #fff;
+        border: 1px solid var(--ink);
+        padding: 10px 10px 35px 10px; /* Bawahnya dikasih space buat teks ARCHIVE */
+        position: relative;
+        box-shadow: 15px 15px 0px rgba(0,0,0,0.05);
+        transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+    }
 
-        .photo-frame img {
-            width: 100%;
-            filter: sepia(0.5) contrast(1.2);
-            transition: 0.3s;
-        }
+    .photo-frame img {
+        width: 100%;
+        aspect-ratio: 3/4; /* Biar ukuran foto di dalemnya konsisten walau file aslinya beda */
+        object-fit: cover;
+        filter: sepia(0.5) contrast(1.2);
+        transition: 0.3s;
+        display: block;
+    }
 
-          .photo-frame2 img {
-            width: 100%;
-            filter: sepia(0.5) contrast(1.2);
-            transition: 0.3s;
-        }
+    /* Label Archive di bawah foto */
+    .photo-frame::after {
+        content: "ARCHIVE NO. " attr(data-no);
+        position: absolute; 
+        bottom: 10px; 
+        left: 10px;
+        font-size: 7px; 
+        font-weight: bold;
+        color: var(--ink);
+    }
 
-        .photo-frame::after {
-            content: "ARCHIVE NO. "attr(data-no);
-            position: absolute; bottom: 10px; left: 10px;
-            font-size: 8px; font-weight: bold;
-        }
+    /* Rotasi yang beda biar estetik */
+    .photo-frame:nth-child(1) { transform: rotate(-4deg); }
+    .photo-frame:nth-child(2) { transform: rotate(5deg); margin-top: 20px; }
 
-        .photo-frame:nth-child(1) { transform: rotate(-3deg); }
-        .photo-frame:nth-child(2) { transform: rotate(4deg); margin-top: 20px; }
+    .photo-frame:hover {
+        transform: rotate(0) scale(1.1);
+        z-index: 5;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
 
-        .photo-frame:hover {
-            transform: rotate(0) scale(1.1);
-            z-index: 5;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.1);
-        }
-
-        .photo-frame:hover img { filter: sepia(0) contrast(1); }
-
-        .photo-frame2::after {
-            content: "ARCHIVE NO. "attr(data-no);
-            position: absolute; bottom: 10px; left: 10px;
-            font-size: 8px; font-weight: bold;
-        }
-
-        .photo-frame2:nth-child(1) { transform: rotate(-3deg); }
-        .photo-frame2:nth-child(2) { transform: rotate(4deg); margin-top: 5px; }
-
-        .photo-frame2:hover {
-            transform: rotate(0) scale(1.1);
-            z-index: 5;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.1);
-        }
-
-        .photo-frame2:hover img { filter: sepia(0) contrast(1); }
+    .photo-frame:hover img { filter: sepia(0) contrast(1); }
 
         /* --- ACTION BUTTON: CHRONOS --- */
         .btn-action {
@@ -221,13 +200,13 @@
         </div>
 
         <div class="gallery-preview">
-            <div class="photo-frame" data-no="8821">
-                <img src="frames/conto.png" alt="Preview">
-            </div>
-            <div class="photo-frame2" data-no="8822">
-                <img src="frames/7.png" alt="Preview">
-            </div>
-        </div>
+    <div class="photo-frame" data-no="8821">
+        <img src="frames/conto.png" alt="Preview">
+    </div>
+    <div class="photo-frame" data-no="8822">
+        <img src="frames/7.png" alt="Preview">
+    </div>
+</div>
 
         <button class="btn-action" onclick="startApp()">
             START SESSION
@@ -274,6 +253,7 @@
     </script>
 </body>
 </html>
+
 
 
 
