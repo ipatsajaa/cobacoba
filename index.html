@@ -3,170 +3,251 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TIMELESSBOOTH — NEO-GLOSS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Syne:wght@800&display=swap" rel="stylesheet">
+    <title>TIMELESSBOOTH — ARCHIVE v2</title>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&family=Syncopate:wght@700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
-        
         :root {
-            --blue: #0047ff;
-            --black: #050505;
-            --white: #ffffff;
+            --paper: #efeee9;
+            --ink: #121212;
+            --accent: #ff4d00; /* Sedikit sentuhan oranye brutal buat kontras */
         }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body { 
-            background: var(--black); 
-            color: var(--white); 
-            font-family: 'Syne', sans-serif; 
+            background: var(--paper); 
+            color: var(--ink); 
+            font-family: 'Space Mono', monospace; 
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* --- CUSTOM CURSOR --- */
-        #cursor {
-            position: fixed; width: 20px; height: 20px; background: var(--blue);
-            border-radius: 50%; pointer-events: none; z-index: 9999;
-            mix-blend-mode: difference; transition: transform 0.1s;
-        }
-
-        /* --- BACKGROUND GRAIN --- */
-        .grain {
+        /* --- OVERLAY GRAIN (LEVEL UP) --- */
+        .overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://upload.wikimedia.org/wikipedia/commons/7/76/1k_Grain_Texture.jpg');
-            opacity: 0.05; pointer-events: none; z-index: 10;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.15; pointer-events: none; z-index: 9999;
         }
 
-        /* --- NAV BAR --- */
-        nav {
-            padding: 30px; display: flex; justify-content: space-between;
-            align-items: center; border-bottom: 1px solid #222;
+        /* --- TOP NAVIGATION --- */
+        .nav-bar {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(18,18,18,0.1);
+            font-weight: 700;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
         }
-        .status { display: flex; align-items: center; gap: 10px; font-size: 12px; }
-        .dot { width: 8px; height: 8px; background: var(--blue); border-radius: 50%; animation: pulse 1.5s infinite; }
 
         /* --- HERO SECTION --- */
         .hero {
-            height: 80vh; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; position: relative;
+            position: relative;
+            padding: 100px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
         }
 
-        .title-main {
-            font-size: clamp(4rem, 20vw, 12rem);
-            line-height: 0.8; text-align: center;
-            text-transform: uppercase; letter-spacing: -5px;
-            z-index: 2; position: relative;
+        .title-wrapper { position: relative; }
+
+        .hero-title {
+            font-family: 'Syncopate', sans-serif;
+            font-size: clamp(3rem, 15vw, 10rem);
+            line-height: 0.8;
+            text-transform: uppercase;
+            letter-spacing: -5px;
+            margin-bottom: 20px;
         }
 
-        .title-outline {
-            -webkit-text-stroke: 1px var(--white);
+        .hero-title span {
+            display: block;
+            -webkit-text-stroke: 1.5px var(--ink);
             color: transparent;
         }
 
-        /* --- FLOATING IMAGES (EDITORIAL STYLE) --- */
-        .float-img {
-            position: absolute; width: 200px; height: 280px;
-            background: var(--white); overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            transition: 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-            z-index: 1; border: 1px solid #333;
+        .badge {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 8px 20px;
+            font-size: 1rem;
+            transform: rotate(-2deg);
+            display: inline-block;
+            margin-bottom: 40px;
+            font-weight: bold;
         }
-        .float-img img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1); transition: 0.5s; }
-        .float-img:hover { transform: scale(1.05); z-index: 5; border-color: var(--blue); }
-        .float-img:hover img { filter: grayscale(0); }
 
-        .img-1 { top: 10%; left: 10%; transform: rotate(-10deg); }
-        .img-2 { bottom: 10%; right: 12%; transform: rotate(8deg); }
+        /* --- FLOATING GALLERY (INTERACTIVE) --- */
+        .gallery-wrap {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            height: 400px;
+            margin-top: 50px;
+        }
 
-        /* --- BIG ACTION BUTTON --- */
-        .start-trigger {
-            margin-top: -50px; z-index: 10;
-            background: var(--white); color: var(--black);
-            padding: 25px 80px; font-size: 1.5rem;
-            font-family: 'Archivo Black'; border: none;
-            clip-path: polygon(0 0, 100% 0, 100% 70%, 85% 100%, 0 100%);
+        .photo-card {
+            position: absolute;
+            width: 180px;
+            background: #fff;
+            padding: 12px 12px 45px 12px;
+            border: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.1s ease-out; /* Smooth movement */
+        }
+
+        .photo-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            filter: grayscale(1) sepia(0.2);
+        }
+
+        .photo-card::after {
+            content: "ARCHIVE "attr(data-id);
+            position: absolute; bottom: 15px; left: 15px;
+            font-size: 10px; font-weight: bold; opacity: 0.5;
+        }
+
+        /* Initial Positions */
+        .c-1 { top: 0; left: 15%; transform: rotate(-8deg); }
+        .c-2 { top: 40px; right: 15%; transform: rotate(10deg); }
+
+        /* --- NEW BUTTON STYLE --- */
+        .start-btn {
+            position: relative;
+            margin-top: 80px;
+            background: var(--ink);
+            color: var(--paper);
+            border: none;
+            padding: 30px 80px;
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            overflow: hidden;
             transition: 0.3s;
+            clip-path: polygon(0% 0%, 100% 0%, 100% 75%, 92% 100%, 0% 100%);
         }
-        .start-trigger:hover {
-            background: var(--blue); color: var(--white);
-            transform: translateY(-5px);
+
+        .start-btn:hover {
+            background: var(--accent);
+            transform: scale(1.05) translateY(-5px);
         }
 
         /* --- FOOTER BRUTALIST --- */
         footer {
-            background: var(--white); color: var(--black);
-            padding: 80px 40px; display: grid;
-            grid-template-columns: 2fr 1fr 1fr; gap: 40px;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 80px 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 60px;
+            border-top: 10px solid var(--accent);
         }
-        .f-big { font-size: 4rem; font-weight: 800; line-height: 0.8; letter-spacing: -2px; }
-        .f-list { list-style: none; font-size: 0.9rem; line-height: 2; }
-        .f-list b { text-transform: uppercase; font-size: 0.7rem; color: #666; }
 
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        .f-col h4 {
+            font-family: 'Archivo Black';
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            font-size: 1.2rem;
+            color: var(--accent);
+        }
 
-        /* Responsive */
+        .f-col p { opacity: 0.7; line-height: 1.8; font-size: 0.9rem; }
+
         @media (max-width: 768px) {
-            .float-img { display: none; }
-            footer { grid-template-columns: 1fr; }
-            .f-big { font-size: 2.5rem; }
+            .gallery-wrap { height: 600px; }
+            .photo-card { width: 150px; position: relative; margin: 20px auto; left: 0; right: 0; top: 0; }
+            .hero-title { font-size: 4rem; letter-spacing: -2px; }
         }
     </style>
 </head>
 <body>
 
-    <div id="cursor"></div>
-    <div class="grain"></div>
+    <div class="overlay"></div>
 
-    <nav>
-        <div class="status"><div class="dot"></div> SERVER: READY</div>
-        <div style="font-weight: 800; letter-spacing: 2px;">V.26</div>
-        <div>MAJALAYA®</div>
+    <nav class="nav-bar">
+        <div>TIMELESSBOOTH™</div>
+        <div id="clock">00:00:00</div>
+        <div>GEN.26_ARCHIVE</div>
     </nav>
 
-    <section class="hero">
-        <div class="float-img img-1"><img src="frames/conto.png"></div>
-        <div class="float-img img-2"><img src="frames/1(2).png"></div>
+    <div class="hero">
+        <div class="title-wrapper">
+            <h1 class="hero-title">TIMELESS<span>BOOTH</span></h1>
+            <div class="badge">FREEZE THE MOMENT</div>
+        </div>
 
-        <h1 class="title-main">
-            TIMELESS<br><span class="title-outline">BOOTH</span>
-        </h1>
-        
-        <button class="start-trigger" onclick="nextPage()">
-            ENTER ARCHIVE
+        <div class="gallery-wrap" id="scene">
+            <div class="photo-card c-1" data-id="PR-01">
+                <img src="frames/conto.png">
+            </div>
+            <div class="photo-card c-2" data-id="PR-02">
+                <img src="frames/7.png">
+            </div>
+        </div>
+
+        <button class="start-btn" onclick="initSession()">
+            INITIALIZE SESSION
         </button>
-    </section>
+    </div>
 
     <footer>
-        <div class="f-big">MEMORIES<br>ARE NOT<br>LINEAR*</div>
-        <div class="f-list">
-            <b>Navigation</b><br>
-            <li>Index</li>
-            <li>Gallery</li>
-            <li>Terms of Use</li>
-            <li>Privacy Policy</li>
+        <div class="f-col">
+            <h4>Vision</h4>
+            <p>We believe that some moments are too precious to be forgotten. Our booth captures the essence of the present for the future you.</p>
         </div>
-        <div class="f-list">
-            <b>Connect</b><br>
-            <li>Instagram ↗</li>
-            <li>TikTok ↗</li>
-            <li>Email ↗</li>
+        <div class="f-col">
+            <h4>Location</h4>
+            <p>Bandung Creative Hub<br>Majalaya Unit 01<br>West Java, ID</p>
+        </div>
+        <div class="f-col">
+            <h4>Socials</h4>
+            <p>
+                <a href="#" style="color:white">Instagram</a><br>
+                <a href="#" style="color:white">TikTok</a><br>
+                <a href="#" style="color:white">Archive.org</a>
+            </p>
+        </div>
+        <div class="f-col">
+            <h4>License</h4>
+            <p>© 2026 TimelessBooth Studio.<br>All Rights Reserved. v2.6.4</p>
         </div>
     </footer>
 
     <script>
-        // Custom Cursor Movement
-        const cursor = document.getElementById('cursor');
-        document.addEventListener('mousemove', e => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
+        // Realtime Clock
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('en-GB');
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Parallax Effect for Photos
+        document.addEventListener('mousemove', (e) => {
+            const cards = document.querySelectorAll('.photo-card');
+            const x = (window.innerWidth / 2 - e.pageX) / 30;
+            const y = (window.innerHeight / 2 - e.pageY) / 30;
+
+            cards.forEach((card, index) => {
+                const modifier = index === 0 ? 1 : -1;
+                card.style.transform = `translate(${x * modifier}px, ${y * modifier}px) rotate(${index === 0 ? -8 : 10}deg)`;
+            });
         });
 
-        function nextPage() {
-            const btn = document.querySelector('.start-trigger');
-            btn.innerHTML = "PROCESSING...";
-            btn.style.background = "#0047ff";
+        function initSession() {
+            const btn = document.querySelector('.start-btn');
+            btn.innerHTML = "LOADING ARCHIVE...";
+            btn.style.background = "#fff";
+            btn.style.color = "#000";
             
             setTimeout(() => {
                 window.location.href = 'layout.html';
-            }, 600);
+            }, 1000);
         }
     </script>
 </body>
