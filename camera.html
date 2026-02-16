@@ -118,11 +118,11 @@
             gap: 10px;
         }
 
-        .inv-item {
+       .inv-item {
             aspect-ratio: 1/1;
             background: #333;
             border: 2px solid #fff;
-            position: relative;
+            position: relative; /* Wajib biar tombol bisa nempel di bawah */
             overflow: hidden;
         }
 
@@ -132,24 +132,30 @@
             object-fit: cover;
         }
 
-        .retake-btn {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            background: #ff4d00; /* Warna Orange Brutalist */
-            color: #fff;
-            border: none;
-            font-family: 'Archivo Black';
-            font-size: 10px;
-            padding: 6px 0;
-            cursor: pointer;
-            text-transform: uppercase;
-            border-top: 2px solid #fff;
-        }
-        .retake-btn:hover {
-            background: #ff0000; /* Berubah merah saat mau hapus */
-        }
+        /* Kotak foto di inventory */
 
+
+/* Tombol REMOVE yang nempel di bawah foto */
+            .retake-btn {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                background: #ff0000; /* Warna merah biar kontras */
+                color: #fff;
+                border: none;
+                font-family: 'Archivo Black', sans-serif;
+                font-size: 10px;
+                padding: 8px 0;
+                cursor: pointer;
+                z-index: 10;
+                text-transform: uppercase;
+            }
+            
+            .retake-btn:hover {
+                background: #fff;
+                color: #000;
+            }
         .filter-container { 
             width: 100%; 
             max-width: 480px; 
@@ -356,25 +362,31 @@
             el.classList.add('active');
         }
 
-        function updateInventory() {
-            invGrid.innerHTML = '';
-            photos.forEach((src, idx) => {
-                const div = document.createElement('div');
-                div.className = 'inv-item';
-                div.innerHTML = `<img src="${src}"><button class="retake-btn" onclick="retake(${idx})">RETAKE</button>`;
-                invGrid.appendChild(div);
-            });
-            updatePoseDisplay();
-            
-            if (photos.length === maxPoses) {
-                startBtn.style.display = 'none';
-                document.getElementById('processBtn').style.display = 'block';
-            } else {
-                startBtn.style.display = 'block';
-                startBtn.innerText = photos.length > 0 ? "CAPTURE NEXT" : "START CAPTURE";
-                document.getElementById('processBtn').style.display = 'none';
-            }
-        }
+       function updateInventory() {
+    invGrid.innerHTML = '';
+    photos.forEach((src, idx) => {
+        const div = document.createElement('div');
+        div.className = 'inv-item';
+        // Tombol hapus (Retake) ditaruh di dalam setiap item foto
+        div.innerHTML = `
+            <img src="${src}">
+            <button class="retake-btn" onclick="retake(${idx})">REMOVE X</button>
+        `;
+        invGrid.appendChild(div);
+    });
+    
+    updatePoseDisplay();
+    
+    // Logic kontrol tombol utama
+    if (photos.length === maxPoses) {
+        startBtn.style.display = 'none';
+        document.getElementById('processBtn').style.display = 'block';
+    } else {
+        startBtn.style.display = 'block';
+        startBtn.innerText = photos.length > 0 ? "CAPTURE NEXT" : "START CAPTURE";
+        document.getElementById('processBtn').style.display = 'none';
+    }
+}
 
         function retake(idx) {
             // 1. Hapus data dari array foto dan frame mentah
@@ -601,4 +613,5 @@
     </script>
 </body>
 </html>
+
 
