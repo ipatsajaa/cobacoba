@@ -199,24 +199,25 @@
         }
 
         function captureGifDuringCountdown(sec) {
-            return new Promise((resolve) => {
-                liveTag.style.display = 'block';
-                gifshot.createGIF({
-                    cameraExternalStream: video.srcObject,
-                    gifWidth: 480,
-                    gifHeight: 360,
-                    numFrames: 25, // Jumlah frame diperbanyak biar pas sama durasi countdown
-                    interval: 0.12, // Durasi antar frame agar total pas ~3 detik
-                    numWorkers: 2,
-                    filter: currentFilter === 'lo-res' || currentFilter === 'sunset' ? '' : currentFilter
-                }, function (obj) {
-                    liveTag.style.display = 'none';
-                    if (!obj.error) {
-                        resolve(obj.image);
-                    }
-                });
-            });
-        }
+    return new Promise((resolve) => {
+        liveTag.style.display = 'block';
+        gifshot.createGIF({
+            cameraExternalStream: video.srcObject,
+            gifWidth: 320,      // Resolusi diturunkan (dari 480) agar proses kilat
+            gifHeight: 240,     // Rasio 4:3 tetap terjaga
+            numFrames: 12,      // Frame dikurangi (dari 25) agar encoding lebih cepat
+            interval: 0.15,     // Jeda antar frame sedikit lebih lama
+            numWorkers: 4,      // Gunakan lebih banyak 'tenaga' prosesor (Workers)
+            sampleInterval: 10, // Melewatkan beberapa pixel untuk mempercepat render
+            filter: currentFilter === 'lo-res' || currentFilter === 'sunset' ? '' : currentFilter
+        }, function (obj) {
+            liveTag.style.display = 'none';
+            if (!obj.error) {
+                resolve(obj.image);
+            }
+        });
+    });
+}
 
         // --- RENDER FINAL (SAMA) ---
         function renderFinalFrame() {
@@ -267,3 +268,4 @@
     </script>
 </body>
 </html>
+
