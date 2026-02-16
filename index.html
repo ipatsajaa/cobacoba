@@ -3,184 +3,237 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TIMELESS BOOTH — RADICAL EDITION</title>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
+    <title>TIMELESSBOOTH — CHRONOS SYSTEM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono&display=swap" rel="stylesheet">
     <style>
-        /* --- RESET & BASE --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Archivo Black', sans-serif; cursor: crosshair; }
-        body { background: #000; color: #fff; overflow-x: hidden; }
+        /* --- CHRONOS THEME BASE --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --paper: #e8e6e1; /* Warna kertas arsip tua */
+            --ink: #111;
+            --accent: #999; /* Chrome/Silver vibe */
+        }
 
-        /* --- BACKGROUND NOISE EFFECT --- */
+        body { 
+            background: var(--paper); 
+            color: var(--ink); 
+            font-family: 'Space Mono', monospace; 
+            overflow-x: hidden;
+        }
+
+        /* --- VINTAGE GRAIN OVERLAY --- */
         body::before {
             content: "";
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/asfalt-light.png');
-            opacity: 0.1; pointer-events: none; z-index: 1000;
+            background: url('https://www.transparenttextures.com/patterns/stardust.png');
+            opacity: 0.4; pointer-events: none; z-index: 1000;
         }
 
-        /* --- SCANNER LINE ANIMATION --- */
-        .scan-line {
-            position: fixed; width: 100%; height: 4px; background: rgba(255, 77, 0, 0.5);
-            z-index: 999; top: -10px; animation: scan 4s linear infinite;
+        /* --- TOP BAR: CLOCK RUNNING --- */
+        .time-header {
+            border-bottom: 2px solid var(--ink);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
         }
-        @keyframes scan { 0% { top: -10px; } 100% { top: 100%; } }
-
-        /* --- MARQUEE REVERSE --- */
-        .marquee {
-            background: #ff4d00; color: #000; padding: 12px 0;
-            border-bottom: 4px solid #fff; text-transform: uppercase;
-            font-size: 1.1rem; display: flex; overflow: hidden;
-        }
-        .m-txt { display: flex; white-space: nowrap; animation: m 15s linear infinite; }
-        @keyframes m { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-
-        /* --- STICKER TAGS --- */
-        .sticker {
-            position: absolute; background: #fff; color: #000; padding: 5px 15px;
-            font-size: 0.8rem; transform: rotate(-15deg); box-shadow: 4px 4px 0 #ff4d00;
-            z-index: 5; animation: float 3s ease-in-out infinite alternate;
-        }
-        @keyframes float { from { transform: rotate(-15deg) translateY(0); } to { transform: rotate(-10deg) translateY(-10px); } }
 
         /* --- CONTAINER --- */
         .container {
-            display: flex; flex-direction: column; align-items: center;
-            padding: 60px 20px; min-height: 100vh; position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 80px 20px;
+            min-height: 100vh;
+            position: relative;
         }
 
-        /* --- HERO TITLE --- */
-        .hero-group { position: relative; margin-bottom: 40px; }
+        /* --- HERO: THE TIMELESS LOGO --- */
+        .logo-wrap {
+            position: relative;
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
         .hero-title {
-            font-size: clamp(4rem, 18vw, 10rem); line-height: 0.8;
-            text-transform: uppercase; text-align: center;
-            -webkit-text-stroke: 2px #fff; color: transparent;
-            transition: 0.3s; animation: fadeInUp 0.8s ease-out;
-        }
-        .hero-title span { color: #fff; -webkit-text-stroke: 0; display: block; }
-        .hero-title:hover { -webkit-text-stroke: 2px #ff4d00; }
-
-        /* --- PREVIEW SECTION --- */
-        .preview-grid {
-            position: relative; width: 100%; max-width: 600px;
-            height: 350px; margin: 40px 0;
-        }
-        
-        .pic {
-            position: absolute; width: 180px; background: #fff;
-            padding: 8px 8px 35px 8px; box-shadow: 8px 8px 0 #ff4d00;
-            transition: 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-        .pic img { width: 100%; filter: contrast(1.2) grayscale(1); display: block; }
-
-        /* Layout Asimetris */
-        .pic-1 { left: 10%; top: 0; transform: rotate(-8deg); z-index: 2; }
-        .pic-2 { right: 15%; top: 40px; transform: rotate(12deg); z-index: 1; }
-        
-        .pic:hover {
-            transform: scale(1.15) rotate(0deg) !important;
-            z-index: 10; box-shadow: 15px 15px 0 #fff;
-        }
-        .pic:hover img { filter: grayscale(0); }
-
-        /* --- BIG BUTTON --- */
-        .btn-wrapper { position: relative; width: 100%; max-width: 400px; margin-top: 20px; }
-        .btn-start {
-            width: 100%; background: #ff4d00; color: #fff;
-            padding: 30px; font-size: 1.8rem; border: 4px solid #fff;
-            cursor: pointer; text-transform: uppercase;
-            box-shadow: 12px 12px 0 #fff; transition: 0.2s;
+            font-family: 'Archivo Black', sans-serif;
+            font-size: clamp(3rem, 12vw, 8rem);
+            line-height: 0.8;
+            letter-spacing: -2px;
+            text-transform: uppercase;
+            color: var(--ink);
         }
 
-        .btn-start:hover {
-            background: #fff; color: #000;
-            transform: translate(-4px, -4px); box-shadow: 20px 20px 0 #ff4d00;
+        .hero-sub {
+            background: var(--ink);
+            color: var(--paper);
+            display: inline-block;
+            padding: 5px 15px;
+            font-size: 1.2rem;
+            margin-top: 10px;
+            transform: skewX(-15deg);
         }
-        .btn-start:active { transform: translate(8px, 8px); box-shadow: 0 0 0; }
 
-        /* --- FOOTER BRUTAL --- */
+        /* --- PREVIEW GRID: MUSEUM STYLE --- */
+        .gallery-preview {
+            display: flex;
+            gap: 40px;
+            margin: 60px 0;
+            z-index: 2;
+        }
+
+        .photo-frame {
+            width: 160px;
+            background: #fff;
+            border: 1px solid var(--ink);
+            padding: 10px 10px 40px 10px;
+            position: relative;
+            box-shadow: 20px 20px 0px rgba(0,0,0,0.05);
+            transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .photo-frame img {
+            width: 100%;
+            filter: sepia(0.5) contrast(1.2);
+            transition: 0.3s;
+        }
+
+        .photo-frame::after {
+            content: "ARCHIVE NO. "attr(data-no);
+            position: absolute; bottom: 10px; left: 10px;
+            font-size: 8px; font-weight: bold;
+        }
+
+        .photo-frame:nth-child(1) { transform: rotate(-3deg); }
+        .photo-frame:nth-child(2) { transform: rotate(4deg); margin-top: 20px; }
+
+        .photo-frame:hover {
+            transform: rotate(0) scale(1.1);
+            z-index: 5;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.1);
+        }
+
+        .photo-frame:hover img { filter: sepia(0) contrast(1); }
+
+        /* --- ACTION BUTTON: CHRONOS --- */
+        .btn-action {
+            margin-top: 40px;
+            background: var(--ink);
+            color: var(--paper);
+            border: none;
+            padding: 25px 60px;
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: 0.3s;
+            position: relative;
+            text-transform: uppercase;
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+        }
+
+        .btn-action:hover {
+            background: #555;
+            padding: 25px 80px;
+        }
+
+        /* --- FOOTER: THE LOG --- */
         footer {
-            background: #ff4d00; color: #000; padding: 60px 30px;
-            border-top: 8px solid #fff; display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px;
-        }
-        .f-top { font-size: 3rem; line-height: 0.8; margin-bottom: 20px; }
-        .f-links a { 
-            color: #fff; background: #000; text-decoration: none; 
-            padding: 5px 10px; font-size: 1.1rem; display: inline-block;
-            margin: 5px; transition: 0.2s; border: 2px solid #000;
-        }
-        .f-links a:hover { background: #fff; color: #000; border-color: #000; }
-
-        /* --- KEYFRAMES --- */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(60px) rotate(2deg); }
-            to { opacity: 1; transform: translateY(0) rotate(0); }
+            width: 100%;
+            padding: 60px 40px;
+            background: var(--ink);
+            color: var(--paper);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
         }
 
-        /* Responsive */
-        @media (max-width: 600px) {
-            .preview-grid { height: 450px; }
-            .pic { width: 140px; }
-            .pic-1 { left: 5%; }
-            .pic-2 { right: 5%; top: 150px; }
+        .f-col h4 { margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .f-col p { line-height: 2; color: var(--accent); }
+
+        /* --- DECORATION --- */
+        .circle-text {
+            position: absolute;
+            top: -20px; right: -40px;
+            width: 100px; height: 100px;
+            animation: rotate 10s linear infinite;
+            opacity: 0.3;
         }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
     </style>
 </head>
 <body>
 
-    <div class="scan-line"></div>
-
-    <div class="marquee">
-        <div class="m-txt">
-            &nbsp;PRESS START TO DEFY TIME — NO REFUNDS — MAJALAYA CORE — STAY RAW — UNLIMITED VIBES — SHOOT NOW OR NEVER — PRESS START TO DEFY TIME — NO REFUNDS —
-        </div>
+    <div class="time-header">
+        <div>TIMELESSBOOTH // GEN-01</div>
+        <div id="clock">00:00:00</div>
     </div>
 
     <div class="container">
-        <div class="sticker" style="top: 15%; left: 5%;">HIGH QUALITY</div>
-        <div class="sticker" style="top: 25%; right: 8%; transform: rotate(15deg); background: #ff4d00; color: #fff;">100% RAW</div>
-
-        <div class="hero-group">
-            <h1 class="hero-title">TIMELESS<span>BOOTH*</span></h1>
+        <div class="logo-wrap">
+            <h1 class="hero-title">TIMELESS<br>BOOTH</h1>
+            <div class="hero-sub">CAPTURE THE INFINITE</div>
+            <svg class="circle-text" viewBox="0 0 100 100">
+                <path id="circlePath" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="transparent"/>
+                <text font-size="8">
+                    <textPath xlink:href="#circlePath">
+                        STOP THE TIME — CAPTURE THE MOMENT — STOP THE TIME —
+                    </textPath>
+                </text>
+            </svg>
         </div>
 
-        <div class="preview-grid">
-            <div class="pic pic-1"><img src="frames/conto.png"></div>
-            <div class="pic pic-2"><img src="frames/1(2).png"></div>
+        <div class="gallery-preview">
+            <div class="photo-frame" data-no="8821">
+                <img src="frames/conto.png" alt="Preview">
+            </div>
+            <div class="photo-frame" data-no="8822">
+                <img src="frames/1(2).png" alt="Preview">
+            </div>
         </div>
 
-        <div class="btn-wrapper">
-            <button class="btn-start" onclick="startApp()">
-                ENTER STUDIO
-            </button>
-        </div>
+        <button class="btn-action" onclick="startApp()">
+            START SESSION
+        </button>
     </div>
 
     <footer>
-        <div>
-            <div class="f-top">TIMELESS<br>STUDIO®</div>
-            <p>EST. 2024 / MAJALAYA SYSTEM</p>
+        <div class="f-col">
+            <h4>Concept</h4>
+            <p>Capturing moments that refuse to fade. A digital archive for physical memories.</p>
         </div>
-        <div class="f-links">
-            <div style="margin-bottom: 10px;">SOCIALS:</div>
-            <a href="https://instagram.com/patkepott">INSTAGRAM ↗</a>
-            <a href="#">TIKTOK ↗</a>
-            <a href="#">YOUTUBE ↗</a>
+        <div class="f-col">
+            <h4>Location</h4>
+            <p>Bandung, West Java<br>Studio Unit 01</p>
         </div>
-        <div>
-            <p style="font-size: 0.8rem; line-height: 1.4;">
-                THIS IS A LIMITED DIGITAL EXPERIENCE. ALL PHOTOS ARE PROCESSED LOCALLY. NO DATA IS SAVED ON OUR SERVERS UNLESS YOU DOWNLOAD IT.
-            </p>
-            <p style="margin-top: 20px; font-size: 0.7rem;">©2024 RADICAL BOOTH DIVISION</p>
+        <div class="f-col">
+            <h4>Navigation</h4>
+            <p><a href="#" style="color:white">Instagram</a> / <a href="#" style="color:white">TikTok</a></p>
+        </div>
+        <div class="f-col">
+            <h4>System</h4>
+            <p>© 2026 TimelessBooth.<br>All Rights Reserved.</p>
         </div>
     </footer>
 
     <script>
+        // Realtime Clock
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString();
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
         function startApp() {
-            const btn = document.querySelector('.btn-start');
-            btn.innerHTML = "SYSTEM INITIALIZING...";
-            btn.style.background = "#000";
-            btn.style.color = "#00ff00";
+            const btn = document.querySelector('.btn-action');
+            btn.innerHTML = "FREEZING TIME...";
+            btn.style.opacity = "0.5";
             
             setTimeout(() => {
                 window.location.href = 'layout.html';
