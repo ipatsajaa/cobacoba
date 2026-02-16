@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TIMELESSBOOTH — PRESTIGE ARCHIVE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&family=Syne:wght@800&display=swap" rel="stylesheet">
+    <title>TIMELESSBOOTH — CHRONOS SYSTEM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono&display=swap" rel="stylesheet">
     <style>
-        /* --- DYNAMIC THEME BASE --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+        /* --- CHRONOS THEME BASE --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         :root {
-            --paper: #f0eee9;
-            --ink: #0a0a0a;
-            --accent: #ff4d00; /* Hit of Brutalist Orange */
-            --silver: #bdc3c7;
+            --paper: #e8e6e1; /* Warna kertas arsip tua */
+            --ink: #111;
+            --accent: #999; /* Chrome/Silver vibe */
         }
 
         body { 
@@ -21,260 +20,220 @@
             color: var(--ink); 
             font-family: 'Space Mono', monospace; 
             overflow-x: hidden;
-            line-height: 1.6;
         }
 
-        /* --- CUSTOM CURSOR (INTERACTIVE) --- */
-        #cursor-dot {
-            position: fixed; width: 8px; height: 8px; background: var(--accent);
-            border-radius: 50%; pointer-events: none; z-index: 10000;
-        }
-        #cursor-outline {
-            position: fixed; width: 40px; height: 40px; border: 1px solid var(--ink);
-            border-radius: 50%; pointer-events: none; z-index: 9999;
-            transition: transform 0.15s ease-out;
-        }
-
-        /* --- VINTAGE TEXTURE --- */
-        .grain-overlay {
+        /* --- VINTAGE GRAIN OVERLAY --- */
+        body::before {
+            content: "";
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/p6.png');
-            opacity: 0.15; pointer-events: none; z-index: 9000;
+            background: url('https://www.transparenttextures.com/patterns/stardust.png');
+            opacity: 0.4; pointer-events: none; z-index: 1000;
         }
 
-        /* --- TOP NAV: ELEGANT --- */
-        nav {
-            padding: 20px 40px;
+        /* --- TOP BAR: CLOCK RUNNING --- */
+        .time-header {
+            border-bottom: 2px solid var(--ink);
+            padding: 10px 20px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(0,0,0,0.1);
-            backdrop-filter: blur(10px);
-            position: sticky; top: 0; z-index: 100;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
         }
-        .nav-brand { font-family: 'Archivo Black'; font-size: 1rem; letter-spacing: 2px; }
-        .nav-status { font-size: 0.7rem; font-weight: bold; color: var(--accent); }
 
-        /* --- HERO SECTION --- */
-        .hero {
-            height: 90vh;
+        /* --- CONTAINER --- */
+        .container {
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            text-align: center;
-            padding: 0 20px;
+            padding: 80px 20px;
+            min-height: 100vh;
+            position: relative;
         }
 
-        .title-container { position: relative; }
+        /* --- HERO: THE TIMELESS LOGO --- */
+        .logo-wrap {
+            position: relative;
+            text-align: center;
+            margin-bottom: 60px;
+        }
 
         .hero-title {
-            font-family: 'Syne', sans-serif;
-            font-size: clamp(4rem, 18vw, 12rem);
-            line-height: 0.75;
+            font-family: 'Archivo Black', sans-serif;
+            font-size: clamp(3rem, 12vw, 8rem);
+            line-height: 0.8;
+            letter-spacing: -2px;
             text-transform: uppercase;
-            letter-spacing: -6px;
-            margin-bottom: 20px;
-            animation: slideUp 1s cubic-bezier(0.2, 1, 0.2, 1);
+            color: var(--ink);
         }
 
-        .hero-title span { display: block; }
-        .title-outline { -webkit-text-stroke: 1.5px var(--ink); color: transparent; }
-
-        /* --- PHOTO ARCHIVE: EDITORIAL GRID --- */
-        .archive-wrap {
-            display: flex;
-            gap: 60px;
-            margin: 40px 0;
-            perspective: 1000px;
-        }
-
-        .photo-card {
-            width: 220px;
-            background: #fff;
-            padding: 12px 12px 50px 12px;
-            border: 1px solid #ddd;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            transition: 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-            position: relative;
-        }
-
-        .photo-card img {
-            width: 100%;
-            height: 300px;
-            object-fit: cover;
-            filter: grayscale(1) contrast(1.1);
-            transition: 0.4s;
-        }
-
-        .photo-card::before {
-            content: "CERTIFIED ARCHIVE";
-            position: absolute; bottom: 15px; right: 15px;
-            font-size: 9px; font-weight: bold; opacity: 0.4;
-        }
-
-        .card-1 { transform: rotate(-6deg) translateY(20px); }
-        .card-2 { transform: rotate(5deg) translateY(-20px); }
-
-        .photo-card:hover {
-            transform: rotate(0) scale(1.05) translateZ(50px);
-            z-index: 10;
-            box-shadow: 0 40px 80px rgba(0,0,0,0.1);
-            border-color: var(--accent);
-        }
-        .photo-card:hover img { filter: grayscale(0) contrast(1); }
-
-        /* --- CTA BUTTON: BRUTALIST PRECISION --- */
-        .cta-container {
-            margin-top: 60px;
-            position: relative;
-        }
-
-        .btn-main {
+        .hero-sub {
             background: var(--ink);
             color: var(--paper);
-            padding: 30px 100px;
-            font-family: 'Archivo Black';
+            display: inline-block;
+            padding: 5px 15px;
             font-size: 1.2rem;
-            border: none;
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            clip-path: polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%);
-            transition: 0.4s;
+            margin-top: 10px;
+            transform: skewX(-15deg);
         }
 
-        .btn-main:hover {
-            background: var(--accent);
-            padding: 30px 120px;
-            transform: translateY(-5px);
+        /* --- PREVIEW GRID: MUSEUM STYLE --- */
+        .gallery-preview {
+            display: flex;
+            gap: 40px;
+            margin: 60px 0;
+            z-index: 2;
         }
 
-        /* --- FOOTER: BOLD & STRUCTURED --- */
-        footer {
+        .photo-frame {
+            width: 100px;
+            background: #fff;
+            border: 1px solid var(--ink);
+            padding: 10px 10px 40px 10px;
+            position: relative;
+            box-shadow: 20px 20px 0px rgba(0,0,0,0.05);
+            transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .photo-frame img {
+            width: 100%;
+            filter: sepia(0.5) contrast(1.2);
+            transition: 0.3s;
+        }
+
+        .photo-frame::after {
+            content: "ARCHIVE NO. "attr(data-no);
+            position: absolute; bottom: 10px; left: 10px;
+            font-size: 8px; font-weight: bold;
+        }
+
+        .photo-frame:nth-child(1) { transform: rotate(-3deg); }
+        .photo-frame:nth-child(2) { transform: rotate(4deg); margin-top: 20px; }
+
+        .photo-frame:hover {
+            transform: rotate(0) scale(1.1);
+            z-index: 5;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.1);
+        }
+
+        .photo-frame:hover img { filter: sepia(0) contrast(1); }
+
+        /* --- ACTION BUTTON: CHRONOS --- */
+        .btn-action {
+            margin-top: 40px;
             background: var(--ink);
             color: var(--paper);
-            padding: 100px 40px;
+            border: none;
+            padding: 25px 60px;
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: 0.3s;
+            position: relative;
+            text-transform: uppercase;
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+        }
+
+        .btn-action:hover {
+            background: #555;
+            padding: 25px 80px;
+        }
+
+        /* --- FOOTER: THE LOG --- */
+        footer {
+            width: 100%;
+            padding: 60px 40px;
+            background: var(--ink);
+            color: var(--paper);
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 40px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
         }
 
-        .f-brand { font-family: 'Syne'; font-size: 4rem; line-height: 0.8; margin-bottom: 20px; }
-        .f-col h4 { text-transform: uppercase; font-size: 0.7rem; letter-spacing: 2px; color: var(--accent); margin-bottom: 20px; }
-        .f-col p, .f-col a { font-size: 0.8rem; color: #888; text-decoration: none; display: block; margin-bottom: 10px; }
+        .f-col h4 { margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .f-col p { line-height: 2; color: var(--accent); }
 
-        /* --- ANIMATIONS --- */
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(100px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* --- DECORATION --- */
+        .circle-text {
+            position: absolute;
+            top: -20px; right: -40px;
+            width: 100px; height: 100px;
+            animation: rotate 10s linear infinite;
+            opacity: 0.3;
         }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        @media (max-width: 768px) {
-            footer { grid-template-columns: 1fr; }
-            .archive-wrap { flex-direction: column; gap: 40px; }
-            .card-1, .card-2 { transform: none; }
-            #cursor-dot, #cursor-outline { display: none; }
-            * { cursor: auto; }
-        }
     </style>
 </head>
 <body>
 
-    <div id="cursor-dot"></div>
-    <div id="cursor-outline"></div>
-    <div class="grain-overlay"></div>
+    <div class="time-header">
+        <div>TIMELESSBOOTH // GEN-01</div>
+        <div id="clock">00:00:00</div>
+    </div>
 
-    <nav>
-        <div class="nav-brand">TIMELESS // STUDIO</div>
-        <div id="clock" style="font-weight: bold;">00:00:00</div>
-        <div class="nav-status">● SYSTEM_ACTIVE</div>
-    </nav>
-
-    <section class="hero">
-        <div class="title-container">
-            <h1 class="hero-title">
-                <span class="title-outline">INFINITE</span>
-                <span>MOMENTS</span>
-            </h1>
-            <p style="letter-spacing: 10px; font-size: 0.6rem; margin-top: -10px; opacity: 0.6;">COLLECTED WORKS // VOL. 01</p>
+    <div class="container">
+        <div class="logo-wrap">
+            <h1 class="hero-title">TIMELESS<br>BOOTH</h1>
+            <div class="hero-sub">CAPTURE THE INFINITE</div>
+            <svg class="circle-text" viewBox="0 0 100 100">
+                <path id="circlePath" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="transparent"/>
+                <text font-size="8">
+                    <textPath xlink:href="#circlePath">
+                        STOP THE TIME — CAPTURE THE MOMENT — STOP THE TIME —
+                    </textPath>
+                </text>
+            </svg>
         </div>
 
-        <div class="archive-wrap">
-            <div class="photo-card card-1">
-                <img src="frames/conto.png" alt="Arsip 1">
+        <div class="gallery-preview">
+            <div class="photo-frame" data-no="8821">
+                <img src="frames/conto.png" alt="Preview">
             </div>
-            <div class="photo-card card-2">
-                <img src="frames/7.png" alt="Arsip 2">
+            <div class="photo-frame" data-no="8822">
+                <img src="frames/7.png" alt="Preview">
             </div>
         </div>
 
-        <div class="cta-container">
-            <button class="btn-main" onclick="startApp()">
-                Begin Archive
-            </button>
-        </div>
-    </section>
+        <button class="btn-action" onclick="startApp()">
+            START SESSION
+        </button>
+    </div>
 
     <footer>
         <div class="f-col">
-            <div class="f-brand">TIMELESS<br>BOOTH*</div>
-            <p style="max-width: 400px;">A high-fidelity digital preservation system designed to capture the essence of the present for the eyes of the future.</p>
+            <h4>Concept</h4>
+            <p>Capturing moments that refuse to fade. A digital archive for physical memories.</p>
         </div>
         <div class="f-col">
-            <h4>Coordinates</h4>
-            <p>Bandung, Indonesia</p>
-            <p>6.9175° S, 107.6191° E</p>
-            <p>Unit 01 / Studio Base</p>
+            <h4>Location</h4>
+            <p>Bandung, West Java<br>Studio Unit 01</p>
         </div>
         <div class="f-col">
-            <h4>Social Index</h4>
-            <a href="#">Instagram ↗</a>
-            <a href="#">TikTok ↗</a>
-            <a href="#">Archive Log ↗</a>
+            <h4>Navigation</h4>
+            <p><a href="#" style="color:white">Instagram</a> / <a href="#" style="color:white">TikTok</a></p>
+        </div>
+        <div class="f-col">
+            <h4>System</h4>
+            <p>© 2026 TimelessBooth.<br>All Rights Reserved.</p>
         </div>
     </footer>
 
     <script>
-        // Custom Cursor Logic
-        const dot = document.getElementById('cursor-dot');
-        const outline = document.getElementById('cursor-outline');
-
-        document.addEventListener('mousemove', (e) => {
-            dot.style.left = e.clientX + 'px';
-            dot.style.top = e.clientY + 'px';
-            
-            // Outline with a slight delay for smooth effect
-            setTimeout(() => {
-                outline.style.left = e.clientX - 16 + 'px';
-                outline.style.top = e.clientY - 16 + 'px';
-            }, 50);
-        });
-
-        // Hover Effect on Buttons/Cards
-        const targets = document.querySelectorAll('button, .photo-card, a');
-        targets.forEach(t => {
-            t.addEventListener('mouseenter', () => {
-                outline.style.transform = 'scale(1.5)';
-                outline.style.background = 'rgba(0,0,0,0.05)';
-            });
-            t.addEventListener('mouseleave', () => {
-                outline.style.transform = 'scale(1)';
-                outline.style.background = 'transparent';
-            });
-        });
-
         // Realtime Clock
         function updateClock() {
             const now = new Date();
-            document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', { hour12: false });
+            document.getElementById('clock').innerText = now.toLocaleTimeString();
         }
         setInterval(updateClock, 1000);
         updateClock();
 
         function startApp() {
-            const btn = document.querySelector('.btn-main');
-            btn.innerHTML = "INITIALIZING...";
-            btn.style.background = "#ff4d00";
+            const btn = document.querySelector('.btn-action');
+            btn.innerHTML = "FREEZING TIME...";
+            btn.style.opacity = "0.5";
             
             setTimeout(() => {
                 window.location.href = 'layout.html';
