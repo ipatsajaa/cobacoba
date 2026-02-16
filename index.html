@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TIMELESSBOOTH - HOME</title>
+    <title>TIMELESSBOOTH — CHRONOS SYSTEM</title>
     <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono&display=swap" rel="stylesheet">
     <style>
         /* --- CHRONOS THEME BASE --- */
@@ -60,7 +60,7 @@
 
         .hero-title {
             font-family: 'Archivo Black', sans-serif;
-            font-size: clamp(3rem, 9vw, 5rem);
+            font-size: clamp(3rem, 12vw, 8rem);
             line-height: 0.8;
             letter-spacing: -2px;
             text-transform: uppercase;
@@ -77,59 +77,46 @@
             transform: skewX(-15deg);
         }
 
-/* --- PREVIEW GRID: KITA GEDEIN WAK --- */
-.gallery-preview {
-    display: flex;
-    gap: 50px; /* Jarak antar foto agak lebarin dikit */
-    margin: 40px 0;
-    z-index: 2;
-    justify-content: center;
-}
+        /* --- PREVIEW GRID: MUSEUM STYLE --- */
+        .gallery-preview {
+            display: flex;
+            gap: 40px;
+            margin: 60px 0;
+            z-index: 2;
+        }
 
-.photo-frame {
-    width: 220px; /* Ukuran pas, nggak kekecilan nggak kegedean */
-    background: #fff;
-    border: 1px solid var(--ink);
-    padding: 12px 12px 45px 12px; /* Space bawah buat teks ARCHIVE lebih lega */
-    position: relative;
-    box-shadow: 15px 15px 0px rgba(0,0,0,0.08); /* Shadow agak tebelan dikit */
-    transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-}
+        .photo-frame {
+            width: 100px;
+            background: #fff;
+            border: 1px solid var(--ink);
+            padding: 10px 10px 40px 10px;
+            position: relative;
+            box-shadow: 20px 20px 0px rgba(0,0,0,0.05);
+            transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        }
 
-.photo-frame img {
-    width: 100%;
-    height: auto;
-    display: block;
-    filter: sepia(0.3) contrast(1.1); /* Tipis-tipis aja biar vintage */
-    transition: 0.3s;
-}
+        .photo-frame img {
+            width: 100%;
+            filter: sepia(0.5) contrast(1.2);
+            transition: 0.3s;
+        }
 
-/* Biar teks Archive pas di tengah bawah */
-.photo-frame::after {
-    content: "ARCHIVE NO. " attr(data-no);
-    position: absolute; 
-    bottom: 15px; 
-    left: 0;
-    width: 100%;
-    text-align: center; /* Teks archive pindah ke tengah biar estetik */
-    font-size: 10px; 
-    font-weight: bold;
-    letter-spacing: 1px;
-    color: var(--ink);
-}
+        .photo-frame::after {
+            content: "ARCHIVE NO. "attr(data-no);
+            position: absolute; bottom: 10px; left: 10px;
+            font-size: 8px; font-weight: bold;
+        }
 
-/* Rotasi tetep miring biar dapet kesan 'berantakan rapi' */
-.photo-frame:nth-child(1) { transform: rotate(-5deg); }
-.photo-frame:nth-child(2) { transform: rotate(5deg); margin-top: 25px; }
+        .photo-frame:nth-child(1) { transform: rotate(-3deg); }
+        .photo-frame:nth-child(2) { transform: rotate(4deg); margin-top: 20px; }
 
-/* Hover: jadi tegak dan gede */
-.photo-frame:hover {
-    transform: rotate(0) scale(1.05);
-    z-index: 10;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.15);
-}
+        .photo-frame:hover {
+            transform: rotate(0) scale(1.1);
+            z-index: 5;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.1);
+        }
 
-    .photo-frame:hover img { filter: sepia(0) contrast(1); }
+        .photo-frame:hover img { filter: sepia(0) contrast(1); }
 
         /* --- ACTION BUTTON: CHRONOS --- */
         .btn-action {
@@ -202,13 +189,13 @@
         </div>
 
         <div class="gallery-preview">
-    <div class="photo-frame" data-no="8821">
-        <img src="frames/conto.png" alt="Preview">
-    </div>
-    <div class="photo-frame" data-no="8822">
-        <img src="frames/7.png" alt="Preview">
-    </div>
-</div>
+            <div class="photo-frame" data-no="8821">
+                <img src="frames/4.png" alt="Preview">
+            </div>
+            <div class="photo-frame" data-no="8822">
+                <img src="frames/5.png" alt="Preview">
+            </div>
+        </div>
 
         <button class="btn-action" onclick="startApp()">
             START SESSION
@@ -255,9 +242,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
