@@ -136,13 +136,18 @@
             position: absolute;
             bottom: 0;
             width: 100%;
-            background: #ff4d00;
-            color: #000;
+            background: #ff4d00; /* Warna Orange Brutalist */
+            color: #fff;
             border: none;
             font-family: 'Archivo Black';
-            font-size: 8px;
-            padding: 4px 0;
+            font-size: 10px;
+            padding: 6px 0;
             cursor: pointer;
+            text-transform: uppercase;
+            border-top: 2px solid #fff;
+        }
+        .retake-btn:hover {
+            background: #ff0000; /* Berubah merah saat mau hapus */
         }
 
         .filter-container { 
@@ -372,10 +377,18 @@
         }
 
         function retake(idx) {
+            // 1. Hapus data dari array foto dan frame mentah
             photos.splice(idx, 1);
             rawFrames.splice(idx, 1);
+            
+            // 2. Refresh tampilan inventory
             updateInventory();
+            
+            // 3. Kembalikan UI ke mode kamera
             document.getElementById('filterContainer').style.display = 'block';
+            document.getElementById('processBtn').style.display = 'none'; // Sembunyikan tombol generate
+            startBtn.style.display = 'block'; // Munculkan tombol capture
+            startBtn.innerText = "CAPTURE NEXT"; // Kasih teks biar user tau ini buat ngisi slot
         }
 
         async function startSequence() {
@@ -588,3 +601,4 @@
     </script>
 </body>
 </html>
+
