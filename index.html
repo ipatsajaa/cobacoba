@@ -3,251 +3,282 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TIMELESSBOOTH — ARCHIVE v2</title>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+    <title>TIMELESSBOOTH — PRESTIGE ARCHIVE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&family=Syne:wght@800&display=swap" rel="stylesheet">
     <style>
+        /* --- DYNAMIC THEME BASE --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+        
         :root {
-            --paper: #efeee9;
-            --ink: #121212;
-            --accent: #ff4d00; /* Sedikit sentuhan oranye brutal buat kontras */
+            --paper: #f0eee9;
+            --ink: #0a0a0a;
+            --accent: #ff4d00; /* Hit of Brutalist Orange */
+            --silver: #bdc3c7;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         body { 
             background: var(--paper); 
             color: var(--ink); 
             font-family: 'Space Mono', monospace; 
             overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
         }
 
-        /* --- OVERLAY GRAIN (LEVEL UP) --- */
-        .overlay {
+        /* --- CUSTOM CURSOR (INTERACTIVE) --- */
+        #cursor-dot {
+            position: fixed; width: 8px; height: 8px; background: var(--accent);
+            border-radius: 50%; pointer-events: none; z-index: 10000;
+        }
+        #cursor-outline {
+            position: fixed; width: 40px; height: 40px; border: 1px solid var(--ink);
+            border-radius: 50%; pointer-events: none; z-index: 9999;
+            transition: transform 0.15s ease-out;
+        }
+
+        /* --- VINTAGE TEXTURE --- */
+        .grain-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://grainy-gradients.vercel.app/noise.svg');
-            opacity: 0.15; pointer-events: none; z-index: 9999;
+            background: url('https://www.transparenttextures.com/patterns/p6.png');
+            opacity: 0.15; pointer-events: none; z-index: 9000;
         }
 
-        /* --- TOP NAVIGATION --- */
-        .nav-bar {
-            padding: 20px;
+        /* --- TOP NAV: ELEGANT --- */
+        nav {
+            padding: 20px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(18,18,18,0.1);
-            font-weight: 700;
-            font-size: 0.7rem;
-            letter-spacing: 2px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            position: sticky; top: 0; z-index: 100;
         }
+        .nav-brand { font-family: 'Archivo Black'; font-size: 1rem; letter-spacing: 2px; }
+        .nav-status { font-size: 0.7rem; font-weight: bold; color: var(--accent); }
 
         /* --- HERO SECTION --- */
         .hero {
-            position: relative;
-            padding: 100px 20px;
+            height: 90vh;
             display: flex;
             flex-direction: column;
+            justify-content: center;
             align-items: center;
             text-align: center;
+            padding: 0 20px;
         }
 
-        .title-wrapper { position: relative; }
+        .title-container { position: relative; }
 
         .hero-title {
-            font-family: 'Syncopate', sans-serif;
-            font-size: clamp(3rem, 15vw, 10rem);
-            line-height: 0.8;
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(4rem, 18vw, 12rem);
+            line-height: 0.75;
             text-transform: uppercase;
-            letter-spacing: -5px;
+            letter-spacing: -6px;
             margin-bottom: 20px;
+            animation: slideUp 1s cubic-bezier(0.2, 1, 0.2, 1);
         }
 
-        .hero-title span {
-            display: block;
-            -webkit-text-stroke: 1.5px var(--ink);
-            color: transparent;
-        }
+        .hero-title span { display: block; }
+        .title-outline { -webkit-text-stroke: 1.5px var(--ink); color: transparent; }
 
-        .badge {
-            background: var(--ink);
-            color: var(--paper);
-            padding: 8px 20px;
-            font-size: 1rem;
-            transform: rotate(-2deg);
-            display: inline-block;
-            margin-bottom: 40px;
-            font-weight: bold;
-        }
-
-        /* --- FLOATING GALLERY (INTERACTIVE) --- */
-        .gallery-wrap {
-            position: relative;
-            width: 100%;
-            max-width: 800px;
-            height: 400px;
-            margin-top: 50px;
+        /* --- PHOTO ARCHIVE: EDITORIAL GRID --- */
+        .archive-wrap {
+            display: flex;
+            gap: 60px;
+            margin: 40px 0;
+            perspective: 1000px;
         }
 
         .photo-card {
-            position: absolute;
-            width: 180px;
+            width: 220px;
             background: #fff;
-            padding: 12px 12px 45px 12px;
-            border: 1px solid rgba(0,0,0,0.1);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: transform 0.1s ease-out; /* Smooth movement */
+            padding: 12px 12px 50px 12px;
+            border: 1px solid #ddd;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            transition: 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
         }
 
         .photo-card img {
             width: 100%;
-            height: 200px;
+            height: 300px;
             object-fit: cover;
-            filter: grayscale(1) sepia(0.2);
+            filter: grayscale(1) contrast(1.1);
+            transition: 0.4s;
         }
 
-        .photo-card::after {
-            content: "ARCHIVE "attr(data-id);
-            position: absolute; bottom: 15px; left: 15px;
-            font-size: 10px; font-weight: bold; opacity: 0.5;
+        .photo-card::before {
+            content: "CERTIFIED ARCHIVE";
+            position: absolute; bottom: 15px; right: 15px;
+            font-size: 9px; font-weight: bold; opacity: 0.4;
         }
 
-        /* Initial Positions */
-        .c-1 { top: 0; left: 15%; transform: rotate(-8deg); }
-        .c-2 { top: 40px; right: 15%; transform: rotate(10deg); }
+        .card-1 { transform: rotate(-6deg) translateY(20px); }
+        .card-2 { transform: rotate(5deg) translateY(-20px); }
 
-        /* --- NEW BUTTON STYLE --- */
-        .start-btn {
+        .photo-card:hover {
+            transform: rotate(0) scale(1.05) translateZ(50px);
+            z-index: 10;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.1);
+            border-color: var(--accent);
+        }
+        .photo-card:hover img { filter: grayscale(0) contrast(1); }
+
+        /* --- CTA BUTTON: BRUTALIST PRECISION --- */
+        .cta-container {
+            margin-top: 60px;
             position: relative;
-            margin-top: 80px;
+        }
+
+        .btn-main {
             background: var(--ink);
             color: var(--paper);
+            padding: 30px 100px;
+            font-family: 'Archivo Black';
+            font-size: 1.2rem;
             border: none;
-            padding: 30px 80px;
-            font-family: 'Archivo Black', sans-serif;
-            font-size: 1.5rem;
             text-transform: uppercase;
-            cursor: pointer;
-            overflow: hidden;
-            transition: 0.3s;
-            clip-path: polygon(0% 0%, 100% 0%, 100% 75%, 92% 100%, 0% 100%);
+            letter-spacing: 4px;
+            clip-path: polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%);
+            transition: 0.4s;
         }
 
-        .start-btn:hover {
+        .btn-main:hover {
             background: var(--accent);
-            transform: scale(1.05) translateY(-5px);
+            padding: 30px 120px;
+            transform: translateY(-5px);
         }
 
-        /* --- FOOTER BRUTALIST --- */
+        /* --- FOOTER: BOLD & STRUCTURED --- */
         footer {
             background: var(--ink);
             color: var(--paper);
-            padding: 80px 40px;
+            padding: 100px 40px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 60px;
-            border-top: 10px solid var(--accent);
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 40px;
         }
 
-        .f-col h4 {
-            font-family: 'Archivo Black';
-            margin-bottom: 25px;
-            text-transform: uppercase;
-            font-size: 1.2rem;
-            color: var(--accent);
-        }
+        .f-brand { font-family: 'Syne'; font-size: 4rem; line-height: 0.8; margin-bottom: 20px; }
+        .f-col h4 { text-transform: uppercase; font-size: 0.7rem; letter-spacing: 2px; color: var(--accent); margin-bottom: 20px; }
+        .f-col p, .f-col a { font-size: 0.8rem; color: #888; text-decoration: none; display: block; margin-bottom: 10px; }
 
-        .f-col p { opacity: 0.7; line-height: 1.8; font-size: 0.9rem; }
+        /* --- ANIMATIONS --- */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(100px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
         @media (max-width: 768px) {
-            .gallery-wrap { height: 600px; }
-            .photo-card { width: 150px; position: relative; margin: 20px auto; left: 0; right: 0; top: 0; }
-            .hero-title { font-size: 4rem; letter-spacing: -2px; }
+            footer { grid-template-columns: 1fr; }
+            .archive-wrap { flex-direction: column; gap: 40px; }
+            .card-1, .card-2 { transform: none; }
+            #cursor-dot, #cursor-outline { display: none; }
+            * { cursor: auto; }
         }
     </style>
 </head>
 <body>
 
-    <div class="overlay"></div>
+    <div id="cursor-dot"></div>
+    <div id="cursor-outline"></div>
+    <div class="grain-overlay"></div>
 
-    <nav class="nav-bar">
-        <div>TIMELESSBOOTH™</div>
-        <div id="clock">00:00:00</div>
-        <div>GEN.26_ARCHIVE</div>
+    <nav>
+        <div class="nav-brand">TIMELESS // STUDIO</div>
+        <div id="clock" style="font-weight: bold;">00:00:00</div>
+        <div class="nav-status">● SYSTEM_ACTIVE</div>
     </nav>
 
-    <div class="hero">
-        <div class="title-wrapper">
-            <h1 class="hero-title">TIMELESS<span>BOOTH</span></h1>
-            <div class="badge">FREEZE THE MOMENT</div>
+    <section class="hero">
+        <div class="title-container">
+            <h1 class="hero-title">
+                <span class="title-outline">INFINITE</span>
+                <span>MOMENTS</span>
+            </h1>
+            <p style="letter-spacing: 10px; font-size: 0.6rem; margin-top: -10px; opacity: 0.6;">COLLECTED WORKS // VOL. 01</p>
         </div>
 
-        <div class="gallery-wrap" id="scene">
-            <div class="photo-card c-1" data-id="PR-01">
-                <img src="frames/conto.png">
+        <div class="archive-wrap">
+            <div class="photo-card card-1">
+                <img src="frames/conto.png" alt="Arsip 1">
             </div>
-            <div class="photo-card c-2" data-id="PR-02">
-                <img src="frames/7.png">
+            <div class="photo-card card-2">
+                <img src="frames/7.png" alt="Arsip 2">
             </div>
         </div>
 
-        <button class="start-btn" onclick="initSession()">
-            INITIALIZE SESSION
-        </button>
-    </div>
+        <div class="cta-container">
+            <button class="btn-main" onclick="startApp()">
+                Begin Archive
+            </button>
+        </div>
+    </section>
 
     <footer>
         <div class="f-col">
-            <h4>Vision</h4>
-            <p>We believe that some moments are too precious to be forgotten. Our booth captures the essence of the present for the future you.</p>
+            <div class="f-brand">TIMELESS<br>BOOTH*</div>
+            <p style="max-width: 400px;">A high-fidelity digital preservation system designed to capture the essence of the present for the eyes of the future.</p>
         </div>
         <div class="f-col">
-            <h4>Location</h4>
-            <p>Bandung Creative Hub<br>Majalaya Unit 01<br>West Java, ID</p>
+            <h4>Coordinates</h4>
+            <p>Bandung, Indonesia</p>
+            <p>6.9175° S, 107.6191° E</p>
+            <p>Unit 01 / Studio Base</p>
         </div>
         <div class="f-col">
-            <h4>Socials</h4>
-            <p>
-                <a href="#" style="color:white">Instagram</a><br>
-                <a href="#" style="color:white">TikTok</a><br>
-                <a href="#" style="color:white">Archive.org</a>
-            </p>
-        </div>
-        <div class="f-col">
-            <h4>License</h4>
-            <p>© 2026 TimelessBooth Studio.<br>All Rights Reserved. v2.6.4</p>
+            <h4>Social Index</h4>
+            <a href="#">Instagram ↗</a>
+            <a href="#">TikTok ↗</a>
+            <a href="#">Archive Log ↗</a>
         </div>
     </footer>
 
     <script>
+        // Custom Cursor Logic
+        const dot = document.getElementById('cursor-dot');
+        const outline = document.getElementById('cursor-outline');
+
+        document.addEventListener('mousemove', (e) => {
+            dot.style.left = e.clientX + 'px';
+            dot.style.top = e.clientY + 'px';
+            
+            // Outline with a slight delay for smooth effect
+            setTimeout(() => {
+                outline.style.left = e.clientX - 16 + 'px';
+                outline.style.top = e.clientY - 16 + 'px';
+            }, 50);
+        });
+
+        // Hover Effect on Buttons/Cards
+        const targets = document.querySelectorAll('button, .photo-card, a');
+        targets.forEach(t => {
+            t.addEventListener('mouseenter', () => {
+                outline.style.transform = 'scale(1.5)';
+                outline.style.background = 'rgba(0,0,0,0.05)';
+            });
+            t.addEventListener('mouseleave', () => {
+                outline.style.transform = 'scale(1)';
+                outline.style.background = 'transparent';
+            });
+        });
+
         // Realtime Clock
         function updateClock() {
             const now = new Date();
-            document.getElementById('clock').innerText = now.toLocaleTimeString('en-GB');
+            document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID', { hour12: false });
         }
         setInterval(updateClock, 1000);
         updateClock();
 
-        // Parallax Effect for Photos
-        document.addEventListener('mousemove', (e) => {
-            const cards = document.querySelectorAll('.photo-card');
-            const x = (window.innerWidth / 2 - e.pageX) / 30;
-            const y = (window.innerHeight / 2 - e.pageY) / 30;
-
-            cards.forEach((card, index) => {
-                const modifier = index === 0 ? 1 : -1;
-                card.style.transform = `translate(${x * modifier}px, ${y * modifier}px) rotate(${index === 0 ? -8 : 10}deg)`;
-            });
-        });
-
-        function initSession() {
-            const btn = document.querySelector('.start-btn');
-            btn.innerHTML = "LOADING ARCHIVE...";
-            btn.style.background = "#fff";
-            btn.style.color = "#000";
+        function startApp() {
+            const btn = document.querySelector('.btn-main');
+            btn.innerHTML = "INITIALIZING...";
+            btn.style.background = "#ff4d00";
             
             setTimeout(() => {
                 window.location.href = 'layout.html';
-            }, 1000);
+            }, 800);
         }
     </script>
 </body>
