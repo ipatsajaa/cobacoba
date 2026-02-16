@@ -161,54 +161,67 @@
         function retake(idx) { photos.splice(idx, 1); updateInventory(); document.getElementById('filterContainer').style.display = 'block'; }
 
         // --- LOGIC BARU: REKAM PAS COUNTDOWN ---
-        async function startSequence() {
-            startBtn.disabled = true;
-            document.getElementById('filterContainer').style.display = 'none';
+        // --- LOGIC BARU: REKAM PAS DETIK KE-1 ---
+async function startSequence() {
+    startBtn.disabled = true;
+    document.getElementById('filterContainer').style.display = 'none';
 
-            if(photos.length < maxPoses) {
-                // Jalankan countdown dan rekam GIF secara bersamaan
-                const gifPromise = captureGifDuringCountdown(3); 
-                await runCountdownUI(3); // Update angka 3, 2, 1 di layar
-                
-                // Efek Flash pas itungan 0
-                const flash = document.getElementById('flash');
-                flash.style.display = 'block';
-                setTimeout(() => flash.style.display = 'none', 100);
+    if(photos.length < maxPoses) {
+        // 1. Jalankan countdown 3 ke 2 dulu (Tanpa Rekam)
+        await runCountdownUI(3, 2); 
+        
+        // 2. Pas masuk detik ke-1, baru mulai rekam GIF
+        countdownEl.innerText = "1";
+        const gifPromise = captureGifDuringCountdown(); 
+        
+        // Tunggu 1 detik pas angka 1 muncul
+        await new Promise(r => setTimeout(r, 1000));
+        
+        // 3. Efek Flash & Selesai
+        const flash = document.getElementById('flash');
+        flash.style.display = 'block';
+        setTimeout(() => flash.style.display = 'none', 100);
+        countdownEl.style.display = 'none';
 
-                loading.style.display = 'block';
-                const gifData = await gifPromise; // Tunggu hasil rekaman selesai di-encode
-                photos.push(gifData);
-                loading.style.display = 'none';
-                
-                updateInventory();
+        loading.style.display = 'block';
+        const gifData = await gifPromise; 
+        photos.push(gifData);
+        loading.style.display = 'none';
+        
+        updateInventory();
+    }
+    startBtn.disabled = false;
+}
+
+// Update fungsi Countdown UI biar bisa dikontrol rentangnya
+function runCountdownUI(from, to) {
+    return new Promise(resolve => {
+        let count = from;
+        countdownEl.style.display = 'block';
+        countdownEl.innerText = count;
+        const timer = setInterval(() => {
+            count--;
+            if(count < to) { 
+                clearInterval(timer); 
+                resolve(); 
+            } else { 
+                countdownEl.innerText = count; 
             }
-            startBtn.disabled = false;
-        }
+        }, 1000);
+    });
+}
 
-        function runCountdownUI(sec) {
-            return new Promise(resolve => {
-                let count = sec;
-                countdownEl.style.display = 'block';
-                countdownEl.innerText = count;
-                const timer = setInterval(() => {
-                    count--;
-                    if(count <= 0) { clearInterval(timer); countdownEl.style.display = 'none'; resolve(); }
-                    else { countdownEl.innerText = count; }
-                }, 1000);
-            });
-        }
-
-        function captureGifDuringCountdown(sec) {
+// Fungsi Rekam yang dipangkas habis biar INSTAN
+function captureGifDuringCountdown() {
     return new Promise((resolve) => {
         liveTag.style.display = 'block';
         gifshot.createGIF({
             cameraExternalStream: video.srcObject,
-            gifWidth: 320,      // Resolusi diturunkan (dari 480) agar proses kilat
-            gifHeight: 240,     // Rasio 4:3 tetap terjaga
-            numFrames: 12,      // Frame dikurangi (dari 25) agar encoding lebih cepat
-            interval: 0.15,     // Jeda antar frame sedikit lebih lama
-            numWorkers: 4,      // Gunakan lebih banyak 'tenaga' prosesor (Workers)
-            sampleInterval: 10, // Melewatkan beberapa pixel untuk mempercepat render
+            gifWidth: 300,      // Kecilin resolusi dikit lagi
+            gifHeight: 225,
+            numFrames: 6,       // Cuma ambil 6 frame (sangat ringan!)
+            interval: 0.1,      // Speed rekam cepet
+            numWorkers: 4,
             filter: currentFilter === 'lo-res' || currentFilter === 'sunset' ? '' : currentFilter
         }, function (obj) {
             liveTag.style.display = 'none';
@@ -268,4 +281,5 @@
     </script>
 </body>
 </html>
+
 
