@@ -9,7 +9,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gifshot/0.3.2/gifshot.min.js"></script>
     
     <style>
-        /* --- SEMUA CSS ASLI LO (TIDAK ADA YANG DIUBAH) --- */
+        /* --- CSS TETAP SAMA --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: #0e0e0e; color: #fff; font-family: 'Space Grotesk', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; min-height: 100vh; }
         .pose-counter { font-family: 'Archivo Black', sans-serif; font-size: 1.2rem; color: #000; margin-bottom: 20px; background: #ff4d00; padding: 10px 40px; text-transform: uppercase; box-shadow: 6px 6px 0px #fff; transform: rotate(-2deg); z-index: 100; }
@@ -60,7 +60,7 @@
         <div class="inventory-grid" id="invGrid"></div>
     </div>
 
-    <div id="loading">RECORDING LIVE PHOTO...</div>
+    <div id="loading">GENERATING GIF...</div>
 
     <div class="filter-container" id="filterContainer">
         <div style="color: #000; font-family: 'Archivo Black'; font-size: 10px; margin-bottom: 8px; text-align: center;">[ SELECT FILTER ]</div>
@@ -113,54 +113,34 @@
         
         let photos = []; 
         let currentFilter = 'none';
-        
         const selectedLayout = localStorage.getItem('selectedLayout') || 'layoutA';
         const camBox = document.getElementById('camBox');
-
         let maxPoses = 3; 
         const frameImg = new Image();
 
-        // LOGIC LAYOUT (ASLI)
+        // KONFIGURASI FRAME (SAMA)
         if (selectedLayout === 'layoutB') { maxPoses = 4; frameImg.src = 'frames/2.png'; } 
-        else if (selectedLayout === 'layoutC') { maxPoses = 3; frameImg.src = 'frames/3.png'; } 
-        else if (selectedLayout === 'layoutD') { maxPoses = 3; frameImg.src = 'frames/4.png'; } 
-        else if (selectedLayout === 'layoutE') { maxPoses = 3; frameImg.src = 'frames/5.png'; } 
+        else if (selectedLayout === 'layoutC' || selectedLayout === 'layoutD' || selectedLayout === 'layoutE') { maxPoses = 3; frameImg.src = `frames/${selectedLayout === 'layoutC' ? '3' : selectedLayout === 'layoutD' ? '4' : '5'}.png`; }
         else if (selectedLayout === 'layoutF') { maxPoses = 2; frameImg.src = 'frames/6.png'; camBox.style.aspectRatio = "640/788"; } 
         else if (selectedLayout === 'layoutG') { maxPoses = 1; frameImg.src = 'frames/7.png'; camBox.style.aspectRatio = "640/788"; } 
         else { maxPoses = 3; frameImg.src = 'frames/1(2).png'; }
 
-        function updatePoseDisplay() {
-            document.getElementById('poseDisplay').innerText = `${photos.length}/${maxPoses}`;
-        }
+        function updatePoseDisplay() { document.getElementById('poseDisplay').innerText = `${photos.length}/${maxPoses}`; }
         updatePoseDisplay();
         
         async function initCamera() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { width: 1280, height: 960 }, audio: false 
-                });
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 960 }, audio: false });
                 video.srcObject = stream;
             } catch (err) { alert("Kamera error!"); }
         }
 
         function setFilter(filter, el) {
             const overlay = document.getElementById('filterOverlay');
-            video.style.filter = 'none';
-            video.style.imageRendering = 'auto'; 
-            overlay.style.display = 'none';
-
-            if (filter === 'sunset') {
-                video.style.filter = 'contrast(1.2) saturate(1.5)';
-                overlay.style.display = 'block';
-                currentFilter = 'sunset'; 
-            } else if (filter === 'lo-res') {
-                video.style.imageRendering = 'pixelated'; 
-                video.style.filter = 'contrast(1.1) brightness(1.1)';
-                currentFilter = 'lo-res';
-            } else {
-                currentFilter = filter;
-                video.style.filter = filter;
-            }
+            video.style.filter = 'none'; video.style.imageRendering = 'auto'; overlay.style.display = 'none';
+            if (filter === 'sunset') { video.style.filter = 'contrast(1.2) saturate(1.5)'; overlay.style.display = 'block'; currentFilter = 'sunset'; } 
+            else if (filter === 'lo-res') { video.style.imageRendering = 'pixelated'; video.style.filter = 'contrast(1.1) brightness(1.1)'; currentFilter = 'lo-res'; } 
+            else { currentFilter = filter; video.style.filter = filter; }
             document.querySelectorAll('.filter-item').forEach(i => i.classList.remove('active'));
             el.classList.add('active');
         }
@@ -174,46 +154,38 @@
                 invGrid.appendChild(div);
             });
             updatePoseDisplay();
-            
-            if (photos.length === maxPoses) {
-                startBtn.style.display = 'none';
-                document.getElementById('processBtn').style.display = 'block';
-            } else {
-                startBtn.style.display = 'block';
-                startBtn.innerText = photos.length > 0 ? "CAPTURE NEXT" : "START CAPTURE";
-                document.getElementById('processBtn').style.display = 'none';
-            }
+            if (photos.length === maxPoses) { startBtn.style.display = 'none'; document.getElementById('processBtn').style.display = 'block'; } 
+            else { startBtn.style.display = 'block'; startBtn.innerText = "CAPTURE NEXT"; document.getElementById('processBtn').style.display = 'none'; }
         }
 
-        function retake(idx) {
-            photos.splice(idx, 1);
-            updateInventory();
-            document.getElementById('filterContainer').style.display = 'block';
-        }
+        function retake(idx) { photos.splice(idx, 1); updateInventory(); document.getElementById('filterContainer').style.display = 'block'; }
 
+        // --- LOGIC BARU: REKAM PAS COUNTDOWN ---
         async function startSequence() {
             startBtn.disabled = true;
             document.getElementById('filterContainer').style.display = 'none';
-            
-            while(photos.length < maxPoses) {
-                await runCountdown(3);
-                liveTag.style.display = 'block'; 
+
+            if(photos.length < maxPoses) {
+                // Jalankan countdown dan rekam GIF secara bersamaan
+                const gifPromise = captureGifDuringCountdown(3); 
+                await runCountdownUI(3); // Update angka 3, 2, 1 di layar
                 
-                // FLASH EFEK
+                // Efek Flash pas itungan 0
                 const flash = document.getElementById('flash');
                 flash.style.display = 'block';
                 setTimeout(() => flash.style.display = 'none', 100);
 
-                await captureGif(); // Memanggil proses pembuatan GIF
+                loading.style.display = 'block';
+                const gifData = await gifPromise; // Tunggu hasil rekaman selesai di-encode
+                photos.push(gifData);
+                loading.style.display = 'none';
                 
-                liveTag.style.display = 'none'; 
                 updateInventory();
-                break; 
             }
             startBtn.disabled = false;
         }
 
-        function runCountdown(sec) {
+        function runCountdownUI(sec) {
             return new Promise(resolve => {
                 let count = sec;
                 countdownEl.style.display = 'block';
@@ -226,31 +198,27 @@
             });
         }
 
-        // --- FITUR GIF TERBARU ---
-        function captureGif() {
+        function captureGifDuringCountdown(sec) {
             return new Promise((resolve) => {
-                loading.style.display = 'block'; // Tampilkan loading saat processing
-                
+                liveTag.style.display = 'block';
                 gifshot.createGIF({
                     cameraExternalStream: video.srcObject,
                     gifWidth: 480,
                     gifHeight: 360,
-                    numFrames: 10, // 10 frame = 1 detik rekaman
-                    interval: 0.1,
+                    numFrames: 25, // Jumlah frame diperbanyak biar pas sama durasi countdown
+                    interval: 0.12, // Durasi antar frame agar total pas ~3 detik
                     numWorkers: 2,
-                    fontWeight: 'bold',
-                    // Memasukkan filter CSS ke dalam GIF
                     filter: currentFilter === 'lo-res' || currentFilter === 'sunset' ? '' : currentFilter
                 }, function (obj) {
+                    liveTag.style.display = 'none';
                     if (!obj.error) {
-                        photos.push(obj.image); // Simpan GIF ke array
+                        resolve(obj.image);
                     }
-                    loading.style.display = 'none';
-                    resolve();
                 });
             });
         }
 
+        // --- RENDER FINAL (SAMA) ---
         function renderFinalFrame() {
             document.getElementById('invSection').style.display = 'none';
             document.getElementById('processBtn').style.display = 'none';
@@ -258,16 +226,10 @@
         }
 
         async function showResult() {
-            loading.style.display = 'block';
-            video.style.display = 'none';
-            canvas.style.display = 'block';
+            loading.style.display = 'block'; video.style.display = 'none'; canvas.style.display = 'block';
             await frameImg.decode();
-
-            if (selectedLayout === 'layoutG') {
-                canvas.width = 1080; canvas.height = 1920;
-            } else {
-                canvas.width = 800; canvas.height = 2400;
-            }
+            canvas.width = (selectedLayout === 'layoutG') ? 1080 : 800;
+            canvas.height = (selectedLayout === 'layoutG') ? 1920 : 2400;
 
             let cfg;
             if (selectedLayout === 'layoutB') { cfg = { photoW: 710, photoH: 447, startX: 45, startY: 54, gap: 90 }; } 
@@ -282,22 +244,16 @@
                 await new Promise(resolve => {
                     img.onload = () => {
                         const yPos = cfg.startY + (i * (cfg.photoH + cfg.gap));
-                        let sourceWidth = img.width;
-                        let sourceHeight = img.height;
-                        let targetRatio = cfg.photoW / cfg.photoH;
-                        let sourceRatio = sourceWidth / sourceHeight;
-                        let sX, sY, sW, sH;
-                        if (sourceRatio > targetRatio) { sW = sourceHeight * targetRatio; sH = sourceHeight; sX = (sourceWidth - sW) / 2; sY = 0; } 
-                        else { sW = sourceWidth; sH = sourceWidth / targetRatio; sX = 0; sY = (sourceHeight - sH) / 2; }
+                        let sW, sH, sX, sY, targetRatio = cfg.photoW / cfg.photoH;
+                        if ((img.width / img.height) > targetRatio) { sW = img.height * targetRatio; sH = img.height; sX = (img.width - sW) / 2; sY = 0; } 
+                        else { sW = img.width; sH = img.width / targetRatio; sX = 0; sY = (img.height - sH) / 2; }
                         ctx.drawImage(img, sX, sY, sW, sH, cfg.startX, yPos, cfg.photoW, cfg.photoH);
                         resolve();
                     }
                 });
             }
             ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
-            loading.style.display = 'none';
-            document.getElementById('dlBtn').style.display = 'block';
-            document.getElementById('reBtn').style.display = 'block';
+            loading.style.display = 'none'; document.getElementById('dlBtn').style.display = 'block'; document.getElementById('reBtn').style.display = 'block';
         }
 
         function downloadImage() {
