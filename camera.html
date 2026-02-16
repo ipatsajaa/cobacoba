@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TIMELESS — SHOOTING SESSION</title>
     <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gifshot/0.3.2/gifshot.min.js"></script>
+    
     <style>
         /* --- BRUTALIST UI OVERHAUL --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -295,7 +297,7 @@
         const liveTag = document.getElementById('liveTag');
         const invGrid = document.getElementById('invGrid');
         
-        let photos = []; // Array utama hasil capture
+        let photos = []; 
         let currentFilter = 'none';
         
         const selectedLayout = localStorage.getItem('selectedLayout') || 'layoutA';
@@ -304,7 +306,6 @@
         let maxPoses = 3; 
         const frameImg = new Image();
 
-        // --- KONFIGURASI LAYOUT (TETAP SAMA) ---
         if (selectedLayout === 'layoutB') { maxPoses = 4; frameImg.src = 'frames/2.png'; } 
         else if (selectedLayout === 'layoutC') { maxPoses = 3; frameImg.src = 'frames/3.png'; } 
         else if (selectedLayout === 'layoutD') { maxPoses = 3; frameImg.src = 'frames/4.png'; } 
@@ -349,18 +350,17 @@
             el.classList.add('active');
         }
 
-        // --- FITUR INVENTORY: UPDATE UI ---
         function updateInventory() {
             invGrid.innerHTML = '';
             photos.forEach((src, idx) => {
                 const div = document.createElement('div');
                 div.className = 'inv-item';
+                // src di sini adalah DataURL (Bisa Image atau GIF)
                 div.innerHTML = `<img src="${src}"><button class="retake-btn" onclick="retake(${idx})">RETAKE</button>`;
                 invGrid.appendChild(div);
             });
             updatePoseDisplay();
             
-            // Kontrol tombol
             if (photos.length === maxPoses) {
                 startBtn.style.display = 'none';
                 document.getElementById('processBtn').style.display = 'block';
@@ -381,16 +381,13 @@
             startBtn.disabled = true;
             document.getElementById('filterContainer').style.display = 'none';
             
-            // Loop hanya untuk slot yang kosong
             while(photos.length < maxPoses) {
                 await runCountdown(3);
-                liveTag.style.display = 'block'; // Fitur Live Tag On
-                capture();
-                liveTag.style.display = 'none'; // Fitur Live Tag Off
+                // --- FITUR LIVE AKTIF ---
+                liveTag.style.display = 'block'; 
+                await captureLive(); // Memanggil fungsi capture baru
+                liveTag.style.display = 'none'; 
                 updateInventory();
-                await new Promise(r => setTimeout(r, 600));
-                
-                // Berhenti per satu jepretan supaya user bisa retake
                 break; 
             }
             startBtn.disabled = false;
@@ -409,56 +406,31 @@
             });
         }
 
-        // --- CORE CAPTURE (TETAP SAMA) ---
-        function capture() {
-            const flash = document.getElementById('flash');
-            flash.style.display = 'block';
-            setTimeout(() => flash.style.display = 'none', 100);
+        // --- TAMBAHAN FITUR: CAPTURE LIVE (GIF) ---
+        function captureLive() {
+            return new Promise(resolve => {
+                const flash = document.getElementById('flash');
+                flash.style.display = 'block';
+                setTimeout(() => flash.style.display = 'none', 100);
 
-            const vW = video.videoWidth;
-            const vH = video.videoHeight;
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = vW;
-            tempCanvas.height = vH;
-            const tempCtx = tempCanvas.getContext('2d');
-
-            if (currentFilter === 'lo-res') {
-                const scale = 0.1; 
-                const sw = Math.floor(vW * scale);
-                const sh = Math.floor(vH * scale);
-                const smallCanvas = document.createElement('canvas');
-                smallCanvas.width = sw;
-                smallCanvas.height = sh;
-                const smallCtx = smallCanvas.getContext('2d');
-                smallCtx.translate(sw, 0);
-                smallCtx.scale(-1, 1);
-                smallCtx.drawImage(video, 0, 0, sw, sh);
-                tempCtx.imageSmoothingEnabled = false; 
-                tempCtx.drawImage(smallCanvas, 0, 0, sw, sh, 0, 0, vW, vH);
-                tempCtx.filter = 'contrast(1.2) brightness(1.1)';
-            } else {
-                tempCtx.filter = (currentFilter === 'sunset') ? 'contrast(1.2) saturate(1.5)' : currentFilter;
-                tempCtx.save();
-                tempCtx.translate(vW, 0);
-                tempCtx.scale(-1, 1);
-                tempCtx.drawImage(video, 0, 0, vW, vH);
-                tempCtx.restore();
-
-                if (currentFilter === 'sunset') {
-                    tempCtx.globalAlpha = 0.4;
-                    tempCtx.globalCompositeOperation = 'screen';
-                    const grad = tempCtx.createLinearGradient(0, 0, 0, vH);
-                    grad.addColorStop(0, '#405de6');
-                    grad.addColorStop(0.5, '#833ab4');
-                    grad.addColorStop(1, '#fd1d1d');
-                    tempCtx.fillStyle = grad;
-                    tempCtx.fillRect(0, 0, vW, vH);
-                }
-            }
-            photos.push(tempCanvas.toDataURL('image/jpeg', 0.9));
+                // Buat GIF 1 detik (10 frame x 0.1s)
+                gifshot.createGIF({
+                    cameraExternalStream: video.srcObject,
+                    gifWidth: 640,
+                    gifHeight: 480,
+                    numFrames: 10,
+                    interval: 0.1,
+                    filter: currentFilter === 'lo-res' || currentFilter === 'sunset' ? '' : currentFilter,
+                    fontWeight: 'bold'
+                }, function (obj) {
+                    if (!obj.error) {
+                        photos.push(obj.image);
+                    }
+                    resolve();
+                });
+            });
         }
 
-        // --- RENDER FINAL FRAME (DIPANGGIL DARI TOMBOL) ---
         function renderFinalFrame() {
             document.getElementById('invSection').style.display = 'none';
             document.getElementById('processBtn').style.display = 'none';
