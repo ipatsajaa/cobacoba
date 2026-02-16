@@ -3,243 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TIMELESSBOOTH — CHRONOS SYSTEM</title>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono&display=swap" rel="stylesheet">
+    <title>TIMELESSBOOTH — NEO-GLOSS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Syne:wght@800&display=swap" rel="stylesheet">
     <style>
-        /* --- CHRONOS THEME BASE --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
         
         :root {
-            --paper: #e8e6e1; /* Warna kertas arsip tua */
-            --ink: #111;
-            --accent: #999; /* Chrome/Silver vibe */
+            --blue: #0047ff;
+            --black: #050505;
+            --white: #ffffff;
         }
 
         body { 
-            background: var(--paper); 
-            color: var(--ink); 
-            font-family: 'Space Mono', monospace; 
+            background: var(--black); 
+            color: var(--white); 
+            font-family: 'Syne', sans-serif; 
             overflow-x: hidden;
         }
 
-        /* --- VINTAGE GRAIN OVERLAY --- */
-        body::before {
-            content: "";
+        /* --- CUSTOM CURSOR --- */
+        #cursor {
+            position: fixed; width: 20px; height: 20px; background: var(--blue);
+            border-radius: 50%; pointer-events: none; z-index: 9999;
+            mix-blend-mode: difference; transition: transform 0.1s;
+        }
+
+        /* --- BACKGROUND GRAIN --- */
+        .grain {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/stardust.png');
-            opacity: 0.4; pointer-events: none; z-index: 1000;
+            background: url('https://upload.wikimedia.org/wikipedia/commons/7/76/1k_Grain_Texture.jpg');
+            opacity: 0.05; pointer-events: none; z-index: 10;
         }
 
-        /* --- TOP BAR: CLOCK RUNNING --- */
-        .time-header {
-            border-bottom: 2px solid var(--ink);
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.8rem;
-            font-weight: bold;
-            text-transform: uppercase;
+        /* --- NAV BAR --- */
+        nav {
+            padding: 30px; display: flex; justify-content: space-between;
+            align-items: center; border-bottom: 1px solid #222;
+        }
+        .status { display: flex; align-items: center; gap: 10px; font-size: 12px; }
+        .dot { width: 8px; height: 8px; background: var(--blue); border-radius: 50%; animation: pulse 1.5s infinite; }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            height: 80vh; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; position: relative;
         }
 
-        /* --- CONTAINER --- */
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 80px 20px;
-            min-height: 100vh;
-            position: relative;
+        .title-main {
+            font-size: clamp(4rem, 20vw, 12rem);
+            line-height: 0.8; text-align: center;
+            text-transform: uppercase; letter-spacing: -5px;
+            z-index: 2; position: relative;
         }
 
-        /* --- HERO: THE TIMELESS LOGO --- */
-        .logo-wrap {
-            position: relative;
-            text-align: center;
-            margin-bottom: 60px;
+        .title-outline {
+            -webkit-text-stroke: 1px var(--white);
+            color: transparent;
         }
 
-        .hero-title {
-            font-family: 'Archivo Black', sans-serif;
-            font-size: clamp(3rem, 12vw, 8rem);
-            line-height: 0.8;
-            letter-spacing: -2px;
-            text-transform: uppercase;
-            color: var(--ink);
+        /* --- FLOATING IMAGES (EDITORIAL STYLE) --- */
+        .float-img {
+            position: absolute; width: 200px; height: 280px;
+            background: var(--white); overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            transition: 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            z-index: 1; border: 1px solid #333;
         }
+        .float-img img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1); transition: 0.5s; }
+        .float-img:hover { transform: scale(1.05); z-index: 5; border-color: var(--blue); }
+        .float-img:hover img { filter: grayscale(0); }
 
-        .hero-sub {
-            background: var(--ink);
-            color: var(--paper);
-            display: inline-block;
-            padding: 5px 15px;
-            font-size: 1.2rem;
-            margin-top: 10px;
-            transform: skewX(-15deg);
-        }
+        .img-1 { top: 10%; left: 10%; transform: rotate(-10deg); }
+        .img-2 { bottom: 10%; right: 12%; transform: rotate(8deg); }
 
-        /* --- PREVIEW GRID: MUSEUM STYLE --- */
-        .gallery-preview {
-            display: flex;
-            gap: 40px;
-            margin: 60px 0;
-            z-index: 2;
-        }
-
-        .photo-frame {
-            width: 100px;
-            background: #fff;
-            border: 1px solid var(--ink);
-            padding: 10px 10px 40px 10px;
-            position: relative;
-            box-shadow: 20px 20px 0px rgba(0,0,0,0.05);
-            transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-        }
-
-        .photo-frame img {
-            width: 100%;
-            filter: sepia(0.5) contrast(1.2);
+        /* --- BIG ACTION BUTTON --- */
+        .start-trigger {
+            margin-top: -50px; z-index: 10;
+            background: var(--white); color: var(--black);
+            padding: 25px 80px; font-size: 1.5rem;
+            font-family: 'Archivo Black'; border: none;
+            clip-path: polygon(0 0, 100% 0, 100% 70%, 85% 100%, 0 100%);
             transition: 0.3s;
         }
-
-        .photo-frame::after {
-            content: "ARCHIVE NO. "attr(data-no);
-            position: absolute; bottom: 10px; left: 10px;
-            font-size: 8px; font-weight: bold;
+        .start-trigger:hover {
+            background: var(--blue); color: var(--white);
+            transform: translateY(-5px);
         }
 
-        .photo-frame:nth-child(1) { transform: rotate(-3deg); }
-        .photo-frame:nth-child(2) { transform: rotate(4deg); margin-top: 20px; }
-
-        .photo-frame:hover {
-            transform: rotate(0) scale(1.1);
-            z-index: 5;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.1);
-        }
-
-        .photo-frame:hover img { filter: sepia(0) contrast(1); }
-
-        /* --- ACTION BUTTON: CHRONOS --- */
-        .btn-action {
-            margin-top: 40px;
-            background: var(--ink);
-            color: var(--paper);
-            border: none;
-            padding: 25px 60px;
-            font-family: 'Archivo Black', sans-serif;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: 0.3s;
-            position: relative;
-            text-transform: uppercase;
-            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
-        }
-
-        .btn-action:hover {
-            background: #555;
-            padding: 25px 80px;
-        }
-
-        /* --- FOOTER: THE LOG --- */
+        /* --- FOOTER BRUTALIST --- */
         footer {
-            width: 100%;
-            padding: 60px 40px;
-            background: var(--ink);
-            color: var(--paper);
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 40px;
-            font-size: 0.7rem;
-            text-transform: uppercase;
+            background: var(--white); color: var(--black);
+            padding: 80px 40px; display: grid;
+            grid-template-columns: 2fr 1fr 1fr; gap: 40px;
         }
+        .f-big { font-size: 4rem; font-weight: 800; line-height: 0.8; letter-spacing: -2px; }
+        .f-list { list-style: none; font-size: 0.9rem; line-height: 2; }
+        .f-list b { text-transform: uppercase; font-size: 0.7rem; color: #666; }
 
-        .f-col h4 { margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 5px; }
-        .f-col p { line-height: 2; color: var(--accent); }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
-        /* --- DECORATION --- */
-        .circle-text {
-            position: absolute;
-            top: -20px; right: -40px;
-            width: 100px; height: 100px;
-            animation: rotate 10s linear infinite;
-            opacity: 0.3;
+        /* Responsive */
+        @media (max-width: 768px) {
+            .float-img { display: none; }
+            footer { grid-template-columns: 1fr; }
+            .f-big { font-size: 2.5rem; }
         }
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
     </style>
 </head>
 <body>
 
-    <div class="time-header">
-        <div>TIMELESSBOOTH // GEN-01</div>
-        <div id="clock">00:00:00</div>
-    </div>
+    <div id="cursor"></div>
+    <div class="grain"></div>
 
-    <div class="container">
-        <div class="logo-wrap">
-            <h1 class="hero-title">TIMELESS<br>BOOTH</h1>
-            <div class="hero-sub">CAPTURE THE INFINITE</div>
-            <svg class="circle-text" viewBox="0 0 100 100">
-                <path id="circlePath" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="transparent"/>
-                <text font-size="8">
-                    <textPath xlink:href="#circlePath">
-                        STOP THE TIME — CAPTURE THE MOMENT — STOP THE TIME —
-                    </textPath>
-                </text>
-            </svg>
-        </div>
+    <nav>
+        <div class="status"><div class="dot"></div> SERVER: READY</div>
+        <div style="font-weight: 800; letter-spacing: 2px;">V.26</div>
+        <div>MAJALAYA®</div>
+    </nav>
 
-        <div class="gallery-preview">
-            <div class="photo-frame" data-no="8821">
-                <img src="frames/conto.png" alt="Preview">
-            </div>
-            <div class="photo-frame" data-no="8822">
-                <img src="frames/7.png" alt="Preview">
-            </div>
-        </div>
+    <section class="hero">
+        <div class="float-img img-1"><img src="frames/conto.png"></div>
+        <div class="float-img img-2"><img src="frames/1(2).png"></div>
 
-        <button class="btn-action" onclick="startApp()">
-            START SESSION
+        <h1 class="title-main">
+            TIMELESS<br><span class="title-outline">BOOTH</span>
+        </h1>
+        
+        <button class="start-trigger" onclick="nextPage()">
+            ENTER ARCHIVE
         </button>
-    </div>
+    </section>
 
     <footer>
-        <div class="f-col">
-            <h4>Concept</h4>
-            <p>Capturing moments that refuse to fade. A digital archive for physical memories.</p>
+        <div class="f-big">MEMORIES<br>ARE NOT<br>LINEAR*</div>
+        <div class="f-list">
+            <b>Navigation</b><br>
+            <li>Index</li>
+            <li>Gallery</li>
+            <li>Terms of Use</li>
+            <li>Privacy Policy</li>
         </div>
-        <div class="f-col">
-            <h4>Location</h4>
-            <p>Bandung, West Java<br>Studio Unit 01</p>
-        </div>
-        <div class="f-col">
-            <h4>Navigation</h4>
-            <p><a href="#" style="color:white">Instagram</a> / <a href="#" style="color:white">TikTok</a></p>
-        </div>
-        <div class="f-col">
-            <h4>System</h4>
-            <p>© 2026 TimelessBooth.<br>All Rights Reserved.</p>
+        <div class="f-list">
+            <b>Connect</b><br>
+            <li>Instagram ↗</li>
+            <li>TikTok ↗</li>
+            <li>Email ↗</li>
         </div>
     </footer>
 
     <script>
-        // Realtime Clock
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('clock').innerText = now.toLocaleTimeString();
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
+        // Custom Cursor Movement
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', e => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
 
-        function startApp() {
-            const btn = document.querySelector('.btn-action');
-            btn.innerHTML = "FREEZING TIME...";
-            btn.style.opacity = "0.5";
+        function nextPage() {
+            const btn = document.querySelector('.start-trigger');
+            btn.innerHTML = "PROCESSING...";
+            btn.style.background = "#0047ff";
             
             setTimeout(() => {
                 window.location.href = 'layout.html';
-            }, 800);
+            }, 600);
         }
     </script>
 </body>
 </html>
-
