@@ -454,43 +454,68 @@
             });
         }
 
-        function captureFrameManual() {
-            const vW = video.videoWidth;
-            const vH = video.videoHeight;
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = vW;
-            tempCanvas.height = vH;
-            const tempCtx = tempCanvas.getContext('2d');
+  function captureFrameManual() {
+    const vW = video.videoWidth;
+    const vH = video.videoHeight;
+    
+    // Ambil config layout buat tau target perbandingan (W/H)
+    const cfg = getLayoutConfig();
+    const targetRatio = cfg.photoW / cfg.photoH;
 
-            if (currentFilter === 'lo-res') {
-                const scale = 0.1; 
-                const sw = Math.floor(vW * scale);
-                const sh = Math.floor(vH * scale);
-                const smallCanvas = document.createElement('canvas');
-                smallCanvas.width = sw; smallCanvas.height = sh;
-                const smallCtx = smallCanvas.getContext('2d');
-                smallCtx.translate(sw, 0); smallCtx.scale(-1, 1);
-                smallCtx.drawImage(video, 0, 0, sw, sh);
-                tempCtx.imageSmoothingEnabled = false; 
-                tempCtx.drawImage(smallCanvas, 0, 0, sw, sh, 0, 0, vW, vH);
-            } else {
-                tempCtx.filter = (currentFilter === 'sunset') ? 'contrast(1.2) saturate(1.5)' : currentFilter;
-                tempCtx.translate(vW, 0);
-                tempCtx.scale(-1, 1);
-                tempCtx.drawImage(video, 0, 0, vW, vH);
-                
-                if (currentFilter === 'sunset') {
-                    tempCtx.translate(vW, 0); tempCtx.scale(-1, 1); // Reset scale for overlay
-                    tempCtx.globalAlpha = 0.4;
-                    tempCtx.globalCompositeOperation = 'screen';
-                    const grad = tempCtx.createLinearGradient(0, 0, 0, vH);
-                    grad.addColorStop(0, '#405de6'); grad.addColorStop(1, '#fd1d1d');
-                    tempCtx.fillStyle = grad;
-                    tempCtx.fillRect(0, 0, vW, vH);
-                }
-            }
-            return tempCanvas.toDataURL('image/jpeg', 0.8);
-        }
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = cfg.photoW; // Kita set canvas seukuran lubang frame
+    tempCanvas.height = cfg.photoH;
+    const tempCtx = tempCanvas.getContext('2d');
+
+    // Itung posisi crop biar Center (Mencegah Gepeng)
+    let sW, sH, sX, sY;
+    if ((vW / vH) > targetRatio) {
+        sH = vH;
+        sW = vH * targetRatio;
+        sX = (vW - sW) / 2;
+        sY = 0;
+    } else {
+        sW = vW;
+        sH = vW / targetRatio;
+        sX = 0;
+        sY = (vH - sH) / 2;
+    }
+
+    // Mirroring & Filter
+    tempCtx.save();
+    if (currentFilter !== 'lo-res') {
+        tempCtx.filter = (currentFilter === 'sunset') ? 'contrast(1.2) saturate(1.5)' : currentFilter;
+    }
+    
+    // Gambar hasil crop ke canvas (di-mirror)
+    tempCtx.translate(cfg.photoW, 0);
+    tempCtx.scale(-1, 1);
+    tempCtx.drawImage(video, sX, sY, sW, sH, 0, 0, cfg.photoW, cfg.photoH);
+    tempCtx.restore();
+
+    // Tambahan buat filter khusus
+    if (currentFilter === 'sunset') {
+        tempCtx.globalAlpha = 0.4;
+        tempCtx.globalCompositeOperation = 'screen';
+        const grad = tempCtx.createLinearGradient(0, 0, 0, cfg.photoH);
+        grad.addColorStop(0, '#405de6'); grad.addColorStop(1, '#fd1d1d');
+        tempCtx.fillStyle = grad;
+        tempCtx.fillRect(0, 0, cfg.photoW, cfg.photoH);
+    }
+
+    if (currentFilter === 'lo-res') {
+        // Efek pixelated manual jika diperlukan
+        const small = document.createElement('canvas');
+        small.width = cfg.photoW * 0.2;
+        small.height = cfg.photoH * 0.2;
+        const sCtx = small.getContext('2d');
+        sCtx.drawImage(tempCanvas, 0, 0, small.width, small.height);
+        tempCtx.imageSmoothingEnabled = false;
+        tempCtx.drawImage(small, 0, 0, small.width, small.height, 0, 0, cfg.photoW, cfg.photoH);
+    }
+
+    return tempCanvas.toDataURL('image/jpeg', 0.8);
+}
 
         function makeGif(frames) {
             return new Promise(resolve => {
@@ -535,13 +560,17 @@
         }
 
         function getLayoutConfig() {
-            if (selectedLayout === 'layoutB') return { photoW: 710, photoH: 447, startX: 45, startY: 54, gap: 90 };
-            if (['layoutC', 'layoutD', 'layoutE'].includes(selectedLayout)) return { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 };
-            if (selectedLayout === 'layoutF') return { photoW: 640, photoH: 788, startX: 80, startY: 290, gap: 193 };
-            if (selectedLayout === 'layoutG') return { photoW: 586, photoH: 798, startX: 343, startY: 372, gap: 0};
-            return { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 };
-        }
-
+    // Sesuaikan angka photoW dan photoH dengan ukuran lubang di PNG lo
+    if (selectedLayout === 'layoutB') return { photoW: 710, photoH: 447, startX: 45, startY: 54, gap: 90 };
+    if (['layoutC', 'layoutD', 'layoutE'].includes(selectedLayout)) return { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 };
+    if (selectedLayout === 'layoutF') return { photoW: 640, photoH: 788, startX: 80, startY: 290, gap: 193 };
+    
+    // Layout G (Story mode)
+    if (selectedLayout === 'layoutG') return { photoW: 586, photoH: 798, startX: 343, startY: 372, gap: 0};
+    
+    // Default / Layout A
+    return { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 };
+}
         function drawCover(targetCtx, img, x, y, w, h) {
             let targetRatio = w / h;
             let sourceRatio = img.width / img.height;
@@ -613,5 +642,6 @@
     </script>
 </body>
 </html>
+
 
 
