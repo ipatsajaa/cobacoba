@@ -572,16 +572,30 @@
     return { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 };
 }
         function drawCover(targetCtx, img, x, y, w, h) {
-            let targetRatio = w / h;
-            let sourceRatio = img.width / img.height;
-            let sX, sY, sW, sH;
-            if (sourceRatio > targetRatio) {
-                sW = img.height * targetRatio; sH = img.height; sX = (img.width - sW) / 2; sY = 0;
-            } else {
-                sW = img.width; sH = img.width / targetRatio; sX = 0; sY = (img.height - sH) / 2;
-            }
-            targetCtx.drawImage(img, sX, sY, sW, sH, x, y, w, h);
-        }
+    // 1. Itung ratio target (kotak di frame) vs ratio foto asli
+    let targetRatio = w / h;
+    let sourceRatio = img.width / img.height;
+    let sX, sY, sW, sH;
+
+    // 2. LOGIKA CROP CENTER:
+    // Kalau foto asli lebih lebar dari lubang frame (kebanyakan kamera begini)
+    if (sourceRatio > targetRatio) {
+        sW = img.height * targetRatio;
+        sH = img.height;
+        sX = (img.width - sW) / 2; // Potong samping kiri-kanan, ambil tengah
+        sY = 0;
+    } 
+    // Kalau foto asli lebih tinggi dari lubang frame
+    else {
+        sW = img.width;
+        sH = img.width / targetRatio;
+        sX = 0;
+        sY = (img.height - sH) / 2; // Potong atas-bawah, ambil tengah
+    }
+
+    // 3. Gambar ke canvas sesuai koordinat hasil potong
+    targetCtx.drawImage(img, sX, sY, sW, sH, x, y, w, h);
+}
 
         function downloadImage() {
             const link = document.createElement('a');
@@ -642,6 +656,7 @@
     </script>
 </body>
 </html>
+
 
 
 
