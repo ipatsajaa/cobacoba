@@ -324,6 +324,7 @@
         else if (selectedLayout === 'layoutE') { maxPoses = 3; frameImg.src = 'frames/5.png'; } 
         else if (selectedLayout === 'layoutF') { maxPoses = 2; frameImg.src = 'frames/6.png'; camBox.style.aspectRatio = "640/788"; } 
         else if (selectedLayout === 'layoutG') { maxPoses = 1; frameImg.src = 'frames/7.png'; camBox.style.aspectRatio = "640/788"; } 
+        else if (selectedLayout === 'layoutH') { maxPoses = 3; frameImg.src = 'frames/8.png'; } 
         else { maxPoses = 3; frameImg.src = 'frames/1(2).png'; }
 
         function updatePoseDisplay() {
@@ -567,6 +568,7 @@
     
     // Layout G (Story mode)
     if (selectedLayout === 'layoutG') return { photoW: 586, photoH: 798, startX: 343, startY: 372, gap: 0};
+    if (selectedLayout === 'layoutH') return { photoW: 700, photoH: 525, startX: 50, startY: 80, gap: 93 };
     
     // Default / Layout A
     return { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 };
@@ -656,6 +658,7 @@
     </script>
 </body>
 </html>
+
 
 
 
