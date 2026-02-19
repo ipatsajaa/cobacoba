@@ -231,6 +231,10 @@
                 <div class="filter-dot" style="background: repeating-conic-gradient(#000 0% 25%, #fff 0% 50%) 50% / 2px 2px;"></div>
                 <span>Dither</span>
         </div>
+            <div class="filter-item" onclick="setFilter('halftone', this)">
+                <div class="filter-dot" style="background: radial-gradient(#000 20%, transparent 25%) 0 0 / 6px 6px, #fff;"></div>
+                <span>Halftone</span>
+        </div>
         </div>
     </div>
 
@@ -405,7 +409,39 @@
     }
     return imageData;
 }
-        
+
+                        function applyHalftone(ctx, width, height) {
+                    const imageData = ctx.getImageData(0, 0, width, height);
+                    const data = imageData.data;
+                    const gridSize = 7; // Ukuran dot. Makin gede makin kasar (brutal)
+                
+                    // Bersihkan canvas jadi putih dulu
+                    ctx.fillStyle = "#fff";
+                    ctx.fillRect(0, 0, width, height);
+                    ctx.fillStyle = "#000";
+                
+                    for (let y = 0; y < height; y += gridSize) {
+                        for (let x = 0; x < width; x += gridSize) {
+                            // Ambil sample warna di tengah grid
+                            const idx = (y * width + x) * 4;
+                            const r = data[idx];
+                            const g = data[idx + 1];
+                            const b = data[idx + 2];
+                            
+                            // Itung kecerahan (0-255)
+                            const brightness = (0.299 * r + 0.587 * g + 0.114 * b);
+                            
+                            // Ukuran radius berbanding terbalik dengan kecerahan
+                            const radius = (gridSize / 2) * (1 - brightness / 255);
+                
+                            if (radius > 0.5) {
+                                ctx.beginPath();
+                                ctx.arc(x + gridSize/2, y + gridSize/2, radius * 1.2, 0, Math.PI * 2);
+                                ctx.fill();
+                            }
+                        }
+                    }
+                }
         function captureFrameManual() {
             const tempCanvas = document.createElement('canvas');
             const cfg = getLayoutConfig();
@@ -431,6 +467,10 @@
                 // Jalankan algoritma dithering
                 imgData = applyDithering(imgData);
                 tempCtx.putImageData(imgData, 0, 0);
+            }
+            if (currentFilter === 'halftone') {
+                // Kita butuh context buat gambar manual titik-titiknya
+                applyHalftone(tempCtx, cfg.photoW, cfg.photoH);
             }
             return tempCanvas.toDataURL('image/jpeg', 0.8);
         }
@@ -522,4 +562,5 @@
     </script>
 </body>
 </html>
+
 
