@@ -227,6 +227,10 @@
                 <div class="filter-dot" style="background: linear-gradient(45deg, #ffcc33, #ff6600);"></div>
                 <span>Chrome</span>
             </div>
+            <div class="filter-item" onclick="setFilter('dither', this)">
+                <div class="filter-dot" style="background: repeating-conic-gradient(#000 0% 25%, #fff 0% 50%) 50% / 2px 2px;"></div>
+                <span>Dither</span>
+        </div>
         </div>
     </div>
 
@@ -371,6 +375,37 @@
             });
         }
 
+        function applyDithering(imageData) {
+    const data = imageData.data;
+    const width = imageData.width;
+
+    for (let y = 0; y < imageData.height; y++) {
+        for (let x = 0; x < width; x++) {
+            const idx = (y * width + x) * 4;
+            const oldR = data[idx];
+            const newR = oldR < 128 ? 0 : 255; // Thresholding ke 0 atau 255
+            
+            data[idx] = data[idx + 1] = data[idx + 2] = newR;
+            const err = (oldR - newR) >> 3; // Sebarkan error ke pixel tetangga
+
+            // Algoritma Atkinson: Sebarkan error ke 6 pixel sekitar
+            const neighbors = [
+                [1, 0], [2, 0], [-1, 1], [0, 1], [1, 1], [0, 2]
+            ];
+
+            neighbors.forEach(([nx, ny]) => {
+                const targetIdx = ((y + ny) * width + (x + nx)) * 4;
+                if (targetIdx >= 0 && targetIdx < data.length) {
+                    data[targetIdx] += err;
+                    data[targetIdx + 1] += err;
+                    data[targetIdx + 2] += err;
+                }
+            });
+        }
+    }
+    return imageData;
+}
+        
         function captureFrameManual() {
             const tempCanvas = document.createElement('canvas');
             const cfg = getLayoutConfig();
@@ -390,6 +425,12 @@
                 grad.addColorStop(0, '#ffcc33'); grad.addColorStop(1, '#ff6600');
                 tempCtx.fillStyle = grad;
                 tempCtx.fillRect(0,0,cfg.photoW, cfg.photoH);
+            }
+            if (currentFilter === 'dither') {
+                let imgData = tempCtx.getImageData(0, 0, cfg.photoW, cfg.photoH);
+                // Jalankan algoritma dithering
+                imgData = applyDithering(imgData);
+                tempCtx.putImageData(imgData, 0, 0);
             }
             return tempCanvas.toDataURL('image/jpeg', 0.8);
         }
@@ -481,3 +522,4 @@
     </script>
 </body>
 </html>
+
