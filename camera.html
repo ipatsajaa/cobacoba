@@ -181,7 +181,32 @@
             display: none; font-family: 'Archivo Black'; margin: 20px; 
             color: var(--ink); text-align: center; animation: blink 0.5s infinite alternate;
         }
-
+        .scanlines {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            /* Garis-garis horizontal hitam transparan */
+            background: linear-gradient(
+                rgba(18, 16, 16, 0) 50%, 
+                rgba(0, 0, 0, 0.1) 50%
+            );
+            background-size: 100% 4px; /* Jarak antar garis */
+            z-index: 999;
+            pointer-events: none;
+        }
+        @keyframes glitch-anim {
+            0% { clip: rect(42px, 9999px, 44px, 0); transform: skew(0.5deg); }
+            5% { clip: rect(12px, 9999px, 22px, 0); transform: skew(0.5deg); }
+            10% { clip: rect(85px, 9999px, 140px, 0); transform: skew(0.8deg); }
+            15% { clip: rect(0, 0, 0, 0); } /* Hilang glitchnya */
+            100% { clip: rect(0, 0, 0, 0); }
+        }
+        
+        .glitch-active {
+            animation: glitch-anim 0.2s infinite;
+            filter: hue-rotate(90deg) contrast(2);
+            position: relative;
+        }
         @keyframes blink { from { opacity: 1; } to { opacity: 0.3; } }
     </style>
 </head>
@@ -356,47 +381,57 @@
             document.getElementById('filterContainer').style.display = 'block';
         }
 
-        async function startSequence() {
-            startBtn.disabled = true;
-            document.getElementById('filterContainer').style.display = 'none';
-            if(photos.length < maxPoses) {
-                // COUNTDOWN WITH BEEP (1s)
-                countdownEl.style.display = 'block';
-                for (let i = 3; i > 1; i--) {
-                    countdownEl.innerText = i;
-                    playSound('beep', 1000); 
-                    await new Promise(r => setTimeout(r, 1000));
-                }
-                
-                countdownEl.innerText = "1";
-                playSound('beep', 1000);
-                await new Promise(r => setTimeout(r, 1000));
+   async function startSequence() {
+    startBtn.disabled = true;
+    document.getElementById('filterContainer').style.display = 'none';
+    const camBox = document.getElementById('camBox'); // Ambil element camBox
 
-                liveTag.style.display = 'block';
-                const currentPoseFrames = [];
-                for(let i=0; i<6; i++) {
-                    currentPoseFrames.push(captureFrameManual());
-                    await new Promise(r => setTimeout(r, 150));
-                }
-
-                // FLASH + SHUTTER (2s)
-                const flash = document.getElementById('flash');
-                flash.style.display = 'block';
-                playSound('shutter', 2000); 
-                
-                setTimeout(() => flash.style.display = 'none', 100);
-                countdownEl.style.display = 'none';
-                liveTag.style.display = 'none';
-                
-                loading.style.display = 'block';
-                const gifData = await makeGif(currentPoseFrames); 
-                rawFrames.push(currentPoseFrames);
-                photos.push(gifData);
-                loading.style.display = 'none';
-                updateInventory();
-            }
-            startBtn.disabled = false;
+    if(photos.length < maxPoses) {
+        // COUNTDOWN WITH BEEP (1s)
+        countdownEl.style.display = 'block';
+        for (let i = 3; i > 1; i--) {
+            countdownEl.innerText = i;
+            playSound('beep', 1000); 
+            await new Promise(r => setTimeout(r, 1000));
         }
+        
+        countdownEl.innerText = "1";
+        playSound('beep', 1000);
+        await new Promise(r => setTimeout(r, 1000));
+
+        liveTag.style.display = 'block';
+        const currentPoseFrames = [];
+        for(let i=0; i<6; i++) {
+            currentPoseFrames.push(captureFrameManual());
+            await new Promise(r => setTimeout(r, 150));
+        }
+
+        // --- FLASH + SHUTTER + GLITCH ---
+        const flash = document.getElementById('flash');
+        
+        // Aktifkan Efek
+        flash.style.display = 'block';
+        camBox.classList.add('glitch-active'); // MULAI GLITCH
+        playSound('shutter', 2000); 
+        
+        // Matikan Flash & Glitch setelah durasi singkat
+        setTimeout(() => {
+            flash.style.display = 'none';
+            camBox.classList.remove('glitch-active'); // STOP GLITCH
+        }, 400); // Glitch cuma 0.4 detik biar dramatis
+
+        countdownEl.style.display = 'none';
+        liveTag.style.display = 'none';
+        
+        loading.style.display = 'block';
+        const gifData = await makeGif(currentPoseFrames); 
+        rawFrames.push(currentPoseFrames);
+        photos.push(gifData);
+        loading.style.display = 'none';
+        updateInventory();
+    }
+    startBtn.disabled = false;
+}
 
         function applyDithering(imageData) {
             const data = imageData.data;
@@ -578,5 +613,6 @@
     </script>
 </body>
 </html>
+
 
 
