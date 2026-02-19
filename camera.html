@@ -177,6 +177,24 @@
             clip-path: polygon(5% 0, 100% 0, 95% 100%, 0% 100%);
         }
 
+        .btn-back {
+            padding: 5px 12px !important; /* Timpa padding button general */
+            font-size: 10px !important;
+            background: transparent;
+            color: var(--ink);
+            border: 1px solid var(--ink);
+            cursor: pointer;
+            font-family: 'Space Mono', monospace;
+            text-transform: uppercase;
+            transition: 0.2s;
+        }
+
+.btn-back:hover {
+    background: var(--ink);
+    color: var(--paper);
+    box-shadow: 4px 4px 0px var(--accent);
+}
+
         #loading { 
             display: none; font-family: 'Archivo Black'; margin: 20px; 
             color: var(--ink); text-align: center; animation: blink 0.5s infinite alternate;
@@ -220,8 +238,13 @@
 <body>
 
     <div class="top-info">
+        <div style="display: flex; align-items: center; gap: 15px;">
+        <button onclick="window.location.href='index.html'" class="btn-back">
+            ← RETAKE_LAYOUT
+        </button>
         <div>SYS_SESSION // GEN_01</div>
-        <div class="pose-counter" id="poseDisplay">0/0</div>
+    </div>
+    <div class="pose-counter" id="poseDisplay">0/0</div>
     </div>
 
     <div class="cam-box" id="camBox">
@@ -488,6 +511,16 @@
             }
         }
 
+        function goBack() {
+            if (photos.length > 0) {
+                if (confirm("ARCHIVE DATA WILL BE LOST. PROCEED?")) {
+                    window.location.href = 'index.html';
+                }
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
+    
         function captureFrameManual() {
             const tempCanvas = document.createElement('canvas');
             const cfg = getLayoutConfig();
@@ -620,6 +653,7 @@
     </script>
 </body>
 </html>
+
 
 
 
