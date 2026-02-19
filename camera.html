@@ -272,7 +272,11 @@
             shutter: new Audio('https://pixabay.com/static/audio/2022/03/15/audio_73024869a2.mp3'),
             printer: new Audio('https://pixabay.com/static/audio/2022/03/15/audio_145d83637e.mp3')
         };
-
+        
+        sfx.beep.volume = 0.3;    // Suara beep pelan aja biar gak kaget (30%)
+        sfx.shutter.volume = 1.0;  // Shutter kenceng biar mantap (100%)
+        sfx.printer.volume = 0.6;
+        
         function playSound(name, duration) {
             sfx[name].currentTime = 0;
             sfx[name].play();
@@ -574,3 +578,4 @@
     </script>
 </body>
 </html>
+
