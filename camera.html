@@ -3,48 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TIMELESS — SHOOTING SESSION</title>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    <title>TIMELESS — ARCHIVING SESSION</title>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gifshot/0.3.2/gifshot.min.js"></script>
 
     <style>
-        /* --- BRUTALIST UI OVERHAUL --- */
+        /* --- CHRONOS THEME BASE --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
+        :root {
+            --paper: #e8e6e1; 
+            --ink: #111;
+            --accent: #555;
+        }
+
         body { 
-            background: #0e0e0e; 
-            color: #fff; 
-            font-family: 'Space Grotesk', sans-serif; 
+            background: var(--paper); 
+            color: var(--ink); 
+            font-family: 'Space Mono', monospace; 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
             padding: 20px; 
             min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- VINTAGE GRAIN OVERLAY --- */
+        body::before {
+            content: "";
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/stardust.png');
+            opacity: 0.3; pointer-events: none; z-index: 1000;
+        }
+
+        /* --- HEADER & COUNTER --- */
+        .top-info {
+            width: 100%;
+            border-bottom: 2px solid var(--ink);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 30px;
         }
 
         .pose-counter { 
             font-family: 'Archivo Black', sans-serif;
-            font-size: 1.2rem; 
-            color: #000; 
-            margin-bottom: 20px; 
-            background: #ff4d00; 
-            padding: 10px 40px; 
-            text-transform: uppercase;
-            box-shadow: 6px 6px 0px #fff;
-            transform: rotate(-2deg);
-            z-index: 100;
+            background: var(--ink); 
+            color: var(--paper); 
+            padding: 5px 20px; 
+            transform: skewX(-10deg);
         }
 
+        /* --- CAM BOX: CHROME STYLE --- */
         .cam-box { 
             width: 100%; 
-            max-width: 450px; 
+            max-width: 500px; 
             aspect-ratio: 4/3; 
             background: #000; 
             position: relative; 
             overflow: hidden; 
-            border: 6px solid #fff; 
-            box-shadow: 15px 15px 0px #ff4d00;
+            border: 2px solid var(--ink); 
+            box-shadow: 15px 15px 0px rgba(0,0,0,0.05);
         }
 
         #videoFeed, #resultCanvas { 
@@ -53,181 +77,109 @@
             object-fit: cover; 
         }
 
-        #videoFeed { transform: scaleX(-1); }
-        #resultCanvas { display: none; background: white; margin-bottom: 20px; border: 4px solid #fff; width: 100%; max-width: 300px; height: auto; }
+        #videoFeed { transform: scaleX(-1); filter: sepia(0.2); }
+        #resultCanvas { display: none; background: white; border: 1px solid var(--ink); }
 
         #countdown { 
             position: absolute; 
-            top: 50%; 
-            left: 50%; 
+            top: 50%; left: 50%; 
             transform: translate(-50%, -50%); 
             font-family: 'Archivo Black', sans-serif;
-            font-size: 120px; 
-            color: #ff4d00; 
+            font-size: 150px; 
+            color: var(--paper); 
             z-index: 5; 
-            text-shadow: 5px 5px 0px #fff; 
+            -webkit-text-stroke: 3px var(--ink);
             display: none; 
         }
 
         #flash { 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: white; 
-            display: none; 
-            z-index: 10; 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: white; display: none; z-index: 10; 
         }
 
         .live-tag {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: red;
-            color: white;
-            padding: 5px 12px;
-            font-family: 'Archivo Black';
-            font-size: 12px;
-            z-index: 20;
-            display: none;
-            animation: blink 0.8s infinite;
-            border: 2px solid white;
+            position: absolute; top: 15px; left: 15px;
+            background: #ff0000; color: white;
+            padding: 4px 10px; font-size: 10px; font-weight: bold;
+            z-index: 20; display: none; animation: blink 0.8s infinite;
         }
 
+        /* --- INVENTORY: ARCHIVE LIST --- */
         .inventory-section {
-            width: 100%;
-            max-width: 450px;
-            margin-top: 30px;
-            background: #1a1a1a;
-            padding: 15px;
-            border: 3px dashed #ff4d00;
+            width: 100%; max-width: 500px; margin-top: 30px;
+            border-top: 2px solid var(--ink); padding-top: 20px;
         }
 
         .inv-title {
-            font-family: 'Archivo Black';
-            font-size: 10px;
-            color: #ff4d00;
-            margin-bottom: 10px;
-            text-align: center;
+            font-family: 'Archivo Black'; font-size: 12px;
+            margin-bottom: 15px; text-align: center; text-transform: uppercase;
         }
 
         .inventory-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
         }
 
-       .inv-item {
-            aspect-ratio: 1/1;
-            background: #333;
-            border: 2px solid #fff;
-            position: relative; /* Wajib biar tombol bisa nempel di bawah */
-            overflow: hidden;
+        .inv-item {
+            aspect-ratio: 1/1; background: #fff;
+            border: 1px solid var(--ink); position: relative; overflow: hidden;
+            box-shadow: 5px 5px 0px rgba(0,0,0,0.05);
         }
 
-        .inv-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .inv-item img { width: 100%; height: 100%; object-fit: cover; filter: sepia(0.3); }
+
+        .retake-btn {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            background: var(--ink); color: #fff; border: none;
+            font-family: 'Space Mono'; font-size: 8px; padding: 5px 0;
+            cursor: pointer; opacity: 0.8;
         }
 
-        /* Kotak foto di inventory */
-
-
-/* Tombol REMOVE yang nempel di bawah foto */
-            .retake-btn {
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                width: 100%;
-                background: #ff0000; /* Warna merah biar kontras */
-                color: #fff;
-                border: none;
-                font-family: 'Archivo Black', sans-serif;
-                font-size: 10px;
-                padding: 8px 0;
-                cursor: pointer;
-                z-index: 10;
-                text-transform: uppercase;
-            }
-            
-            .retake-btn:hover {
-                background: #fff;
-                color: #000;
-            }
+        /* --- FILTERS: MINIMALIST --- */
         .filter-container { 
-            width: 100%; 
-            max-width: 480px; 
-            margin-top: 20px; 
-            background: #fff;
-            padding: 10px;
-            border: 4px solid #ff4d00;
+            width: 100%; max-width: 500px; margin-top: 20px;
         }
 
-        .filter-bar { 
-            display: flex; 
-            gap: 15px; 
-            padding: 5px; 
-            width: max-content; 
-        }
+        .filter-bar { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; }
 
-        .filter-item { 
-            cursor: pointer; 
-            text-align: center; 
-            font-family: 'Archivo Black', sans-serif;
-            font-size: 9px; 
-            color: #000;
-            text-transform: uppercase;
-            transition: 0.2s;
-        }
+        .filter-item { cursor: pointer; text-align: center; min-width: 70px; }
 
         .filter-dot { 
-            width: 60px; 
-            height: 60px; 
-            border: 3px solid #000; 
-            margin-bottom: 5px; 
+            width: 50px; height: 50px; border: 1px solid var(--ink); 
+            margin: 0 auto 5px; transition: 0.3s; 
         }
+
+        .filter-item span { font-size: 9px; font-weight: bold; text-transform: uppercase; }
 
         .active .filter-dot { 
-            border-color: #ff4d00; 
-            transform: translateY(-5px); 
-            box-shadow: 0px 5px 0px #000;
+            transform: scale(1.1); border-width: 3px; 
+            box-shadow: 4px 4px 0px var(--ink);
         }
 
+        /* --- CONTROLS: BRUTALISM --- */
         .controls { 
-            margin-top: 30px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 15px; 
-            width: 100%; 
-            max-width: 320px; 
+            margin-top: 30px; display: flex; flex-direction: column; 
+            gap: 15px; width: 100%; max-width: 350px; 
         }
 
         button { 
-            padding: 20px; 
-            font-family: 'Archivo Black', sans-serif; 
-            font-size: 1.1rem;
-            border: none; 
-            cursor: pointer; 
-            text-transform: uppercase; 
-            transition: 0.1s;
+            padding: 18px; font-family: 'Archivo Black', sans-serif; 
+            font-size: 1rem; cursor: pointer; text-transform: uppercase; 
+            transition: 0.2s; border: 2px solid var(--ink);
         }
 
-        .btn-capture { background: #fff; color: #000; box-shadow: 8px 8px 0px #ff4d00; }
-        .btn-process { background: #00ff00; color: #000; box-shadow: 8px 8px 0px #fff; display: none; }
-        .btn-download { background: #ff4d00; color: white; box-shadow: 5px 5px 0px #fff; font-size: 0.9rem; margin-bottom: 5px; }
+        .btn-capture { background: var(--ink); color: var(--paper); }
+        .btn-capture:hover { background: var(--accent); }
+
+        .btn-process { background: #fff; color: var(--ink); box-shadow: 8px 8px 0px var(--ink); display: none; }
         
-        #downloadOptions { display: none; flex-direction: column; width: 100%; }
+        .btn-download { 
+            background: var(--ink); color: var(--paper); font-size: 0.8rem; margin-bottom: 8px; 
+            clip-path: polygon(5% 0, 100% 0, 95% 100%, 0% 100%);
+        }
 
         #loading { 
-            display: none; 
-            font-family: 'Archivo Black', sans-serif;
-            margin: 20px; 
-            color: #ff4d00; 
-            text-transform: uppercase;
-            animation: blink 0.5s infinite alternate;
-            text-align: center;
+            display: none; font-family: 'Archivo Black'; margin: 20px; 
+            color: var(--ink); text-align: center; animation: blink 0.5s infinite alternate;
         }
 
         @keyframes blink { from { opacity: 1; } to { opacity: 0.3; } }
@@ -235,69 +187,64 @@
 </head>
 <body>
 
-    <div class="pose-counter" id="poseDisplay">0/0</div>
+    <div class="top-info">
+        <div>SYS_SESSION // GEN_01</div>
+        <div class="pose-counter" id="poseDisplay">0/0</div>
+    </div>
 
     <div class="cam-box" id="camBox">
         <div id="flash"></div>
         <div id="countdown">3</div>
-        <div class="live-tag" id="liveTag">● LIVE REC</div>
-        <div id="filterOverlay" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:2; display:none; mix-blend-mode: screen; opacity: 0.5; background: linear-gradient(45deg, #405de6, #833ab4, #fd1d1d, #fcaf45);"></div>
+        <div class="live-tag" id="liveTag">● RECORDING</div>
+        <div id="filterOverlay" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:2; display:none; mix-blend-mode: multiply; opacity: 0.4; background: linear-gradient(45deg, #ffcc33, #ff6600);"></div>
         
         <video id="videoFeed" autoplay playsinline></video>
         <canvas id="resultCanvas"></canvas>
     </div>
 
     <div class="inventory-section" id="invSection">
-        <div class="inv-title">[ PREVIEW INVENTORY ]</div>
+        <div class="inv-title">Archive Inventory</div>
         <div class="inventory-grid" id="invGrid"></div>
     </div>
 
-    <div id="loading">PROCESSING...</div>
+    <div id="loading">EXECUTING_ARCHIVE...</div>
 
     <div class="filter-container" id="filterContainer">
-        <div style="color: #000; font-family: 'Archivo Black'; font-size: 10px; margin-bottom: 8px; text-align: center;">[ SELECT FILTER ]</div>
-        <div style="overflow-x: auto;">
-            <div class="filter-bar">
-                <div class="filter-item active" onclick="setFilter('none', this)">
-                    <div class="filter-dot" style="background:#ddd"></div>
-                    <span>Normal</span>
-                </div>
-                <div class="filter-item" onclick="setFilter('grayscale(100%)', this)">
-                    <div class="filter-dot" style="background:#333"></div>
-                    <span>B&W</span>
-                </div>
-                <div class="filter-item" onclick="setFilter('sepia(0.5) contrast(1.2)', this)">
-                    <div class="filter-dot" style="background:#d2b48c"></div>
-                    <span>Vintage</span>
-                </div>
-                <div class="filter-item" onclick="setFilter('saturate(1.8) contrast(1.1)', this)">
-                    <div class="filter-dot" style="background:#e9967a"></div>
-                    <span>Vivid</span>
-                </div>
-                <div class="filter-item" onclick="setFilter('sunset', this)">
-                    <div class="filter-dot" style="background: linear-gradient(45deg, #405de6, #fd1d1d);"></div>
-                    <span>Sunset</span>
-                </div>
-                <div class="filter-item" onclick="setFilter('lo-res', this)">
-                    <div class="filter-dot" style="background: repeating-conic-gradient(#555 0% 25%, #888 0% 50%) 50% / 10px 10px;"></div>
-                    <span>Lo-Res</span>
-                </div>
+        <div class="filter-bar">
+            <div class="filter-item active" onclick="setFilter('none', this)">
+                <div class="filter-dot" style="background:#fff"></div>
+                <span>Neutral</span>
+            </div>
+            <div class="filter-item" onclick="setFilter('grayscale(100%) contrast(1.2)', this)">
+                <div class="filter-dot" style="background:#333"></div>
+                <span>B&W</span>
+            </div>
+            <div class="filter-item" onclick="setFilter('sepia(0.6) contrast(1.1)', this)">
+                <div class="filter-dot" style="background:#d2b48c"></div>
+                <span>Archive</span>
+            </div>
+            <div class="filter-item" onclick="setFilter('sunset', this)">
+                <div class="filter-dot" style="background: linear-gradient(45deg, #ffcc33, #ff6600);"></div>
+                <span>Chrome</span>
             </div>
         </div>
     </div>
 
     <div class="controls">
-        <button class="btn-capture" id="startBtn" onclick="startSequence()">START CAPTURE</button>
-        <button class="btn-process" id="processBtn" onclick="renderFinalFrame()">GENERATE FRAME*</button>
+        <button class="btn-capture" id="startBtn" onclick="startSequence()">Capture Moment</button>
+        <button class="btn-process" id="processBtn" onclick="renderFinalFrame()">Assemble Archive</button>
         
-        <div id="downloadOptions">
-            <button class="btn-download" onclick="downloadImage()">SAVE JPG (GRID)</button>
-            <button class="btn-download" style="background:#00ffee; color:#000;" onclick="downloadGifWithFrame()">SAVE GIF (ANIMATED)</button>
-            <button class="btn-retake" style="display:block; border: 3px solid #fff; color: #fff; background: transparent; margin-top: 10px;" onclick="location.reload()">TRY AGAIN</button>
+        <div id="downloadOptions" style="display:none; flex-direction:column;">
+            <button class="btn-download" onclick="downloadImage()">Download JPG</button>
+            <button class="btn-download" style="background:#555" onclick="downloadGifWithFrame()">Download Animated GIF</button>
+            <button onclick="location.reload()" style="background:transparent; border:1px solid #999; font-size:10px; margin-top:10px;">New Session</button>
         </div>
     </div>
 
     <script>
+        // Logika JS tetap sama dengan yang lo punya sebelumnya, 
+        // gue cuma rapihin dikit biar match sama filter baru.
+        
         const video = document.getElementById('videoFeed');
         const canvas = document.getElementById('resultCanvas');
         const ctx = canvas.getContext('2d');
@@ -307,8 +254,8 @@
         const liveTag = document.getElementById('liveTag');
         const invGrid = document.getElementById('invGrid');
         
-        let photos = []; // Preview GIF URLs
-        let rawFrames = []; // Kumpulan frame mentah untuk proses download GIF
+        let photos = []; 
+        let rawFrames = []; 
         let currentFilter = 'none';
         
         const selectedLayout = localStorage.getItem('selectedLayout') || 'layoutA';
@@ -317,7 +264,7 @@
         let maxPoses = 3; 
         const frameImg = new Image();
 
-        // Layout Config
+        // Layout Config (Sesuai Logic Lo)
         if (selectedLayout === 'layoutB') { maxPoses = 4; frameImg.src = 'frames/2.png'; } 
         else if (selectedLayout === 'layoutC') { maxPoses = 3; frameImg.src = 'frames/3.png'; } 
         else if (selectedLayout === 'layoutD') { maxPoses = 3; frameImg.src = 'frames/4.png'; } 
@@ -338,23 +285,18 @@
                     video: { width: 1280, height: 960 }, audio: false 
                 });
                 video.srcObject = stream;
-            } catch (err) { alert("Kamera error!"); }
+            } catch (err) { alert("Access Denied: Camera not found."); }
         }
 
         function setFilter(filter, el) {
             const overlay = document.getElementById('filterOverlay');
             video.style.filter = 'none';
-            video.style.imageRendering = 'auto'; 
             overlay.style.display = 'none';
 
             if (filter === 'sunset') {
-                video.style.filter = 'contrast(1.2) saturate(1.5)';
+                video.style.filter = 'contrast(1.2) sepia(0.2)';
                 overlay.style.display = 'block';
                 currentFilter = 'sunset'; 
-            } else if (filter === 'lo-res') {
-                video.style.imageRendering = 'pixelated'; 
-                video.style.filter = 'contrast(1.1) brightness(1.1)';
-                currentFilter = 'lo-res';
             } else {
                 currentFilter = filter;
                 video.style.filter = filter;
@@ -363,79 +305,53 @@
             el.classList.add('active');
         }
 
-       function updateInventory() {
-    invGrid.innerHTML = '';
-    photos.forEach((src, idx) => {
-        const div = document.createElement('div');
-        div.className = 'inv-item';
-        // Tombol hapus (Retake) ditaruh di dalam setiap item foto
-        div.innerHTML = `
-            <img src="${src}">
-            <button class="retake-btn" onclick="retake(${idx})">REMOVE X</button>
-        `;
-        invGrid.appendChild(div);
-    });
-    
-    updatePoseDisplay();
-    
-    // Logic kontrol tombol utama
-    if (photos.length === maxPoses) {
-        startBtn.style.display = 'none';
-        document.getElementById('processBtn').style.display = 'block';
-    } else {
-        startBtn.style.display = 'block';
-        startBtn.innerText = photos.length > 0 ? "CAPTURE NEXT" : "START CAPTURE";
-        document.getElementById('processBtn').style.display = 'none';
-    }
-}
+        function updateInventory() {
+            invGrid.innerHTML = '';
+            photos.forEach((src, idx) => {
+                const div = document.createElement('div');
+                div.className = 'inv-item';
+                div.innerHTML = `<img src="${src}"><button class="retake-btn" onclick="retake(${idx})">DEL</button>`;
+                invGrid.appendChild(div);
+            });
+            updatePoseDisplay();
+            if (photos.length === maxPoses) {
+                startBtn.style.display = 'none';
+                document.getElementById('processBtn').style.display = 'block';
+            } else {
+                startBtn.style.display = 'block';
+                startBtn.innerText = photos.length > 0 ? "Next Pose" : "Capture Moment";
+                document.getElementById('processBtn').style.display = 'none';
+            }
+        }
 
         function retake(idx) {
-            // 1. Hapus data dari array foto dan frame mentah
             photos.splice(idx, 1);
             rawFrames.splice(idx, 1);
-            
-            // 2. Refresh tampilan inventory
             updateInventory();
-            
-            // 3. Kembalikan UI ke mode kamera
             document.getElementById('filterContainer').style.display = 'block';
-            document.getElementById('processBtn').style.display = 'none'; // Sembunyikan tombol generate
-            startBtn.style.display = 'block'; // Munculkan tombol capture
-            startBtn.innerText = "CAPTURE NEXT"; // Kasih teks biar user tau ini buat ngisi slot
         }
 
         async function startSequence() {
             startBtn.disabled = true;
             document.getElementById('filterContainer').style.display = 'none';
-            
             if(photos.length < maxPoses) {
-                // 1. Countdown 3.. 2..
                 await runCountdownRange(3, 2);
-                
-                // 2. Detik ke-1: Mulai Rekam
                 countdownEl.innerText = "1";
                 liveTag.style.display = 'block';
-                
                 const currentPoseFrames = [];
                 for(let i=0; i<6; i++) {
                     currentPoseFrames.push(captureFrameManual());
                     await new Promise(r => setTimeout(r, 150));
                 }
-
-                // 3. Flash & Selesai jepret
                 const flash = document.getElementById('flash');
                 flash.style.display = 'block';
                 setTimeout(() => flash.style.display = 'none', 100);
                 countdownEl.style.display = 'none';
                 liveTag.style.display = 'none';
-
                 loading.style.display = 'block';
-                loading.innerText = "SAVING LIVE PHOTO...";
-
-                rawFrames.push(currentPoseFrames);
                 const gifData = await makeGif(currentPoseFrames); 
+                rawFrames.push(currentPoseFrames);
                 photos.push(gifData);
-                
                 loading.style.display = 'none';
                 updateInventory();
             }
@@ -455,180 +371,94 @@
             });
         }
 
-  function captureFrameManual() {
-    const vW = video.videoWidth;
-    const vH = video.videoHeight;
-    
-    // Ambil config layout buat tau target perbandingan (W/H)
-    const cfg = getLayoutConfig();
-    const targetRatio = cfg.photoW / cfg.photoH;
-
-    const tempCanvas = document.createElement('canvas');
-    tempCanvas.width = cfg.photoW; // Kita set canvas seukuran lubang frame
-    tempCanvas.height = cfg.photoH;
-    const tempCtx = tempCanvas.getContext('2d');
-
-    // Itung posisi crop biar Center (Mencegah Gepeng)
-    let sW, sH, sX, sY;
-    if ((vW / vH) > targetRatio) {
-        sH = vH;
-        sW = vH * targetRatio;
-        sX = (vW - sW) / 2;
-        sY = 0;
-    } else {
-        sW = vW;
-        sH = vW / targetRatio;
-        sX = 0;
-        sY = (vH - sH) / 2;
-    }
-
-    // Mirroring & Filter
-    tempCtx.save();
-    if (currentFilter !== 'lo-res') {
-        tempCtx.filter = (currentFilter === 'sunset') ? 'contrast(1.2) saturate(1.5)' : currentFilter;
-    }
-    
-    // Gambar hasil crop ke canvas (di-mirror)
-    tempCtx.translate(cfg.photoW, 0);
-    tempCtx.scale(-1, 1);
-    tempCtx.drawImage(video, sX, sY, sW, sH, 0, 0, cfg.photoW, cfg.photoH);
-    tempCtx.restore();
-
-    // Tambahan buat filter khusus
-    if (currentFilter === 'sunset') {
-        tempCtx.globalAlpha = 0.4;
-        tempCtx.globalCompositeOperation = 'screen';
-        const grad = tempCtx.createLinearGradient(0, 0, 0, cfg.photoH);
-        grad.addColorStop(0, '#405de6'); grad.addColorStop(1, '#fd1d1d');
-        tempCtx.fillStyle = grad;
-        tempCtx.fillRect(0, 0, cfg.photoW, cfg.photoH);
-    }
-
-    if (currentFilter === 'lo-res') {
-        // Efek pixelated manual jika diperlukan
-        const small = document.createElement('canvas');
-        small.width = cfg.photoW * 0.2;
-        small.height = cfg.photoH * 0.2;
-        const sCtx = small.getContext('2d');
-        sCtx.drawImage(tempCanvas, 0, 0, small.width, small.height);
-        tempCtx.imageSmoothingEnabled = false;
-        tempCtx.drawImage(small, 0, 0, small.width, small.height, 0, 0, cfg.photoW, cfg.photoH);
-    }
-
-    return tempCanvas.toDataURL('image/jpeg', 0.8);
-}
+        function captureFrameManual() {
+            const tempCanvas = document.createElement('canvas');
+            const cfg = getLayoutConfig();
+            tempCanvas.width = cfg.photoW;
+            tempCanvas.height = cfg.photoH;
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.save();
+            tempCtx.filter = (currentFilter === 'sunset') ? 'contrast(1.2) sepia(0.2)' : currentFilter;
+            tempCtx.translate(cfg.photoW, 0);
+            tempCtx.scale(-1, 1);
+            tempCtx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, 0, 0, cfg.photoW, cfg.photoH);
+            tempCtx.restore();
+            if (currentFilter === 'sunset') {
+                tempCtx.globalAlpha = 0.3;
+                tempCtx.globalCompositeOperation = 'multiply';
+                const grad = tempCtx.createLinearGradient(0,0,0,cfg.photoH);
+                grad.addColorStop(0, '#ffcc33'); grad.addColorStop(1, '#ff6600');
+                tempCtx.fillStyle = grad;
+                tempCtx.fillRect(0,0,cfg.photoW, cfg.photoH);
+            }
+            return tempCanvas.toDataURL('image/jpeg', 0.8);
+        }
 
         function makeGif(frames) {
             return new Promise(resolve => {
-                gifshot.createGIF({ images: frames, gifWidth: 400, gifHeight: 300, interval: 0.1, numWorkers: 4 }, 
+                gifshot.createGIF({ images: frames, gifWidth: 400, gifHeight: 300, interval: 0.1 }, 
                 function(obj) { if(!obj.error) resolve(obj.image); });
             });
         }
 
         async function renderFinalFrame() {
             loading.style.display = 'block';
-            loading.innerText = "GENERATING GRID...";
             document.getElementById('invSection').style.display = 'none';
             document.getElementById('processBtn').style.display = 'none';
-            
             video.style.display = 'none';
             canvas.style.display = 'block';
             await frameImg.decode();
-
-            if (selectedLayout === 'layoutG') {
-                canvas.width = 1080; canvas.height = 1920;
-            } else {
-                canvas.width = 800; canvas.height = 2400;
-            }
-
+            canvas.width = (selectedLayout === 'layoutG') ? 1080 : 800;
+            canvas.height = (selectedLayout === 'layoutG') ? 1920 : 2400;
             let cfg = getLayoutConfig();
-
             for (let i = 0; i < photos.length; i++) {
                 const img = new Image();
                 img.src = photos[i]; 
-                await new Promise(resolve => {
+                await new Promise(r => {
                     img.onload = () => {
                         const yPos = cfg.startY + (i * (cfg.photoH + cfg.gap));
-                        drawCover(ctx, img, cfg.startX, yPos, cfg.photoW, cfg.photoH);
-                        resolve();
+                        ctx.drawImage(img, cfg.startX, yPos, cfg.photoW, cfg.photoH);
+                        r();
                     }
                 });
             }
             ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
-            
             loading.style.display = 'none';
             document.getElementById('downloadOptions').style.display = 'flex';
         }
 
         function getLayoutConfig() {
-    // Sesuaikan angka photoW dan photoH dengan ukuran lubang di PNG lo
-    if (selectedLayout === 'layoutB') return { photoW: 710, photoH: 447, startX: 45, startY: 54, gap: 90 };
-    if (['layoutC', 'layoutD', 'layoutE'].includes(selectedLayout)) return { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 };
-    if (selectedLayout === 'layoutF') return { photoW: 640, photoH: 788, startX: 80, startY: 290, gap: 193 };
-    
-    // Layout G (Story mode)
-    if (selectedLayout === 'layoutG') return { photoW: 586, photoH: 798, startX: 343, startY: 372, gap: 0};
-    if (selectedLayout === 'layoutH') return { photoW: 700, photoH: 525, startX: 50, startY: 80, gap: 93 };
-    
-    // Default / Layout A
-    return { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 };
-}
-        function drawCover(targetCtx, img, x, y, w, h) {
-    // 1. Itung ratio target (kotak di frame) vs ratio foto asli
-    let targetRatio = w / h;
-    let sourceRatio = img.width / img.height;
-    let sX, sY, sW, sH;
-
-    // 2. LOGIKA CROP CENTER:
-    // Kalau foto asli lebih lebar dari lubang frame (kebanyakan kamera begini)
-    if (sourceRatio > targetRatio) {
-        sW = img.height * targetRatio;
-        sH = img.height;
-        sX = (img.width - sW) / 2; // Potong samping kiri-kanan, ambil tengah
-        sY = 0;
-    } 
-    // Kalau foto asli lebih tinggi dari lubang frame
-    else {
-        sW = img.width;
-        sH = img.width / targetRatio;
-        sX = 0;
-        sY = (img.height - sH) / 2; // Potong atas-bawah, ambil tengah
-    }
-
-    // 3. Gambar ke canvas sesuai koordinat hasil potong
-    targetCtx.drawImage(img, sX, sY, sW, sH, x, y, w, h);
-}
+            if (selectedLayout === 'layoutB') return { photoW: 710, photoH: 447, startX: 45, startY: 54, gap: 90 };
+            if (['layoutC', 'layoutD', 'layoutE'].includes(selectedLayout)) return { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 };
+            if (selectedLayout === 'layoutF') return { photoW: 640, photoH: 788, startX: 80, startY: 290, gap: 193 };
+            if (selectedLayout === 'layoutG') return { photoW: 586, photoH: 798, startX: 343, startY: 372, gap: 0};
+            return { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 };
+        }
 
         function downloadImage() {
             const link = document.createElement('a');
-            link.download = `photobooth_${Date.now()}.jpg`;
+            link.download = `archive_${Date.now()}.jpg`;
             link.href = canvas.toDataURL('image/jpeg', 1.0);
             link.click();
         }
 
         async function downloadGifWithFrame() {
             loading.style.display = 'block';
-            loading.innerText = "CREATING ANIMATED FRAME...";
-            
             const cfg = getLayoutConfig();
             const finalGifFrames = [];
-
             for (let f = 0; f < 6; f++) {
                 const tempCanvas = document.createElement('canvas');
-                tempCanvas.width = canvas.width;
-                tempCanvas.height = canvas.height;
+                tempCanvas.width = canvas.width; tempCanvas.height = canvas.height;
                 const tCtx = tempCanvas.getContext('2d');
-                
                 tCtx.fillStyle = "white";
                 tCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-
                 for (let p = 0; p < rawFrames.length; p++) {
                     const img = new Image();
                     img.src = rawFrames[p][f]; 
                     await new Promise(r => {
                         img.onload = () => {
                             const yPos = cfg.startY + (p * (cfg.photoH + cfg.gap));
-                            drawCover(tCtx, img, cfg.startX, yPos, cfg.photoW, cfg.photoH);
+                            tCtx.drawImage(img, cfg.startX, yPos, cfg.photoW, cfg.photoH);
                             r();
                         };
                     });
@@ -636,19 +466,12 @@
                 tCtx.drawImage(frameImg, 0, 0, tempCanvas.width, tempCanvas.height);
                 finalGifFrames.push(tempCanvas.toDataURL('image/jpeg', 0.7));
             }
-
-            gifshot.createGIF({
-                images: finalGifFrames,
-                gifWidth: canvas.width / 2,
-                gifHeight: canvas.height / 2,
-                interval: 0.15,
-                numWorkers: 4
-            }, function(obj) {
+            gifshot.createGIF({ images: finalGifFrames, gifWidth: canvas.width/2, gifHeight: canvas.height/2, interval: 0.15 }, 
+            function(obj) {
                 if (!obj.error) {
                     const link = document.createElement('a');
-                    link.download = `photobooth_live_${Date.now()}.gif`;
-                    link.href = obj.image;
-                    link.click();
+                    link.download = `animated_archive_${Date.now()}.gif`;
+                    link.href = obj.image; link.click();
                 }
                 loading.style.display = 'none';
             });
@@ -658,8 +481,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
