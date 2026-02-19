@@ -250,9 +250,6 @@
     </div>
 
     <script>
-        // Logika JS tetap sama dengan yang lo punya sebelumnya, 
-        // gue cuma rapihin dikit biar match sama filter baru.
-        
         const video = document.getElementById('videoFeed');
         const canvas = document.getElementById('resultCanvas');
         const ctx = canvas.getContext('2d');
@@ -269,10 +266,27 @@
         const selectedLayout = localStorage.getItem('selectedLayout') || 'layoutA';
         const camBox = document.getElementById('camBox');
 
+        // AUDIO SYSTEM
+        const sfx = {
+            beep: new Audio('https://pixabay.com/static/audio/2021/08/04/audio_bb665796c7.mp3'),
+            shutter: new Audio('https://pixabay.com/static/audio/2022/03/15/audio_73024869a2.mp3'),
+            printer: new Audio('https://pixabay.com/static/audio/2022/03/15/audio_145d83637e.mp3')
+        };
+
+        function playSound(name, duration) {
+            sfx[name].currentTime = 0;
+            sfx[name].play();
+            if (duration) {
+                setTimeout(() => {
+                    sfx[name].pause();
+                    sfx[name].currentTime = 0;
+                }, duration);
+            }
+        }
+
         let maxPoses = 3; 
         const frameImg = new Image();
 
-        // Layout Config (Sesuai Logic Lo)
         if (selectedLayout === 'layoutB') { maxPoses = 4; frameImg.src = 'frames/2.png'; } 
         else if (selectedLayout === 'layoutC') { maxPoses = 3; frameImg.src = 'frames/3.png'; } 
         else if (selectedLayout === 'layoutD') { maxPoses = 3; frameImg.src = 'frames/4.png'; } 
@@ -300,7 +314,6 @@
             const overlay = document.getElementById('filterOverlay');
             video.style.filter = 'none';
             overlay.style.display = 'none';
-
             if (filter === 'sunset') {
                 video.style.filter = 'contrast(1.2) sepia(0.2)';
                 overlay.style.display = 'block';
@@ -343,19 +356,34 @@
             startBtn.disabled = true;
             document.getElementById('filterContainer').style.display = 'none';
             if(photos.length < maxPoses) {
-                await runCountdownRange(3, 2);
+                // COUNTDOWN WITH BEEP (1s)
+                countdownEl.style.display = 'block';
+                for (let i = 3; i > 1; i--) {
+                    countdownEl.innerText = i;
+                    playSound('beep', 1000); 
+                    await new Promise(r => setTimeout(r, 1000));
+                }
+                
                 countdownEl.innerText = "1";
+                playSound('beep', 1000);
+                await new Promise(r => setTimeout(r, 1000));
+
                 liveTag.style.display = 'block';
                 const currentPoseFrames = [];
                 for(let i=0; i<6; i++) {
                     currentPoseFrames.push(captureFrameManual());
                     await new Promise(r => setTimeout(r, 150));
                 }
+
+                // FLASH + SHUTTER (2s)
                 const flash = document.getElementById('flash');
                 flash.style.display = 'block';
+                playSound('shutter', 2000); 
+                
                 setTimeout(() => flash.style.display = 'none', 100);
                 countdownEl.style.display = 'none';
                 liveTag.style.display = 'none';
+                
                 loading.style.display = 'block';
                 const gifData = await makeGif(currentPoseFrames); 
                 rawFrames.push(currentPoseFrames);
@@ -366,82 +394,54 @@
             startBtn.disabled = false;
         }
 
-        function runCountdownRange(from, to) {
-            return new Promise(resolve => {
-                let count = from;
-                countdownEl.style.display = 'block';
-                countdownEl.innerText = count;
-                const timer = setInterval(() => {
-                    count--;
-                    if(count < to) { clearInterval(timer); resolve(); }
-                    else { countdownEl.innerText = count; }
-                }, 1000);
-            });
-        }
-
         function applyDithering(imageData) {
-    const data = imageData.data;
-    const width = imageData.width;
-
-    for (let y = 0; y < imageData.height; y++) {
-        for (let x = 0; x < width; x++) {
-            const idx = (y * width + x) * 4;
-            const oldR = data[idx];
-            const newR = oldR < 128 ? 0 : 255; // Thresholding ke 0 atau 255
-            
-            data[idx] = data[idx + 1] = data[idx + 2] = newR;
-            const err = (oldR - newR) >> 3; // Sebarkan error ke pixel tetangga
-
-            // Algoritma Atkinson: Sebarkan error ke 6 pixel sekitar
-            const neighbors = [
-                [1, 0], [2, 0], [-1, 1], [0, 1], [1, 1], [0, 2]
-            ];
-
-            neighbors.forEach(([nx, ny]) => {
-                const targetIdx = ((y + ny) * width + (x + nx)) * 4;
-                if (targetIdx >= 0 && targetIdx < data.length) {
-                    data[targetIdx] += err;
-                    data[targetIdx + 1] += err;
-                    data[targetIdx + 2] += err;
-                }
-            });
-        }
-    }
-    return imageData;
-}
-
-                        function applyHalftone(ctx, width, height) {
-                    const imageData = ctx.getImageData(0, 0, width, height);
-                    const data = imageData.data;
-                    const gridSize = 7; // Ukuran dot. Makin gede makin kasar (brutal)
-                
-                    // Bersihkan canvas jadi putih dulu
-                    ctx.fillStyle = "#fff";
-                    ctx.fillRect(0, 0, width, height);
-                    ctx.fillStyle = "#000";
-                
-                    for (let y = 0; y < height; y += gridSize) {
-                        for (let x = 0; x < width; x += gridSize) {
-                            // Ambil sample warna di tengah grid
-                            const idx = (y * width + x) * 4;
-                            const r = data[idx];
-                            const g = data[idx + 1];
-                            const b = data[idx + 2];
-                            
-                            // Itung kecerahan (0-255)
-                            const brightness = (0.299 * r + 0.587 * g + 0.114 * b);
-                            
-                            // Ukuran radius berbanding terbalik dengan kecerahan
-                            const radius = (gridSize / 2) * (1 - brightness / 255);
-                
-                            if (radius > 0.5) {
-                                ctx.beginPath();
-                                ctx.arc(x + gridSize/2, y + gridSize/2, radius * 1.2, 0, Math.PI * 2);
-                                ctx.fill();
-                            }
+            const data = imageData.data;
+            const width = imageData.width;
+            for (let y = 0; y < imageData.height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const idx = (y * width + x) * 4;
+                    const oldR = data[idx];
+                    const newR = oldR < 128 ? 0 : 255;
+                    data[idx] = data[idx + 1] = data[idx + 2] = newR;
+                    const err = (oldR - newR) >> 3;
+                    const neighbors = [[1, 0], [2, 0], [-1, 1], [0, 1], [1, 1], [0, 2]];
+                    neighbors.forEach(([nx, ny]) => {
+                        const targetIdx = ((y + ny) * width + (x + nx)) * 4;
+                        if (targetIdx >= 0 && targetIdx < data.length) {
+                            data[targetIdx] += err;
+                            data[targetIdx + 1] += err;
+                            data[targetIdx + 2] += err;
                         }
+                    });
+                }
+            }
+            return imageData;
+        }
+
+        function applyHalftone(ctx, width, height) {
+            const imageData = ctx.getImageData(0, 0, width, height);
+            const data = imageData.data;
+            const gridSize = 7;
+            ctx.fillStyle = "#fff";
+            ctx.fillRect(0, 0, width, height);
+            ctx.fillStyle = "#000";
+            for (let y = 0; y < height; y += gridSize) {
+                for (let x = 0; x < width; x += gridSize) {
+                    const idx = (y * width + x) * 4;
+                    const r = data[idx];
+                    const g = data[idx + 1];
+                    const b = data[idx + 2];
+                    const brightness = (0.299 * r + 0.587 * g + 0.114 * b);
+                    const radius = (gridSize / 2) * (1 - brightness / 255);
+                    if (radius > 0.5) {
+                        ctx.beginPath();
+                        ctx.arc(x + gridSize/2, y + gridSize/2, radius * 1.2, 0, Math.PI * 2);
+                        ctx.fill();
                     }
                 }
+            }
+        }
+
         function captureFrameManual() {
             const tempCanvas = document.createElement('canvas');
             const cfg = getLayoutConfig();
@@ -464,12 +464,10 @@
             }
             if (currentFilter === 'dither') {
                 let imgData = tempCtx.getImageData(0, 0, cfg.photoW, cfg.photoH);
-                // Jalankan algoritma dithering
                 imgData = applyDithering(imgData);
                 tempCtx.putImageData(imgData, 0, 0);
             }
             if (currentFilter === 'halftone') {
-                // Kita butuh context buat gambar manual titik-titiknya
                 applyHalftone(tempCtx, cfg.photoW, cfg.photoH);
             }
             return tempCanvas.toDataURL('image/jpeg', 0.8);
@@ -484,26 +482,40 @@
 
         async function renderFinalFrame() {
             loading.style.display = 'block';
+            loading.innerText = "GENERATING_ARCHIVE...";
+            
+            // PRINT SOUND (3s)
+            playSound('printer', 3000);
+
             document.getElementById('invSection').style.display = 'none';
             document.getElementById('processBtn').style.display = 'none';
             video.style.display = 'none';
             canvas.style.display = 'block';
+
             await frameImg.decode();
-            canvas.width = (selectedLayout === 'layoutG') ? 1080 : 800;
-            canvas.height = (selectedLayout === 'layoutG') ? 1920 : 2400;
-            let cfg = getLayoutConfig();
-            for (let i = 0; i < photos.length; i++) {
-                const img = new Image();
-                img.src = photos[i]; 
-                await new Promise(r => {
-                    img.onload = () => {
-                        const yPos = cfg.startY + (i * (cfg.photoH + cfg.gap));
-                        ctx.drawImage(img, cfg.startX, yPos, cfg.photoW, cfg.photoH);
-                        r();
+
+            // Artificial Delay for Printer Sound Experience
+            await new Promise(resolve => {
+                setTimeout(async () => {
+                    canvas.width = (selectedLayout === 'layoutG') ? 1080 : 800;
+                    canvas.height = (selectedLayout === 'layoutG') ? 1920 : 2400;
+                    let cfg = getLayoutConfig();
+                    for (let i = 0; i < photos.length; i++) {
+                        const img = new Image();
+                        img.src = photos[i]; 
+                        await new Promise(r => {
+                            img.onload = () => {
+                                const yPos = cfg.startY + (i * (cfg.photoH + cfg.gap));
+                                ctx.drawImage(img, cfg.startX, yPos, cfg.photoW, cfg.photoH);
+                                r();
+                            }
+                        });
                     }
-                });
-            }
-            ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
+                    resolve();
+                }, 3000); 
+            });
+
             loading.style.display = 'none';
             document.getElementById('downloadOptions').style.display = 'flex';
         }
@@ -562,5 +574,3 @@
     </script>
 </body>
 </html>
-
-
