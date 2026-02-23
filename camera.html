@@ -581,13 +581,24 @@
                     canvas.height = (selectedLayout === 'layoutG') ? 1920 : 2400;
                     let cfg = getLayoutConfig();
                     for (let i = 0; i < photos.length; i++) {
-                        const img = new Image();
-                        img.src = photos[i]; 
-                        await new Promise(r => {
-                            img.onload = () => {
-                                const yPos = cfg.startY + (i * (cfg.photoH + cfg.gap));
-                                ctx.drawImage(img, cfg.startX, yPos, cfg.photoW, cfg.photoH);
-                                r();
+            const img = new Image();
+            img.src = photos[i]; 
+            await new Promise(r => {
+                img.onload = () => {
+                    let xPos, yPos;
+                    
+                    if (cfg.positions) {
+                        // Pakai koordinat spesifik kalau ada di config
+                        xPos = cfg.positions[i].x;
+                        yPos = cfg.positions[i].y;
+                    } else {
+                        // Pakai rumus vertikal lama untuk layout strip
+                        xPos = cfg.startX;
+                        yPos = cfg.startY + (i * (cfg.photoH + cfg.gap));
+                    }
+            
+            ctx.drawImage(img, xPos, yPos, cfg.photoW, cfg.photoH);
+            r();
                             }
                         });
                     }
@@ -667,6 +678,7 @@
     </script>
 </body>
 </html>
+
 
 
 
