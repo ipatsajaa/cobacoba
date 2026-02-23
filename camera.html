@@ -639,45 +639,81 @@
             link.click();
         }
 
-        async function downloadGifWithFrame() {
-            loading.style.display = 'block';
-            const cfg = getLayoutConfig();
-            const finalGifFrames = [];
-            for (let f = 0; f < 6; f++) {
-                const tempCanvas = document.createElement('canvas');
-                tempCanvas.width = canvas.width; tempCanvas.height = canvas.height;
-                const tCtx = tempCanvas.getContext('2d');
-                tCtx.fillStyle = "white";
-                tCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-                for (let p = 0; p < rawFrames.length; p++) {
-                    const img = new Image();
-                    img.src = rawFrames[p][f]; 
-                    await new Promise(r => {
-                        img.onload = () => {
-                            const yPos = cfg.startY + (p * (cfg.photoH + cfg.gap));
-                            tCtx.drawImage(img, cfg.startX, yPos, cfg.photoW, cfg.photoH);
-                            r();
-                        };
-                    });
-                }
-                tCtx.drawImage(frameImg, 0, 0, tempCanvas.width, tempCanvas.height);
-                finalGifFrames.push(tempCanvas.toDataURL('image/jpeg', 0.7));
-            }
-            gifshot.createGIF({ images: finalGifFrames, gifWidth: canvas.width/2, gifHeight: canvas.height/2, interval: 0.15 }, 
-            function(obj) {
-                if (!obj.error) {
-                    const link = document.createElement('a');
-                    link.download = `animated_archive_${Date.now()}.gif`;
-                    link.href = obj.image; link.click();
-                }
-                loading.style.display = 'none';
+       async function downloadGifWithFrame() {
+    loading.style.display = 'block';
+    loading.innerText = "GENERATING_ANIMATED_GIF..."; // Tambahin info biar user tahu lagi proses
+    
+    const cfg = getLayoutConfig();
+    const finalGifFrames = [];
+    
+    // Looping 6 frame untuk animasi
+    for (let f = 0; f < 6; f++) {
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = canvas.width; 
+        tempCanvas.height = canvas.height;
+        const tCtx = tempCanvas.getContext('2d');
+        
+        // Background putih biar gak transparan aneh
+        tCtx.fillStyle = "white";
+        tCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+        
+        // Looping untuk tiap pose (p)
+        for (let p = 0; p < rawFrames.length; p++) {
+            const img = new Image();
+            img.src = rawFrames[p][f]; // Ambil frame animasi ke-f dari pose ke-p
+            
+            await new Promise(r => {
+                img.onload = () => {
+                    let xPos, yPos;
+                    
+                    // --- PERBAIKAN DI SINI ---
+                    if (cfg.positions) {
+                        // Kalau layout custom (seperti Layout I), pakai koordinat dari array positions
+                        xPos = cfg.positions[p].x;
+                        yPos = cfg.positions[p].y;
+                    } else {
+                        // Kalau layout strip biasa, pakai rumus vertikal
+                        xPos = cfg.startX;
+                        yPos = cfg.startY + (p * (cfg.photoH + cfg.gap));
+                    }
+                    
+                    tCtx.drawImage(img, xPos, yPos, cfg.photoW, cfg.photoH);
+                    r();
+                };
             });
         }
+        
+        // Tempel frame PNG di atas foto
+        tCtx.drawImage(frameImg, 0, 0, tempCanvas.width, tempCanvas.height);
+        
+        // Push ke array frames dengan kualitas 0.7 biar gak berat
+        finalGifFrames.push(tempCanvas.toDataURL('image/jpeg', 0.7));
+    }
+    
+    // Proses bikin GIF pakai gifshot
+    gifshot.createGIF({ 
+        images: finalGifFrames, 
+        gifWidth: canvas.width / 2, // Diperkecil biar sizenya ramah memori
+        gifHeight: canvas.height / 2, 
+        interval: 0.15 
+    }, function(obj) {
+        if (!obj.error) {
+            const link = document.createElement('a');
+            link.download = `animated_archive_${Date.now()}.gif`;
+            link.href = obj.image; 
+            link.click();
+        } else {
+            console.error("GIF Error:", obj.error);
+        }
+        loading.style.display = 'none';
+    });
+}
 
         window.onload = initCamera;
     </script>
 </body>
 </html>
+
 
 
 
