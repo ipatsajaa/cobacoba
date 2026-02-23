@@ -353,6 +353,7 @@
         else if (selectedLayout === 'layoutF') { maxPoses = 2; frameImg.src = 'frames/6.png'; camBox.style.aspectRatio = "640/788"; } 
         else if (selectedLayout === 'layoutG') { maxPoses = 1; frameImg.src = 'frames/7.png'; camBox.style.aspectRatio = "640/788"; } 
         else if (selectedLayout === 'layoutH') { maxPoses = 3; frameImg.src = 'frames/8.png'; } 
+        else if (selectedLayout === 'layoutI') { maxPoses = 4; frameImg.src = 'frames/9.png'; } 
         else { maxPoses = 3; frameImg.src = 'frames/1(2).png'; }
 
         function updatePoseDisplay() {
@@ -604,6 +605,19 @@
             if (['layoutC', 'layoutD', 'layoutE'].includes(selectedLayout)) return { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 };
             if (selectedLayout === 'layoutF') return { photoW: 640, photoH: 788, startX: 80, startY: 290, gap: 193 };
             if (selectedLayout === 'layoutG') return { photoW: 586, photoH: 798, startX: 343, startY: 372, gap: 0};
+            if (selectedLayout === 'layoutI') {
+            return {
+                photoW: 485,  // Berdasarkan screenshot lo
+                photoH: 597,  // Berdasarkan screenshot lo
+                // Karena posisinya custom (tidak cuma vertikal), kita buat array koordinat
+                positions: [
+                    { x: 34,  y: 186 }, // Foto 1 (Kiri Atas)
+                    { x: 560, y: 186 }, // Foto 2 (Kanan Atas)
+                    { x: 34,  y: 830 }, // Foto 3 (Kiri Bawah - Estimasi gap 122)
+                    { x: 560, y: 830 }  // Foto 4 (Kanan Bawah - Estimasi gap 122)
+                    ]
+                };
+            }
             return { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 };
         }
 
@@ -653,6 +667,7 @@
     </script>
 </body>
 </html>
+
 
 
 
