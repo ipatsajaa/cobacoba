@@ -354,6 +354,7 @@
         else if (selectedLayout === 'layoutG') { maxPoses = 1; frameImg.src = 'frames/7.png'; camBox.style.aspectRatio = "640/788"; } 
         else if (selectedLayout === 'layoutH') { maxPoses = 3; frameImg.src = 'frames/8.png'; } 
         else if (selectedLayout === 'layoutI') { maxPoses = 4; frameImg.src = 'frames/9.png'; camBox.style.aspectRatio = "640/788"; } 
+        else if (selectedLayout === 'layoutJ') { maxPoses = 3; frameImg.src = 'frames/10.png'; }
         else { maxPoses = 3; frameImg.src = 'frames/1(2).png'; }
 
         function updatePoseDisplay() {
@@ -613,7 +614,7 @@
 
         function getLayoutConfig() {
             if (selectedLayout === 'layoutB') return { photoW: 710, photoH: 447, startX: 45, startY: 54, gap: 90 };
-            if (['layoutC', 'layoutD', 'layoutE'].includes(selectedLayout)) return { photoW: 710, photoH: 549, startX: 43, startY: 50, gap: 190 };
+            if (['layoutC', 'layoutD', 'layoutE', 'layoutJ'].includes(selectedLayout)) return { photoW: 710, photoH: 549, startX: 50, startY: 133, gap: 190 };
             if (selectedLayout === 'layoutF') return { photoW: 640, photoH: 788, startX: 80, startY: 290, gap: 193 };
             if (selectedLayout === 'layoutG') return { photoW: 586, photoH: 798, startX: 343, startY: 372, gap: 0};
             if (selectedLayout === 'layoutI') {
@@ -713,6 +714,7 @@
     </script>
 </body>
 </html>
+
 
 
 
