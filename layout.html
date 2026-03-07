@@ -169,7 +169,7 @@
     <div class="tab-container">
         <button class="tab-btn active" onclick="switchTab('strip', this)">STRIP_TYPE</button>
         <button class="tab-btn" onclick="switchTab('story', this)">STORY_TYPE</button>
-        <button class="tab-btn" onclick="switchTab('special', this)">SPECIAL_BIASS</button>
+        <!-- <button class="tab-btn" onclick="switchTab('special', this)">SPECIAL_BIASS</button> -->
     </div>
 
     <div id="strip" class="layout-section active">
@@ -195,6 +195,9 @@
             <div class="frame-card" data-type="TS-08" onclick="selectLayout('layoutH', this)">
                 <img src="frames/8.png" alt="Frame 8">
             </div>
+            <div class="frame-card" data-type="TS-08" onclick="selectLayout('layoutJ', this)">
+                <img src="frames/10.png" alt="Frame 10">
+            </div>
         </div>
     </div>
 
@@ -206,12 +209,12 @@
         </div>
     </div>
 
-    <div id="special" class="layout-section">
+    <!-- <div id="special" class="layout-section">
             <div class="frame-card" data-type="Special" onclick="selectLayout('layoutI', this)">
                 <img src="frames/9.png" alt="Frame 9">
             </div>
         </div>
-    </div>
+    </div> -->
 
     <script>
         // Realtime Clock
@@ -243,6 +246,7 @@
     </script>
 </body>
 </html>
+
 
 
 
