@@ -614,7 +614,7 @@
 
         function getLayoutConfig() {
             if (selectedLayout === 'layoutB') return { photoW: 710, photoH: 447, startX: 45, startY: 54, gap: 90 };
-            if (['layoutC', 'layoutD', 'layoutE', 'layoutJ'].includes(selectedLayout)) return { photoW: 710, photoH: 549, startX: 50, startY: 133, gap: 190 };
+            if (['layoutC', 'layoutD', 'layoutE',].includes(selectedLayout)) return { photoW: 710, photoH: 549, startX: 50, startY: 133, gap: 190 };
             if (selectedLayout === 'layoutF') return { photoW: 640, photoH: 788, startX: 80, startY: 290, gap: 193 };
             if (selectedLayout === 'layoutG') return { photoW: 586, photoH: 798, startX: 343, startY: 372, gap: 0};
             if (selectedLayout === 'layoutI') {
@@ -627,6 +627,17 @@
                     { x: 564, y: 186 }, // Foto 2 (Kanan Atas)
                     { x: 29,  y: 905 }, // Foto 3 (Kiri Bawah - Estimasi gap 122)
                     { x: 564, y: 905 }  // Foto 4 (Kanan Bawah - Estimasi gap 122)
+                    ]
+                };
+            if (selectedLayout === 'layoutJ') {
+            return {
+                photoW: 485,  // Lebar berdasarkan screenshot Canva kamu
+                photoH: 597,  // Tinggi berdasarkan screenshot Canva kamu
+                // Kita tentukan koordinat X dan Y untuk masing-masing dari 3 foto
+                positions: [
+                    { x: 34,  y: 186 },  // Foto 1 (Kiri Atas)
+                    { x: 564, y: 186 },  // Foto 2 (Kanan Atas)
+                    { x: 34,  y: 905 }   // Foto 3 (Kiri Bawah) -> Angka 905 ini estimasi, silakan cek Y di Canva untuk kotak bawah
                     ]
                 };
             }
@@ -714,6 +725,7 @@
     </script>
 </body>
 </html>
+
 
 
 
