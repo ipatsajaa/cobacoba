@@ -524,35 +524,71 @@
         }
     
         function captureFrameManual() {
-            const tempCanvas = document.createElement('canvas');
-            const cfg = getLayoutConfig();
-            tempCanvas.width = cfg.photoW;
-            tempCanvas.height = cfg.photoH;
-            const tempCtx = tempCanvas.getContext('2d');
-            tempCtx.save();
-            tempCtx.filter = (currentFilter === 'sunset') ? 'contrast(1.2) sepia(0.2)' : currentFilter;
-            tempCtx.translate(cfg.photoW, 0);
-            tempCtx.scale(-1, 1);
-            tempCtx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, 0, 0, cfg.photoW, cfg.photoH);
-            tempCtx.restore();
-            if (currentFilter === 'sunset') {
-                tempCtx.globalAlpha = 0.3;
-                tempCtx.globalCompositeOperation = 'multiply';
-                const grad = tempCtx.createLinearGradient(0,0,0,cfg.photoH);
-                grad.addColorStop(0, '#ffcc33'); grad.addColorStop(1, '#ff6600');
-                tempCtx.fillStyle = grad;
-                tempCtx.fillRect(0,0,cfg.photoW, cfg.photoH);
-            }
-            if (currentFilter === 'dither') {
-                let imgData = tempCtx.getImageData(0, 0, cfg.photoW, cfg.photoH);
-                imgData = applyDithering(imgData);
-                tempCtx.putImageData(imgData, 0, 0);
-            }
-            if (currentFilter === 'halftone') {
-                applyHalftone(tempCtx, cfg.photoW, cfg.photoH);
-            }
-            return tempCanvas.toDataURL('image/jpeg', 0.8);
-        }
+    const tempCanvas = document.createElement('canvas');
+    const cfg = getLayoutConfig();
+    
+    // Set ukuran canvas sesuai kotak di frame
+    tempCanvas.width = cfg.photoW;
+    tempCanvas.height = cfg.photoH;
+    
+    const tempCtx = tempCanvas.getContext('2d');
+    
+    // --- LOGIKA ANTI GEPENG (CENTER CROP) ---
+    const videoW = video.videoWidth;
+    const videoH = video.videoHeight;
+    const targetRatio = cfg.photoW / cfg.photoH;
+    const videoRatio = videoW / videoH;
+
+    let sX, sY, sW, sH;
+
+    if (videoRatio > targetRatio) {
+        sW = videoH * targetRatio;
+        sH = videoH;
+        sX = (videoW - sW) / 2;
+        sY = 0;
+    } else {
+        sW = videoW;
+        sH = videoW / targetRatio;
+        sX = 0;
+        sY = (videoH - sH) / 2;
+    }
+
+    tempCtx.save();
+    
+    // Efek Filter
+    tempCtx.filter = (currentFilter === 'sunset') ? 'contrast(1.2) sepia(0.2)' : currentFilter;
+    
+    // Mirroring (Balik foto agar tidak terbalik seperti cermin)
+    tempCtx.translate(cfg.photoW, 0);
+    tempCtx.scale(-1, 1);
+
+    // DRAW DENGAN 9 PARAMETER UNTUK CROP
+    tempCtx.drawImage(video, sX, sY, sW, sH, 0, 0, cfg.photoW, cfg.photoH);
+    
+    tempCtx.restore();
+
+    // Logika tambahan untuk filter khusus (sunset, dither, dll) tetap sama
+    if (currentFilter === 'sunset') {
+        tempCtx.globalAlpha = 0.3;
+        tempCtx.globalCompositeOperation = 'multiply';
+        const grad = tempCtx.createLinearGradient(0,0,0,cfg.photoH);
+        grad.addColorStop(0, '#ffcc33'); grad.addColorStop(1, '#ff6600');
+        tempCtx.fillStyle = grad;
+        tempCtx.fillRect(0,0,cfg.photoW, cfg.photoH);
+    }
+    
+    if (currentFilter === 'dither') {
+        let imgData = tempCtx.getImageData(0, 0, cfg.photoW, cfg.photoH);
+        imgData = applyDithering(imgData);
+        tempCtx.putImageData(imgData, 0, 0);
+    }
+    
+    if (currentFilter === 'halftone') {
+        applyHalftone(tempCtx, cfg.photoW, cfg.photoH);
+    }
+
+    return tempCanvas.toDataURL('image/jpeg', 0.9); // Kualitas ditingkatkan ke 0.9
+}
 
         function makeGif(frames) {
             return new Promise(resolve => {
@@ -588,40 +624,19 @@
                 img.src = photos[i]; 
                 await new Promise(r => {
                     img.onload = () => {
-                        let xPos, yPos;
-                        
-                        if (cfg.positions) {
-                            xPos = cfg.positions[i].x;
-                            yPos = cfg.positions[i].y;
-                        } else {
-                            xPos = cfg.startX;
-                            yPos = cfg.startY + (i * (cfg.photoH + cfg.gap));
-                        }
+    let xPos, yPos;
+    if (cfg.positions) {
+        xPos = cfg.positions[i].x;
+        yPos = cfg.positions[i].y;
+    } else {
+        xPos = cfg.startX;
+        yPos = cfg.startY + (i * (cfg.photoH + cfg.gap));
+    }
 
-                        // --- LOGIKA ANTI GEPENG (CENTER CROP) ---
-                        const targetRatio = cfg.photoW / cfg.photoH;
-                        const imgRatio = img.width / img.height;
-                        
-                        let sX, sY, sW, sH;
-
-                        if (imgRatio > targetRatio) {
-                            // Foto terlalu lebar dibanding kotak frame
-                            sW = img.height * targetRatio;
-                            sH = img.height;
-                            sX = (img.width - sW) / 2;
-                            sY = 0;
-                        } else {
-                            // Foto terlalu tinggi dibanding kotak frame
-                            sW = img.width;
-                            sH = img.width / targetRatio;
-                            sX = 0;
-                            sY = (img.height - sH) / 2;
-                        }
-
-                        // Gambar dengan 9 parameter: ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh)
-                        ctx.drawImage(img, sX, sY, sW, sH, xPos, yPos, cfg.photoW, cfg.photoH);
-                        r();
-                    }
+    // Karena foto sudah di-crop di captureFrameManual, tinggal tempel:
+    ctx.drawImage(img, xPos, yPos, cfg.photoW, cfg.photoH);
+    r();
+}
                 });
             }
             ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
@@ -746,6 +761,7 @@
     </script>
 </body>
 </html>
+
 
 
 
