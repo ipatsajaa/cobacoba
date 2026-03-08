@@ -562,56 +562,72 @@
         }
 
         async function renderFinalFrame() {
-            loading.style.display = 'block';
-            loading.innerText = "GENERATING_ARCHIVE...";
-            
-            // PRINT SOUND (3s)
-            playSound('printer', 3000);
-
-            document.getElementById('invSection').style.display = 'none';
-            document.getElementById('processBtn').style.display = 'none';
-            video.style.display = 'none';
-            canvas.style.display = 'block';
-
-            await frameImg.decode();
-
-            // Artificial Delay for Printer Sound Experience
-            await new Promise(resolve => {
-               setTimeout(async () => {
-    // Perbaikan Logika: Cek apakah layoutG ATAU layoutI
-    const isLargeLayout = (selectedLayout === 'layoutG' || selectedLayout === 'layoutI');
+    loading.style.display = 'block';
+    loading.innerText = "GENERATING_ARCHIVE...";
     
-    canvas.width = isLargeLayout ? 1080 : 800;
-    canvas.height = isLargeLayout ? 1920 : 2400;
+    playSound('printer', 3000);
 
-    let cfg = getLayoutConfig();
-                    for (let i = 0; i < photos.length; i++) {
-            const img = new Image();
-            img.src = photos[i]; 
-            await new Promise(r => {
-                img.onload = () => {
-                    let xPos, yPos;
-                    
-                    if (cfg.positions) {
-                        // Pakai koordinat spesifik kalau ada di config
-                        xPos = cfg.positions[i].x;
-                        yPos = cfg.positions[i].y;
-                    } else {
-                        // Pakai rumus vertikal lama untuk layout strip
-                        xPos = cfg.startX;
-                        yPos = cfg.startY + (i * (cfg.photoH + cfg.gap));
-                    }
+    document.getElementById('invSection').style.display = 'none';
+    document.getElementById('processBtn').style.display = 'none';
+    video.style.display = 'none';
+    canvas.style.display = 'block';
+
+    await frameImg.decode();
+
+    await new Promise(resolve => {
+        setTimeout(async () => {
+            const isLargeLayout = (selectedLayout === 'layoutG' || selectedLayout === 'layoutI');
             
-            ctx.drawImage(img, xPos, yPos, cfg.photoW, cfg.photoH);
-            r();
-                            }
-                        });
-                    }
-                    ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
-                    resolve();
-                }, 3000); 
-            });
+            canvas.width = isLargeLayout ? 1080 : 800;
+            canvas.height = isLargeLayout ? 1920 : 2400;
 
+            let cfg = getLayoutConfig();
+            
+            for (let i = 0; i < photos.length; i++) {
+                const img = new Image();
+                img.src = photos[i]; 
+                await new Promise(r => {
+                    img.onload = () => {
+                        let xPos, yPos;
+                        
+                        if (cfg.positions) {
+                            xPos = cfg.positions[i].x;
+                            yPos = cfg.positions[i].y;
+                        } else {
+                            xPos = cfg.startX;
+                            yPos = cfg.startY + (i * (cfg.photoH + cfg.gap));
+                        }
+
+                        // --- LOGIKA ANTI GEPENG (CENTER CROP) ---
+                        const targetRatio = cfg.photoW / cfg.photoH;
+                        const imgRatio = img.width / img.height;
+                        
+                        let sX, sY, sW, sH;
+
+                        if (imgRatio > targetRatio) {
+                            // Foto terlalu lebar dibanding kotak frame
+                            sW = img.height * targetRatio;
+                            sH = img.height;
+                            sX = (img.width - sW) / 2;
+                            sY = 0;
+                        } else {
+                            // Foto terlalu tinggi dibanding kotak frame
+                            sW = img.width;
+                            sH = img.width / targetRatio;
+                            sX = 0;
+                            sY = (img.height - sH) / 2;
+                        }
+
+                        // Gambar dengan 9 parameter: ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh)
+                        ctx.drawImage(img, sX, sY, sW, sH, xPos, yPos, cfg.photoW, cfg.photoH);
+                        r();
+                    }
+                });
+            }
+            ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
+            resolve();
+        }, 3000); 
+    });
             loading.style.display = 'none';
             document.getElementById('downloadOptions').style.display = 'flex';
         }
@@ -730,6 +746,7 @@
     </script>
 </body>
 </html>
+
 
 
 
